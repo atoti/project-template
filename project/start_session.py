@@ -1,9 +1,9 @@
 import atoti as tt
 import pandas as pd
-
+import os
 
 def start_session():
-    session = tt.create_session(config={"port": 80})
+    session = tt.create_session(config={"port": int(os.environ["PORT"]), "java_options": ["-Xmx250m"]})
     store = session.read_pandas(
         pd.DataFrame(
             columns=["Product", "Price"],
