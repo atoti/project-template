@@ -52,3 +52,18 @@ On top of the `atoti` package, it comes with:
   ```bash
   poetry run pylint project/ tests/
   ```
+
+### Deploying on Heroku
+
+The application can be deployed very easily on Heroku. Since we use poetry, you will need to add the following build packs using the CLI:
+
+```bash
+heroku buildpacks:clear
+heroku buildpacks:add https://github.com/moneymeets/python-poetry-buildpack.git
+heroku buildpacks:add heroku/python
+```
+
+Heroku assigns the port that the application needs to bind to in the `PORT` environment variable.
+
+With this config done, you can follow the normal deployment procedure for Heroku apps.
+A tutorial can be found [here](https://devcenter.heroku.com/articles/getting-started-with-python).

@@ -2,8 +2,16 @@ import atoti as tt
 import pandas as pd
 import os
 
+
 def start_session():
-    session = tt.create_session(config={"port": int(os.environ["PORT"]), "java_options": ["-Xmx250m"]})
+    session = tt.create_session(
+        config={
+            "port": int(
+                os.environ["PORT"]
+            ),  # port assigned by Heroku for the application
+            "java_options": ["-Xmx250m"],
+        },  # Limit memory for the free Dyno
+    )
     store = session.read_pandas(
         pd.DataFrame(
             columns=["Product", "Price"],
