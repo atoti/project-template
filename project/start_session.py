@@ -3,7 +3,7 @@ import pandas as pd
 
 
 def start_session():
-    session = tt.create_session(config={"port": 9090})
+    session = tt.create_session(config={"port": 80})
     store = session.read_pandas(
         pd.DataFrame(
             columns=["Product", "Price"],
