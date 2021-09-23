@@ -65,5 +65,9 @@ heroku buildpacks:add heroku/python
 
 Heroku assigns the port that the application needs to bind to in the `PORT` environment variable.
 
+You can automatically deploy this project to Heroku using this.
+If you start a project using this template, remember to change the `repository` value in the `app.json` file to the URL of your repository.
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 With this config done, you can follow the normal deployment procedure for Heroku apps.
 A tutorial can be found [here](https://devcenter.heroku.com/articles/getting-started-with-python).

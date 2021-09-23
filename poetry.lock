@@ -49,6 +49,17 @@ plus = ["atoti-plus (==0.6.1)"]
 sql = ["atoti-sql (==0.6.1)"]
 
 [[package]]
+name = "atoti-sql"
+version = "0.6.1"
+description = "Plugin to load the results of SQL queries into atoti tables"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+atoti = "0.6.1"
+
+[[package]]
 name = "attrs"
 version = "21.2.0"
 description = "Classes Without Boilerplate"
@@ -427,7 +438,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.4"
-content-hash = "6facaac3f70a2217f91407ef1006d6b72c81e55da9ec4e4b35b326490483bfaa"
+content-hash = "178af7415528b0215154c4712ff6ca30371be4519a6280116a1aaebe5ea1cb04"
 
 [metadata.files]
 astroid = [
@@ -440,6 +451,9 @@ atomicwrites = [
 ]
 atoti = [
     {file = "atoti-0.6.1-0_fdad45f-py3-none-any.whl", hash = "sha256:e7d2a57b68f8115e2207b4dc2f45686c7f3c5d2a4c9fab9dc75cc06c55fcc06d"},
+]
+atoti-sql = [
+    {file = "atoti_sql-0.6.1-0_fdad45f-py3-none-any.whl", hash = "sha256:2c9959e813419f5ac49e33039f20377bcf7ca408fc932ffa1d41eab1b9650750"},
 ]
 attrs = [
     {file = "attrs-21.2.0-py2.py3-none-any.whl", hash = "sha256:149e90d6d8ac20db7a955ad60cf0e6881a3f20d37096140088356da6c716b0b1"},
