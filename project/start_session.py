@@ -3,7 +3,7 @@ import pandas as pd
 
 
 def start_session():
-    session = tt.create_session(config="config.yml")
+    session = tt.create_session(config={"port": 9090})
     store = session.read_pandas(
         pd.DataFrame(
             columns=["Product", "Price"],
@@ -14,7 +14,7 @@ def start_session():
                 ("game", 60.0),
             ],
         ),
-        store_name="Products",
+        table_name="Products",
     )
     session.create_cube(store)
     return session
