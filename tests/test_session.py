@@ -1,7 +1,7 @@
 import pandas as pd
 from pandas._testing import assert_frame_equal
 
-from project.start_session import start_session
+from app.start_session import start_session
 
 
 def test_price_sum():
