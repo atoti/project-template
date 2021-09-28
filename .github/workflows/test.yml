@@ -17,7 +17,7 @@ jobs:
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python - --no-modify-path
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
       - run: poetry install
-      - run: poetry run black --check project/ tests/
-      - run: poetry run isort --check project/ tests/
-      - run: poetry run pylint project/ tests/
+      - run: poetry run black --check app/ tests/
+      - run: poetry run isort --check app/ tests/
+      - run: poetry run pylint app/ tests/
       - run: poetry run pytest
