@@ -26,7 +26,7 @@ On top of the `atoti` package, it comes with:
 - Start the session:
 
   ```bash
-  poetry run python -m project
+  poetry run python -m app 
   ```
 
 - Run the tests:
@@ -38,19 +38,19 @@ On top of the `atoti` package, it comes with:
 - Format the code:
 
   ```bash
-  poetry run black project/ tests/
+  poetry run black app/ tests/
   ```
 
 - Sort the imports:
 
   ```bash
-  poetry run isort project/ tests/
+  poetry run isort app/ tests/
   ```
 
 - Lint the code:
 
   ```bash
-  poetry run pylint project/ tests/
+  poetry run pylint app/ tests/
   ```
 
 ### Deploying on Heroku

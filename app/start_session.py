@@ -22,7 +22,7 @@ def start_session():
             **_get_content_storage_config(),
         }
     )
-    store = session.read_pandas(
+    table = session.read_pandas(
         pd.DataFrame(
             columns=["Product", "Price"],
             data=[
@@ -34,7 +34,7 @@ def start_session():
         ),
         table_name="Products",
     )
-    session.create_cube(store)
+    session.create_cube(table)
     return session
 
 
