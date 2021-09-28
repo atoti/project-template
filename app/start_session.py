@@ -3,8 +3,10 @@ import pandas as pd
 
 
 def start_session():
-    session = tt.create_session(config="config.yml")
-    store = session.read_pandas(
+    session = tt.create_session(
+        config={"user_content_storage": "content", "port": 9090}
+    )
+    table = session.read_pandas(
         pd.DataFrame(
             columns=["Product", "Price"],
             data=[
@@ -14,7 +16,7 @@ def start_session():
                 ("game", 60.0),
             ],
         ),
-        store_name="Products",
+        table_name="Products",
     )
-    session.create_cube(store)
+    session.create_cube(table)
     return session
