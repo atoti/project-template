@@ -6,9 +6,9 @@ import requests
 
 def test_docker_container():
     client = docker.from_env()
-    client.api.build(".", tag="template")
+    image, _ = client.images.build(path=".", tag="template")
     container = client.containers.run(
-        image="template",
+        image=image,
         ports={9090: 9090},
         environment={"ATOTI_DISABLE_TELEMETRY": "true"},
         detach=True,
