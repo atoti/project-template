@@ -1,6 +1,7 @@
+import time
+
 import docker
 import requests
-import time
 
 
 def test_docker_container():

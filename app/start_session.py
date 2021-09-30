@@ -1,4 +1,3 @@
-import os
 import atoti as tt
 import pandas as pd
 
@@ -7,8 +6,7 @@ def start_session():
     session = tt.create_session(
         config={
             "user_content_storage": "content",
-            "port": int(os.getenv("PORT") or 9090),
-            "java_options": ["-Xmx250m"],
+            "port": 9090,
         }
     )
     table = session.read_pandas(
