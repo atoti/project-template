@@ -2,7 +2,7 @@
 # Enables Docker buildkit caching feature, also requires setting DOCKER_BUILDKIT=1
 FROM python:3.9-slim AS builder
 
-RUN pip install poetry
+RUN --mount=type=cache,target=/root/.cache pip install poetry
 RUN poetry config virtualenvs.create false
 
 COPY poetry.lock .
