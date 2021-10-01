@@ -5,7 +5,7 @@ RUN poetry config virtualenvs.create false
 
 COPY poetry.lock pyproject.toml .
 
-RUN --mount=type=cache,target=/root/.cache poetry install --no-ansi --no-dev
+RUN --mount=type=cache,target=/root/.cache poetry install --no-ansi
 
 FROM python:3.9-slim AS runner
 
