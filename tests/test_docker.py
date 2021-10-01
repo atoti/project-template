@@ -14,7 +14,7 @@ def test_docker_container():
     # See https://github.com/docker/docker-py/issues/2230.
     check_call(
         ["docker", "build", "--tag", IMAGE_TAG, "."],
-        env={"DOCKER_BUILDKIT": 1},
+        env={"DOCKER_BUILDKIT": "1"},
     )
 
     client = docker.from_env()
