@@ -1,6 +1,6 @@
+from http import HTTPStatus
 from subprocess import check_call
 from time import sleep
-from http import HTTPStatus
 
 import docker
 import requests
@@ -21,9 +21,9 @@ def test_docker_container():
 
     try:
         container = client.containers.run(
+            detach=True,
             image=IMAGE_TAG,
             ports={SESSION_PORT: SESSION_PORT},
-            detach=True,
         )
         while "Session running" not in str(container.logs()):
             sleep(1)
