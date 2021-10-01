@@ -3,10 +3,11 @@ on: push
 
 jobs:
   test:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     name: Test
     env:
       ATOTI_HIDE_EULA_MESSAGE: true
+      DOCKER_BUILDKIT: 1
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2

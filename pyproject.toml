@@ -11,6 +11,7 @@ python = "^3.7.4"
 
 [tool.poetry.dev-dependencies]
 black = "*"
+docker = "^5.0.2"
 isort = "*"
 pytest = "*"
 pylint = "*"

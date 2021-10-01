@@ -4,7 +4,10 @@ import pandas as pd
 
 def start_session():
     session = tt.create_session(
-        config={"user_content_storage": "content", "port": 9090}
+        config={
+            "user_content_storage": "content",
+            "port": 9090,
+        }
     )
     table = session.read_pandas(
         pd.DataFrame(
