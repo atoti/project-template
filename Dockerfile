@@ -1,8 +1,6 @@
-# First stage to install dependencies
+# syntax=docker/dockerfile:experimental
+# Enables Docker buildkit caching feature, also requires setting DOCKER_BUILDKIT=1
 FROM python:3.9-slim AS builder
-
-ENV ATOTI_DISABLE_TELEMETRY=true
-ENV PIP_CACHE_DIR=true
 
 RUN pip install poetry
 RUN poetry config virtualenvs.create false
@@ -10,12 +8,12 @@ RUN poetry config virtualenvs.create false
 COPY poetry.lock .
 COPY pyproject.toml .
 
-RUN poetry install --no-ansi
-RUN rm -rf ~/.cache/pypoetry
+RUN --mount=type=cache,target=/root/.cache poetry install --no-ansi
 
-# Second stage to copy project code and resources
 
-FROM python:3.9-slim
+FROM python:3.9-slim AS runner
+
+ENV ATOTI_DISABLE_TELEMETRY=true
 
 COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 

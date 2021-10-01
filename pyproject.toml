@@ -10,10 +10,10 @@ atoti = "*"
 # See https://github.com/PyCQA/pylint/issues/3836
 pandas = "1.1.4"
 python = "^3.7.4"
-docker = "^5.0.2"
 
 [tool.poetry.dev-dependencies]
 black = "*"
+docker = "^5.0.2"
 isort = "*"
 pytest = "*"
 pylint = "*"
