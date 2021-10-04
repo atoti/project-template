@@ -1,6 +1,6 @@
 {
-    "name": "atoti sample",
-    "description": "A sample atoti application",
+    "name": "atoti template",
+    "description": "A template for atoti projects",
     "repository": "https://github.com/atoti/project-template",
     "keywords": ["atoti", "dataviz", "python", "visualization"],
     "addons": ["heroku-postgresql:hobby-dev"],

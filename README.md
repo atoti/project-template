@@ -26,7 +26,7 @@ On top of the `atoti` package, it comes with:
 - Start the session:
 
   ```bash
-  poetry run python -m app 
+  poetry run python -m app
   ```
 
 - Run the tests:
@@ -55,7 +55,9 @@ On top of the `atoti` package, it comes with:
 
 ### Deploying on Heroku
 
-The application can be deployed very easily on Heroku. Since we use poetry, you will need to add the following build packs using the CLI:
+The application can be deployed easily on Heroku.
+
+Since the dependencies in this project are managed with poetry, the following CLI commands are required to change the buildpacks:
 
 ```bash
 heroku buildpacks:clear
@@ -63,14 +65,11 @@ heroku buildpacks:add https://github.com/moneymeets/python-poetry-buildpack.git
 heroku buildpacks:add heroku/python
 ```
 
-Heroku assigns the port that the application needs to bind to in the `PORT` environment variable.
-With this config done, you can follow the normal deployment procedure for Heroku apps.
-A tutorial can be found [here](https://devcenter.heroku.com/articles/getting-started-with-python).
+With this config done, the [usual deployment procedure for Heroku apps can be followed](https://devcenter.heroku.com/articles/getting-started-with-python).
 
 #### Heroku button
 
-You can automatically deploy this project to Heroku using this button.
+Click on the button below to automatically deploy this project on Heroku.
+To deploy a project started from this template, remember to change the `repository` value in [app.json](app.json).
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-If you start a project using this template, remember to change the `repository` value in the `app.json` file to the URL of your repository.
