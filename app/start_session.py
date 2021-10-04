@@ -15,7 +15,7 @@ def start_session():
         config={
             **{
                 "port": int(
-                    os.getenv("PORT") or 9090
+                    os.environ.get("PORT") or 9090
                 ),  # port assigned by Heroku for the application
                 "java_options": ["-Xmx250m"],
             },

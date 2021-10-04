@@ -6,14 +6,13 @@ authors = []
 
 [tool.poetry.dependencies]
 atoti = "*"
-# Pylint currently crashes on pandas 1.1.5.
-# See https://github.com/PyCQA/pylint/issues/3836
-pandas = "1.1.4"
+pandas = "1.3.3"
 python = "^3.7.4"
 atoti-sql = "^0.6.1"
 
 [tool.poetry.dev-dependencies]
 black = "*"
+docker = "^5.0.2"
 isort = "*"
 pytest = "*"
 pylint = "*"
