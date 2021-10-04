@@ -26,7 +26,7 @@ version = "0.6.1"
 description = "Design, explore and deploy efficient and flexible data models"
 category = "main"
 optional = false
-python-versions = ">=3.7.1"
+python-versions = "3.9.7"
 
 [package.dependencies]
 atoti-sql = {version = "0.6.1", optional = true, markers = "extra == \"sql\""}
