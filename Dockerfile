@@ -15,5 +15,4 @@ ENV ATOTI_DISABLE_TELEMETRY=true
 COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 COPY app app
 
-EXPOSE 9090
 ENTRYPOINT ["python", "-u", "-m", "app"]
