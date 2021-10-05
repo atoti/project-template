@@ -11,6 +11,7 @@ RUN --mount=type=cache,target=/root/.cache poetry install --no-ansi
 FROM python:3.9-slim AS runner
 
 ENV ATOTI_DISABLE_TELEMETRY=true
+ENV ATOTI_HIDE_EULA_MESSAGE=true
 
 COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 COPY app app

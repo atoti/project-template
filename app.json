@@ -1,0 +1,15 @@
+{
+    "name": "atoti template",
+    "description": "A template for atoti projects",
+    "repository": "https://github.com/atoti/project-template",
+    "keywords": ["atoti", "dataviz", "python", "visualization"],
+    "addons": ["heroku-postgresql:hobby-dev"],
+    "buildpacks": [
+        {
+            "url": "https://github.com/moneymeets/python-poetry-buildpack.git"
+        },
+        {
+            "url": "heroku/python"
+        }
+    ]
+}

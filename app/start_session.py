@@ -1,12 +1,44 @@
+import os
+import re
+from typing import Mapping
+
 import atoti as tt
 import pandas as pd
+
+HEROKU_DATABASE_URL_PATTERN = (
+    r"(?P<database>postgres://)(?P<username>.*):(?P<password>.*)@(?P<url>.*)"
+)
+
+
+def _get_user_content_storage_config() -> Mapping[str, Mapping[str, str]]:
+    database_url = os.environ.get("DATABASE_URL")
+    if database_url is None:
+        return {}
+    match = re.match(HEROKU_DATABASE_URL_PATTERN, database_url)
+    if match is None:
+        raise ValueError("Failed to parse database URL")
+    username = match.group("username")
+    password = match.group("password")
+    url = match.group("url")
+    if not "postgres" in match.group("database"):
+        raise ValueError(f"Expected Postgres database, got {match.group('database')}")
+    return {
+        "user_content_storage": {
+            "url": f"postgresql://{url}?user={username}&password={password}"
+        }
+    }
 
 
 def start_session():
     session = tt.create_session(
         config={
-            "user_content_storage": "content",
-            "port": 9090,
+            **{
+                "port": int(os.environ.get("PORT") or 9090),
+                # The PORT environment variable is used by platforms such as Heroku
+                # to communicate the port the application server should bind to.
+                "java_options": ["-Xmx250m"],
+            },
+            **_get_user_content_storage_config(),
         }
     )
     table = session.read_pandas(
