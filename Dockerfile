@@ -1,23 +1,19 @@
-# syntax=docker/dockerfile:experimental
-# Enables Docker buildkit caching feature, also requires setting DOCKER_BUILDKIT=1
-FROM python:3.9-slim AS builder
+# syntax=docker/dockerfile:1.2
+FROM python:3.9.7-slim AS builder
 
-RUN --mount=type=cache,target=/root/.cache pip install poetry
+RUN --mount=type=cache,target=/root/.cache pip install poetry==1.1.10
 RUN poetry config virtualenvs.create false
 
-COPY poetry.lock .
-COPY pyproject.toml .
+COPY poetry.lock pyproject.toml ./
 
-RUN --mount=type=cache,target=/root/.cache poetry install --no-ansi
+RUN --mount=type=cache,target=/root/.cache poetry install --no-ansi --no-dev
 
-
-FROM python:3.9-slim AS runner
+FROM python:3.9.7-slim AS runner
 
 ENV ATOTI_DISABLE_TELEMETRY=true
 ENV ATOTI_HIDE_EULA_MESSAGE=true
 
 COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
-
 COPY app app
 
 ENTRYPOINT ["python", "-u", "-m", "app"]
