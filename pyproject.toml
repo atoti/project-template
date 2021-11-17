@@ -49,5 +49,6 @@ disable = [
   "missing-function-docstring",
   "missing-module-docstring",
   "singleton-comparison", # So that code such as `m["Boolean"] == True` can be used.
+  "useless-import-alias", # Goes against https://www.python.org/dev/peps/pep-0484/#stub-files.
 ]
 good-names = ["at", "h", "l", "m"]
