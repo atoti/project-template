@@ -6,18 +6,18 @@ authors = []
 
 [tool.poetry.dependencies]
 atoti = {extras = ["sql"], version = "*"}
-pandas = "1.3.3"
-python = "3.9.7"
-# poetry deletes this package when the --no-dev flag is enabled because it is a dependency of requests, however it is needed for package installation.
-certifi = "^2021.10.8"
+# Poetry deletes this package when the --no-dev flag is enabled because it is a dependency of requests, however it is needed for package installation.
+certifi = "*"
+pandas = "*"
+python = "^3.9"
 
 [tool.poetry.dev-dependencies]
 black = "*"
-docker = "^5.0.2"
+docker = "*"
 isort = "*"
-pytest = "*"
 pylint = "*"
-requests = "^2.26.0"
+pytest = "*"
+requests = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -29,8 +29,7 @@ profile = "black"
 [tool.pylint."messages control"]
 ignore = [".venv"]
 disable = [
-  # Broken, see https://github.com/PyCQA/pylint/issues/3507
-  "isinstance-second-argument-not-valid-type",
+  "line-too-long", # Handled by Black
   # Do not force docstrings
   "missing-class-docstring",
   "missing-function-docstring",
