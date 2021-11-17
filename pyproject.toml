@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "project"
+name = "app"
 version = "0.1.0"
 description = ""
 authors = []
@@ -15,9 +15,12 @@ python = "^3.9"
 black = "*"
 docker = "*"
 isort = "*"
+mypy = "*"
+pandas-stubs = "*"
 pylint = "*"
 pytest = "*"
 requests = "*"
+types-requests = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -26,13 +29,26 @@ build-backend = "poetry.core.masonry.api"
 [tool.isort]
 profile = "black"
 
+[tool.mypy]
+strict = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_calls = false
+
+[[tool.mypy.overrides]]
+module = ["docker"]
+ignore_missing_imports = true
+
 [tool.pylint."messages control"]
 ignore = [".venv"]
 disable = [
-  "line-too-long", # Handled by Black
-  # Do not force docstrings
+  "line-too-long", # Handled by Black.
+  # Do not force docstrings.
   "missing-class-docstring",
   "missing-function-docstring",
   "missing-module-docstring",
+  "singleton-comparison", # So that code such as `m["Boolean"] == True` can be used.
+  "useless-import-alias", # Goes against https://www.python.org/dev/peps/pep-0484/#stub-files.
 ]
 good-names = ["at", "h", "l", "m"]

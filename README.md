@@ -6,6 +6,7 @@ On top of the `atoti` package, it comes with:
 
 - Dependency management with [Poetry](https://python-poetry.org/)
 - Testing with [pytest](https://docs.pytest.org/)
+- Type checking with [mypy](http://mypy-lang.org/)
 - Formatting with [Black](https://black.readthedocs.io/) and [isort](https://pycqa.github.io/isort/)
 - Linting with [Pylint](https://www.pylint.org/)
 - Continuous testing with [GitHub Actions](https://github.com/features/actions)
@@ -35,10 +36,16 @@ On top of the `atoti` package, it comes with:
   poetry run pytest
   ```
 
-- Format the code:
+- Check the types:
 
   ```bash
-  poetry run black app/ tests/
+  poetry run mypy --package app --package tests
+  ```
+
+- Lint the code:
+
+  ```bash
+  poetry run pylint app/ tests/
   ```
 
 - Sort the imports:
@@ -47,10 +54,10 @@ On top of the `atoti` package, it comes with:
   poetry run isort app/ tests/
   ```
 
-- Lint the code:
+- Format the code:
 
   ```bash
-  poetry run pylint app/ tests/
+  poetry run black app/ tests/
   ```
 
 ### Deploying on Heroku

@@ -1,10 +1,10 @@
 import pandas as pd
 from pandas._testing import assert_frame_equal
 
-from app.start_session import start_session
+from app import start_session
 
 
-def test_price_sum():
+def test_price_sum() -> None:
     session = start_session()
     cube = session.cubes["Products"]
     actual_result = cube.query(cube.measures["Price.SUM"])
