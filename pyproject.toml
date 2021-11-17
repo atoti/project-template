@@ -29,8 +29,7 @@ profile = "black"
 [tool.pylint."messages control"]
 ignore = [".venv"]
 disable = [
-  # Broken, see https://github.com/PyCQA/pylint/issues/3507
-  "isinstance-second-argument-not-valid-type",
+  "line-too-long", # Handled by Black
   # Do not force docstrings
   "missing-class-docstring",
   "missing-function-docstring",
