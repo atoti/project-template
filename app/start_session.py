@@ -33,10 +33,9 @@ def start_session():
     session = tt.create_session(
         config={
             **{
-                "port": int(os.environ.get("PORT") or 9090),
-                # The PORT environment variable is used by platforms such as Heroku
-                # to communicate the port the application server should bind to.
                 "java_options": ["-Xmx250m"],
+                # The $PORT environment variable is used by most PaaS to indicate the port the application server should bind to.
+                "port": int(os.environ.get("PORT") or 9090),
             },
             **_get_user_content_storage_config(),
         }
