@@ -6,7 +6,7 @@ authors = []
 
 [tool.poetry.dependencies]
 atoti = {extras = ["sql"], version = "*"}
-pandas = "1.3.3"
+pandas = "1.3.4"
 python = "3.9.7"
 # poetry deletes this package when the --no-dev flag is enabled because it is a dependency of requests, however it is needed for package installation.
 certifi = "^2021.10.8"
