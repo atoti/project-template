@@ -13,7 +13,7 @@ certifi = "^2021.10.8"
 
 [tool.poetry.dev-dependencies]
 black = "*"
-docker = "^5.0.2"
+docker = "^5.0.3"
 isort = "*"
 pytest = "*"
 pylint = "*"
