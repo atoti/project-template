@@ -15,17 +15,18 @@ def test_docker_container() -> None:
     check_call(
         ["docker", "build", "--tag", IMAGE_TAG, "."],
         env={"DOCKER_BUILDKIT": "1"},
-        shell=True,
+        # shell=True,
     )
 
     client = docker.from_env()
 
+    container = client.containers.run(
+        detach=True,
+        image=IMAGE_TAG,
+        ports={SESSION_PORT: SESSION_PORT},
+    )
+
     try:
-        container = client.containers.run(
-            detach=True,
-            image=IMAGE_TAG,
-            ports={SESSION_PORT: SESSION_PORT},
-        )
         while "Session running" not in str(container.logs()):
             sleep(1)
         response = requests.get(f"http://localhost:{SESSION_PORT}/versions/rest")
