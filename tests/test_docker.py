@@ -5,7 +5,7 @@ from time import sleep
 import docker
 import requests
 
-IMAGE_TAG = "atoti-template"
+IMAGE_TAG = "atoti-project-template"
 SESSION_PORT = 9090
 
 
@@ -15,6 +15,7 @@ def test_docker_container() -> None:
     check_call(
         ["docker", "build", "--tag", IMAGE_TAG, "."],
         env={"DOCKER_BUILDKIT": "1"},
+        shell=True,
     )
 
     client = docker.from_env()
