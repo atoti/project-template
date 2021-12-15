@@ -16,7 +16,18 @@ jobs:
         uses: snok/install-poetry@v1
         with:
           version: "1.1.12"
-      - run: poetry install
+          virtualenvs-in-project: true
+      - name: Load cached venv
+        id: cached-poetry-venv
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+      - name: Install dependencies
+        if: steps.cached-poetry-venv.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+      - name: Install project root
+        run: poetry install --no-interaction
       - run: poetry run black --check app/ tests/
       - run: poetry run isort --check app/ tests/
       - run: poetry run pylint app/ tests/
