@@ -10,6 +10,7 @@ atoti = {extras = ["sql"], version = "*"}
 certifi = "*"
 pandas = "*"
 pydantic = "*"
+# Cannot use pinned version as it leads to NoCompatiblePythonVersionFound error when doing a fresh install.
 python = "^3.9"
 
 [tool.poetry.dev-dependencies]
@@ -44,14 +45,22 @@ ignore_missing_imports = true
 [tool.pylint."messages control"]
 ignore = [".venv"]
 disable = [
-  "line-too-long", # Handled by Black.
-  # Do not force docstrings.
+  # Handled by Black.
+  "line-too-long",
+  # <----------------------
+  # Do not force docstrings
   "missing-class-docstring",
   "missing-function-docstring",
   "missing-module-docstring",
-  "no-name-in-module", # Handled by mypy.
-  "singleton-comparison", # So that code such as `m["Boolean"] == True` can be used.
-  "too-few-public-methods", # Useless.
-  "useless-import-alias", # Goes against https://www.python.org/dev/peps/pep-0484/#stub-files.
+  # Do not force docstrings
+  # ----------------------->
+  # Handled by mypy.
+  "no-name-in-module",
+  # So that code such as `m["Boolean"] == True` can be used.
+  "singleton-comparison",
+  # Useless.
+  "too-few-public-methods",
+  # Goes against https://www.python.org/dev/peps/pep-0484/#stub-files.
+  "useless-import-alias",
 ]
 good-names = ["at", "h", "l", "m"]
