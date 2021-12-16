@@ -9,6 +9,7 @@ atoti = {extras = ["sql"], version = "*"}
 # Poetry deletes this package when the --no-dev flag is enabled because it is a dependency of requests, however it is needed for package installation.
 certifi = "*"
 pandas = "*"
+pydantic = "*"
 python = "^3.9"
 
 [tool.poetry.dev-dependencies]
@@ -48,7 +49,9 @@ disable = [
   "missing-class-docstring",
   "missing-function-docstring",
   "missing-module-docstring",
+  "no-name-in-module", # Handled by mypy.
   "singleton-comparison", # So that code such as `m["Boolean"] == True` can be used.
+  "too-few-public-methods", # Useless.
   "useless-import-alias", # Goes against https://www.python.org/dev/peps/pep-0484/#stub-files.
 ]
 good-names = ["at", "h", "l", "m"]
