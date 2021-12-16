@@ -19,7 +19,7 @@ def normalize_postgresql_dsn_for_atoti_sql(url: PostgresDsn) -> Any:
         )
 
     return PostgresDsn(
-        # This is how Pydantic creates an instance from parts.
+        # This is how pydantic creates an instance from parts.
         None,
         scheme="postgresql",
         host=str(parts.hostname),
