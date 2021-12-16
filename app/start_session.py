@@ -1,45 +1,31 @@
-import os
-import re
-from typing import Mapping
+import sys
+from typing import Any, Dict
 
 import atoti as tt
 import pandas as pd
+from pydantic import AnyUrl
 
-POSTGRES_DATABASE_URL_PATTERN = (
-    r"(?P<database>postgres://)(?P<username>.*):(?P<password>.*)@(?P<url>.*)"
-)
+from .app_config import AppConfig
 
 
-def _get_user_content_storage_config() -> Mapping[str, Mapping[str, str]]:
-    database_url = os.environ.get("DATABASE_URL")
-    if database_url is None:
-        return {}
-    match = re.match(POSTGRES_DATABASE_URL_PATTERN, database_url)
-    if match is None:
-        raise ValueError("Failed to parse database URL")
-    username = match.group("username")
-    password = match.group("password")
-    url = match.group("url")
-    if not "postgres" in match.group("database"):
-        raise ValueError(f"Expected Postgres database, got {match.group('database')}")
-    return {
-        "user_content_storage": {
-            "url": f"postgresql://{url}?user={username}&password={password}"
-        }
+def create_session(*, app_config: AppConfig) -> tt.Session:
+    session_config: Dict[str, Any] = {
+        "logging": {"destination": sys.stdout},
+        "port": app_config.port,
     }
 
+    if app_config.user_content_storage:
+        session_config["user_content_storage"] = (
+            {"url": str(app_config.user_content_storage)}
+            if isinstance(app_config.user_content_storage, AnyUrl)
+            else app_config.user_content_storage
+        )
 
-def start_session() -> tt.Session:
-    session = tt.create_session(
-        config={
-            **{
-                "java_options": ["-Xmx250m"],
-                # The $PORT environment variable is used by most PaaS to indicate the port the application server should bind to.
-                "port": int(os.environ.get("PORT") or 9090),
-            },
-            **_get_user_content_storage_config(),
-        }
-    )
+    return tt.create_session(config=session_config)
+
+
+def start_session(*, app_config: AppConfig) -> tt.Session:
+    session = create_session(app_config=app_config)
     table = session.read_pandas(
         pd.DataFrame(
             columns=["Product", "Price"],
