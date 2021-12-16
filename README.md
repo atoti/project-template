@@ -42,12 +42,6 @@ On top of the `atoti` package, it comes with:
   poetry run mypy --package app --package tests
   ```
 
-- Lint the code:
-
-  ```bash
-  poetry run pylint app/ tests/
-  ```
-
 - Sort the imports:
 
   ```bash
@@ -58,6 +52,12 @@ On top of the `atoti` package, it comes with:
 
   ```bash
   poetry run black app/ tests/
+  ```
+
+- Lint the code:
+
+  ```bash
+  poetry run pylint app/ tests/
   ```
 
 ### Deploying on Heroku
