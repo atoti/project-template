@@ -1,19 +1,35 @@
+from pathlib import Path
 from typing import Generator
 
 import atoti as tt
 import pytest
 
-from app import AppConfig, start_session
+from app import App, Config
+
+TEST_DATA_PATH = Path(__file__).parent / "data"
 
 
-@pytest.fixture(name="app_config")
-def app_config_fixture() -> AppConfig:
-    return AppConfig(
-        # user_content_storage=None,
+@pytest.fixture(name="config", scope="session")
+def config_fixture() -> Config:
+    return Config(
+        data_refresh_period=None,
+        reverse_geocoding_path=TEST_DATA_PATH / "station_location.csv",
+        port=None,
+        user_content_storage=None,
+        velib_data_path=TEST_DATA_PATH,
     )
 
 
-@pytest.fixture(name="session")
-def session_fixture(app_config: AppConfig) -> Generator[tt.Session, None, None]:
-    with start_session(app_config=app_config) as session:
-        yield session
+@pytest.fixture(
+    name="app",
+    # Don't use this fixture in tests mutating the app or its underlying session.
+    scope="session",
+)
+def app_fixture(config: Config) -> Generator[App, None, None]:
+    with App(config) as app:
+        yield app
+
+
+@pytest.fixture(name="session", scope="session")
+def session_fixture(app: App) -> tt.Session:
+    return app.session
