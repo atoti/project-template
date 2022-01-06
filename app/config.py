@@ -34,7 +34,7 @@ class Config(BaseSettings):
         env="database_url",
     )
 
-    velib_data_path: Union[HttpUrl, DirectoryPath] = Field(
+    velib_data_base_path: Union[HttpUrl, DirectoryPath] = Field(
         default="https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole"
     )
 
