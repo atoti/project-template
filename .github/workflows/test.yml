@@ -29,5 +29,5 @@ jobs:
       - run: poetry run black --check app/ tests/
       - run: poetry run isort --check app/ tests/
       - run: poetry run pylint app/ tests/
-      - run: poetry run mypy --package app --package tests
+      - run: poetry run mypy --package app --package tests --show-error-codes
       - run: poetry run pytest
