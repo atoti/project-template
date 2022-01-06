@@ -12,6 +12,7 @@ from .load_tables import load_tables
 
 def create_session(*, config: Config) -> tt.Session:
     session_config: Dict[str, Any] = {
+        "authentication": {"basic": {}},
         "logging": {"destination": sys.stdout},
     }
 
@@ -25,7 +26,12 @@ def create_session(*, config: Config) -> tt.Session:
             else config.user_content_storage
         )
 
-    return tt.create_session(config=session_config)
+    session = tt.create_session(config=session_config)
+
+    for username, password in config.basic_authentication_users:
+        session.security.basic.create_user(username, password=password)
+
+    return session
 
 
 def start_session(*, config: Config) -> tt.Session:

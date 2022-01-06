@@ -1,7 +1,10 @@
+from http import HTTPStatus
+
 import atoti as tt
 import pandas as pd
+import requests
 
-from app import Cube, StationCubeMeasure
+from app import Config, Cube, StationCubeMeasure
 from app.constants import StationCubeLocationLevel
 
 
@@ -32,3 +35,15 @@ def test_departments(session: tt.Session) -> None:
         "94, Val-de-Marne, Île-de-France",
         "95, Val-d'Oise, Île-de-France",
     ]
+
+
+def test_basic_authentication(config: Config, session: tt.Session) -> None:
+    session_url = f"http://localhost:{session.port}"
+
+    assert (
+        config.basic_authentication_users
+    ), "Expected some basic authentication users to have been configured."
+
+    for user in config.basic_authentication_users:
+        assert requests.get(session_url).status_code == HTTPStatus.UNAUTHORIZED
+        assert requests.get(session_url, auth=user).status_code == HTTPStatus.OK

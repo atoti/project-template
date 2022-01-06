@@ -28,6 +28,7 @@ optional = false
 python-versions = ">=3.7.1"
 
 [package.dependencies]
+atoti-plus = {version = "0.6.3", optional = true, markers = "extra == \"plus\""}
 atoti-sql = {version = "0.6.3", optional = true, markers = "extra == \"sql\""}
 importlib-metadata = ">=3.6.0"
 jdk4py = ">=11.0,<12.0"
@@ -48,6 +49,30 @@ kafka = ["atoti-kafka (==0.6.3)"]
 plus = ["atoti-plus (==0.6.3)"]
 sql = ["atoti-sql (==0.6.3)"]
 
+[package.source]
+type = "legacy"
+url = "https://pypi.atoti.io/simple"
+reference = "atoti-plus"
+
+[[package]]
+name = "atoti-plus"
+version = "0.6.3"
+description = "Plugin to access the Atoti+ features"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+atoti = "0.6.3"
+
+[package.extras]
+dev = ["pyjwt", "requests"]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.atoti.io/simple"
+reference = "atoti-plus"
+
 [[package]]
 name = "atoti-sql"
 version = "0.6.3"
@@ -58,6 +83,11 @@ python-versions = ">=3.7"
 
 [package.dependencies]
 atoti = "0.6.3"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.atoti.io/simple"
+reference = "atoti-plus"
 
 [[package]]
 name = "attrs"
@@ -566,7 +596,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "d0967b5d93cf054c883a838b08ba493ffbb6427420819bfadb4137dd8d48e1b3"
+content-hash = "90a4b14479d27cdbb29d03b229ada5afcf1a4333a5b77c5b94cc3ed2b3f5609e"
 
 [metadata.files]
 astroid = [
@@ -579,6 +609,9 @@ atomicwrites = [
 ]
 atoti = [
     {file = "atoti-0.6.3-0_bb62584-py3-none-any.whl", hash = "sha256:4786cf88687f2d5c973eb8913645b5a3ddad0774b9513cc7d518da6ccf5b7822"},
+]
+atoti-plus = [
+    {file = "atoti_plus-0.6.3-0_bb62584-py3-none-any.whl", hash = "sha256:b78207d7625eb99e206dfb0397cfdb79375a7391a74a2942ab3d1dbefed0ca59"},
 ]
 atoti-sql = [
     {file = "atoti_sql-0.6.3-0_bb62584-py3-none-any.whl", hash = "sha256:7e07a53daccd3c9826f62372f1841e230e2e33a6c5b76064ef7c9038f40422b9"},
