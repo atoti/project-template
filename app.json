@@ -1,7 +1,7 @@
 {
   "name": "atoti template",
   "description": "A template for atoti projects",
-  "repository": "https://github.com/atoti/project-template",
+  "repository": "https://github.com/atoti/project-template#deploy-to-heroku",
   "keywords": ["atoti", "dataviz", "python", "visualization"],
   "addons": ["heroku-postgresql:hobby-dev"],
   "buildpacks": [
