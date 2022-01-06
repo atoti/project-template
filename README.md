@@ -39,7 +39,7 @@ On top of the `atoti` package, it comes with:
 - Check the types:
 
   ```bash
-  poetry run mypy --package app --package tests
+  poetry run mypy --package app --package tests --show-error-codes
   ```
 
 - Sort the imports:

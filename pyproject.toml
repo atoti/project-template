@@ -8,10 +8,12 @@ authors = []
 atoti = {extras = ["sql"], version = "*"}
 # Poetry deletes this package when the --no-dev flag is enabled because it is a dependency of requests, however it is needed for package installation.
 certifi = "*"
+numpy = "*"
 pandas = "*"
 pydantic = "*"
 # Cannot use pinned version as it leads to NoCompatiblePythonVersionFound error when doing a fresh install.
 python = "^3.9"
+requests = "*"
 
 [tool.poetry.dev-dependencies]
 black = "*"
@@ -21,7 +23,6 @@ mypy = "*"
 pandas-stubs = "*"
 pylint = "*"
 pytest = "*"
-requests = "*"
 types-requests = "*"
 
 [build-system]

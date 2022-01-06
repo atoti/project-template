@@ -1,7 +1,7 @@
-from . import AppConfig, start_session
+from . import App, Config
 
-app_config = AppConfig()
+config = Config()
 
-with start_session(app_config=app_config) as session:
-    print(f"Session running at http://localhost:{session.port}")
-    session.wait()
+with App(config) as app:
+    print(f"Session running at http://localhost:{app.session.port}")
+    app.session.wait()
