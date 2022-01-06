@@ -1,6 +1,6 @@
 # atoti Project Template
 
-Switch to the `main` branch to learn how to use this template.
+Switch to the [default branch](https://github.com/atoti/project-template#readme) to learn how to use this template.
 
 ## Deploy to Heroku
 
