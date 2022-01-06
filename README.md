@@ -18,7 +18,7 @@ On top of the `atoti` package, it comes with:
 - [Install `poetry`](https://python-poetry.org/docs/#installation)
 - Install the dependencies:
 
-  ```bash
+  ```console
   poetry install
   ```
 
@@ -26,37 +26,37 @@ On top of the `atoti` package, it comes with:
 
 - Start the session:
 
-  ```bash
+  ```console
   poetry run python -m app
   ```
 
 - Run the tests:
 
-  ```bash
+  ```console
   poetry run pytest
   ```
 
 - Check the types:
 
-  ```bash
+  ```console
   poetry run mypy --package app --package tests --show-error-codes
   ```
 
 - Sort the imports:
 
-  ```bash
+  ```console
   poetry run isort app/ tests/
   ```
 
 - Format the code:
 
-  ```bash
+  ```console
   poetry run black app/ tests/
   ```
 
 - Lint the code:
 
-  ```bash
+  ```console
   poetry run pylint app/ tests/
   ```
 
