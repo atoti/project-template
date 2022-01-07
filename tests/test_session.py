@@ -1,8 +1,7 @@
 import atoti as tt
 import pandas as pd
 
-from app import Cube, StationCubeMeasure
-from app.constants import StationCubeLocationLevel
+from app import Cube, StationCubeLocationLevel, StationCubeMeasure
 
 
 def test_total_capacity(session: tt.Session) -> None:
