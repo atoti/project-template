@@ -4,7 +4,7 @@ Switch to the [default branch](https://github.com/atoti/project-template#readme)
 
 ## Atoti+
 
-This branch shows [the modifications](https://github.com/atoti/project-template/compare/atoti-plus) required to switch a project from atoti to Atoti+.
+This branch shows [the modifications](https://github.com/atoti/project-template/compare/atoti-plus) required to upgrade a project from atoti to Atoti+.
 
 ### Required environments variables
 
