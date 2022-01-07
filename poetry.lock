@@ -49,11 +49,6 @@ kafka = ["atoti-kafka (==0.6.3)"]
 plus = ["atoti-plus (==0.6.3)"]
 sql = ["atoti-sql (==0.6.3)"]
 
-[package.source]
-type = "legacy"
-url = "https://pypi.atoti.io/simple"
-reference = "atoti-plus"
-
 [[package]]
 name = "atoti-plus"
 version = "0.6.3"
@@ -83,11 +78,6 @@ python-versions = ">=3.7"
 
 [package.dependencies]
 atoti = "0.6.3"
-
-[package.source]
-type = "legacy"
-url = "https://pypi.atoti.io/simple"
-reference = "atoti-plus"
 
 [[package]]
 name = "attrs"
