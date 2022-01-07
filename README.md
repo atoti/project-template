@@ -4,4 +4,9 @@ Switch to the [default branch](https://github.com/atoti/project-template#readme)
 
 ## Atoti+
 
-This branch shows the modifications required to switch a project from atoti to Atoti+.
+This branch shows [the modifications](https://github.com/atoti/project-template/compare/atoti-plus) required to switch a project from atoti to Atoti+.
+
+### Required environments variables
+
+- `POETRY_HTTP_BASIC_ATOTI_PLUS_USERNAME` and `POETRY_HTTP_BASIC_ATOTI_PLUS_PASSWORD` to install the `atoti-plus` plugin.
+- A valid `ATOTI_LICENSE` to start the application.

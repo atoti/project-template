@@ -7,7 +7,6 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     name: Test
-    environment: atoti-plus
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -25,8 +24,8 @@ jobs:
       - name: Install dependencies
         if: steps.cached-poetry-venv.outputs.cache-hit != 'true'
         env:
-          POETRY_HTTP_BASIC_ATOTI_PLUS_PASSWORD: ${{ secrets.ATOTI_PLUS_PASSWORD }}
-          POETRY_HTTP_BASIC_ATOTI_PLUS_USERNAME: ${{ secrets.ATOTI_PLUS_USERNAME }}
+          POETRY_HTTP_BASIC_ATOTI_PLUS_PASSWORD: ${{ secrets.ATOTI_PLUS_REPOSITORY_PASSWORD }}
+          POETRY_HTTP_BASIC_ATOTI_PLUS_USERNAME: ${{ secrets.ATOTI_PLUS_REPOSITORY_USERNAME }}
         run: poetry install --no-interaction --no-root
       - name: Install project root
         run: poetry install --no-interaction
@@ -35,3 +34,7 @@ jobs:
       - run: poetry run pylint app/ tests/
       - run: poetry run mypy --package app --package tests --show-error-codes
       - run: poetry run pytest
+        env:
+          ATOTI_LICENSE: ${{ secrets.ATOTI_PLUS_LICENSE }}
+          ATOTI_PLUS_REPOSITORY_PASSWORD: ${{ secrets.ATOTI_PLUS_REPOSITORY_PASSWORD }}
+          ATOTI_PLUS_REPOSITORY_USERNAME: ${{ secrets.ATOTI_PLUS_REPOSITORY_USERNAME }}

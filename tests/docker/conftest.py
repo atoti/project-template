@@ -1,5 +1,8 @@
+import os
+from pathlib import Path
 from shutil import which
 from subprocess import STDOUT, check_output
+from textwrap import dedent
 from time import sleep
 from typing import Generator
 from uuid import uuid4
@@ -7,6 +10,7 @@ from uuid import uuid4
 import atoti as tt
 import docker
 import pytest
+from _pytest.tmpdir import TempPathFactory
 from docker.models.containers import Container
 
 
@@ -17,13 +21,39 @@ def docker_bin_fixture() -> str:
     return docker_bin
 
 
+@pytest.fixture(name="poetry_auth_toml", scope="session")
+def poetry_auth_toml_fixture(tmp_path_factory: TempPathFactory) -> Path:
+    repository_name = "atoti-plus"
+    content = dedent(
+        f"""\
+        [http-basic]
+        [http-basic.{repository_name}]
+        username = "{os.environ["ATOTI_PLUS_REPOSITORY_USERNAME"]}"
+        password = "{os.environ["ATOTI_PLUS_REPOSITORY_PASSWORD"]}"
+        """
+    )
+    path = tmp_path_factory.mktemp("poetry-atoti-project-template") / "auth.toml"
+    path.write_text(content, encoding="utf8")
+    return path
+
+
 @pytest.fixture(name="docker_image_name", scope="session")
-def docker_image_name_fixture(docker_bin: str) -> Generator[str, None, None]:
+def docker_image_name_fixture(
+    docker_bin: str, poetry_auth_toml: Path
+) -> Generator[str, None, None]:
     name = f"atoti-project-template:{uuid4()}"
     # BuildKit is not supported by Docker's Python SDK.
     # See https://github.com/docker/docker-py/issues/2230.
     build_image_output = check_output(
-        [docker_bin, "build", "--tag", name, "."],
+        [
+            docker_bin,
+            "build",
+            "--secret",
+            f"id=poetry_auth_toml,src={str(poetry_auth_toml.absolute())}",
+            "--tag",
+            name,
+            ".",
+        ],
         env={"DOCKER_BUILDKIT": "1"},
         stderr=STDOUT,
         text=True,
@@ -49,6 +79,7 @@ def docker_container_fixture(
     container = client.containers.run(
         docker_image_name,
         detach=True,
+        environment={"ATOTI_LICENSE": os.environ["ATOTI_LICENSE"]},
         name=str(uuid4()),
         publish_all_ports=True,
     )
