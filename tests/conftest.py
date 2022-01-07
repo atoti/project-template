@@ -26,7 +26,7 @@ def config_fixture() -> Config:
     scope="session",
 )
 def app_fixture(config: Config) -> Generator[App, None, None]:
-    with App(config) as app:
+    with App(config=config) as app:
         yield app
 
 

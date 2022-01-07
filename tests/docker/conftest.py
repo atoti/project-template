@@ -1,13 +1,22 @@
 from shutil import which
-from subprocess import STDOUT, check_output
+from subprocess import STDOUT, CalledProcessError, check_output
 from time import sleep
-from typing import Generator
+from typing import Generator, Iterable, Mapping, Optional
 from uuid import uuid4
 
 import atoti as tt
 import docker
 import pytest
 from docker.models.containers import Container
+
+
+def run_command(
+    args: Iterable[str], /, *, env: Optional[Mapping[str, str]] = None
+) -> str:
+    try:
+        return check_output(args, env=env, stderr=STDOUT, text=True)
+    except CalledProcessError as error:
+        raise RuntimeError(f"Command {error.cmd} failed:\n{error.output}") from error
 
 
 @pytest.fixture(name="docker_bin", scope="session")
@@ -22,17 +31,12 @@ def docker_image_name_fixture(docker_bin: str) -> Generator[str, None, None]:
     name = f"atoti-project-template:{uuid4()}"
     # BuildKit is not supported by Docker's Python SDK.
     # See https://github.com/docker/docker-py/issues/2230.
-    build_image_output = check_output(
-        [docker_bin, "build", "--tag", name, "."],
-        env={"DOCKER_BUILDKIT": "1"},
-        stderr=STDOUT,
-        text=True,
+    build_image_output = run_command(
+        [docker_bin, "build", "--tag", name, "."], env={"DOCKER_BUILDKIT": "1"}
     )
     assert f"naming to docker.io/library/{name}" in build_image_output
     yield name
-    remove_image_output = check_output(
-        [docker_bin, "image", "rm", name], stderr=STDOUT, text=True
-    )
+    remove_image_output = run_command([docker_bin, "image", "rm", name])
     assert "Deleted" in remove_image_output
 
 
@@ -61,8 +65,8 @@ def docker_container_fixture(
 
 @pytest.fixture(name="host_port", scope="session")
 def host_port_fixture(docker_bin: str, docker_container: Container) -> int:
-    container_port_output = check_output(
-        [docker_bin, "container", "port", docker_container.name], text=True
+    container_port_output = run_command(
+        [docker_bin, "container", "port", docker_container.name]
     )
     return int(container_port_output.rsplit(":", maxsplit=1)[-1].strip())
 

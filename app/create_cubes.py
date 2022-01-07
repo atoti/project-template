@@ -13,7 +13,7 @@ from .constants import (
 )
 
 
-def _create_station_cube(session: tt.Session) -> None:
+def _create_station_cube(session: tt.Session, /) -> None:
     station_details_table = session.tables[Table.STATION_DETAILS.value]
     station_status_table = session.tables[Table.STATION_STATUS.value]
 
@@ -73,5 +73,5 @@ def _create_station_cube(session: tt.Session) -> None:
     )
 
 
-def create_cubes(session: tt.Session) -> None:
+def create_cubes(session: tt.Session, /) -> None:
     _create_station_cube(session)

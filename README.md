@@ -64,4 +64,5 @@ On top of the `atoti` package, it comes with:
 
 This repository has the following long-lived branches showcasing different aspects:
 
+- [`atoti-plus`](https://github.com/atoti/project-template/tree/atoti-plus) for upgrading to Atoti+.
 - [`deploy-to-heroku`](https://github.com/atoti/project-template/tree/deploy-to-heroku) for a one-click deploy to Heroku.

@@ -59,7 +59,7 @@ def read_station_details(
     ).drop(columns=["latitude", "longitude"])
 
 
-def read_station_status(velib_data_base_path: Union[HttpUrl, Path]) -> pd.DataFrame:
+def read_station_status(velib_data_base_path: Union[HttpUrl, Path], /) -> pd.DataFrame:
     stations_data = read_json(velib_data_base_path, Path("station_status.json"))[
         "data"
     ]["stations"]
@@ -84,7 +84,7 @@ def read_station_status(velib_data_base_path: Union[HttpUrl, Path]) -> pd.DataFr
     return station_statuses_df
 
 
-def load_tables(session: tt.Session, *, config: Config) -> None:
+def load_tables(session: tt.Session, /, *, config: Config) -> None:
     station_details_df = read_station_details(
         reverse_geocoding_path=config.reverse_geocoding_path,
         velib_data_base_path=config.velib_data_base_path,

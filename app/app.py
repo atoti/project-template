@@ -14,7 +14,7 @@ from .util import run_periodically
 class App:
     """Regroup the session with other resources so that they can be closed together."""
 
-    def __init__(self, config: Config) -> None:
+    def __init__(self, *, config: Config) -> None:
         # The config is kept private to deter passing an App to functions when a Config is all they need.
         self._session = start_session(config=config)
         self._stop_refreshing_data = (
