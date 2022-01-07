@@ -12,9 +12,11 @@ from .load_tables import load_tables
 
 def create_session(*, config: Config) -> tt.Session:
     session_config: Dict[str, Any] = {
-        "authentication": {"basic": {}},
         "logging": {"destination": sys.stdout},
     }
+
+    if config.basic_authentication_users:
+        session_config["authentication"] = {"basic": {}}
 
     if config.port is not None:
         session_config["port"] = config.port

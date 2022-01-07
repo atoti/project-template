@@ -4,8 +4,7 @@ import atoti as tt
 import pandas as pd
 import requests
 
-from app import Config, Cube, StationCubeMeasure
-from app.constants import StationCubeLocationLevel
+from app import Config, Cube, StationCubeLocationLevel, StationCubeMeasure
 
 
 def test_total_capacity(session: tt.Session) -> None:
