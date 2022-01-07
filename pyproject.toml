@@ -31,6 +31,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.isort]
 profile = "black"
+combine_as_imports = "True"
 
 [tool.mypy]
 strict = true
@@ -40,7 +41,7 @@ module = "tests.*"
 disallow_untyped_calls = false
 
 [[tool.mypy.overrides]]
-module = ["docker"]
+module = ["docker", "docker.*"]
 ignore_missing_imports = true
 
 [tool.pylint."messages control"]
