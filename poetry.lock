@@ -21,43 +21,73 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "atoti"
-version = "0.6.3"
+version = "0.6.4"
 description = "Design, explore and deploy efficient and flexible data models"
 category = "main"
 optional = false
 python-versions = ">=3.7.1"
 
 [package.dependencies]
-atoti-sql = {version = "0.6.3", optional = true, markers = "extra == \"sql\""}
-importlib-metadata = ">=3.6.0"
+atoti-core = "0.6.4"
+atoti-query = "0.6.4"
+atoti-sql = {version = "0.6.4", optional = true, markers = "extra == \"sql\""}
 jdk4py = ">=11.0,<12.0"
 numpy = "!=1.19.4"
 pandas = "*"
 py4j = ">=0.10.9,<0.11.0"
 pyarrow = ">=6.0,<7.0"
-typeguard = ">=2.12,<3.0"
-typing-extensions = "*"
 
 [package.extras]
-aws = ["atoti-aws (==0.6.3)"]
-azure = ["atoti-azure (==0.6.3)"]
-dev = ["pandas-stubs", "premailer", "pyspark", "requests", "scipy"]
-gcp = ["atoti-gcp (==0.6.3)"]
-jupyterlab = ["atoti-jupyterlab (==0.6.3)"]
-kafka = ["atoti-kafka (==0.6.3)"]
-plus = ["atoti-plus (==0.6.3)"]
-sql = ["atoti-sql (==0.6.3)"]
+aws = ["atoti-aws (==0.6.4)"]
+azure = ["atoti-azure (==0.6.4)"]
+dev = ["pyspark", "requests", "scipy"]
+gcp = ["atoti-gcp (==0.6.4)"]
+jupyterlab = ["atoti-jupyterlab (==0.6.4)"]
+kafka = ["atoti-kafka (==0.6.4)"]
+plus = ["atoti-plus (==0.6.4)"]
+sql = ["atoti-sql (==0.6.4)"]
+
+[[package]]
+name = "atoti-core"
+version = "0.6.4"
+description = "Package containing private symbols shared by the other atoti packages"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+importlib-metadata = ">=4.10,<5.0"
+pandas = "*"
+typing-extensions = ">=4.0.1"
+
+[package.extras]
+dev = ["pandas-stubs"]
+
+[[package]]
+name = "atoti-query"
+version = "0.6.4"
+description = "Package to query remote atoti sessions."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+atoti-core = "0.6.4"
+typeguard = ">=2.12,<3.0"
+
+[package.extras]
+dev = ["premailer"]
 
 [[package]]
 name = "atoti-sql"
-version = "0.6.3"
+version = "0.6.4"
 description = "Plugin to load the results of SQL queries into atoti tables"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
-atoti = "0.6.3"
+atoti = "0.6.4"
 
 [[package]]
 name = "attrs"
@@ -578,10 +608,16 @@ atomicwrites = [
     {file = "atomicwrites-1.4.0.tar.gz", hash = "sha256:ae70396ad1a434f9c7046fd2dd196fc04b12f9e91ffb859164193be8b6168a7a"},
 ]
 atoti = [
-    {file = "atoti-0.6.3-0_bb62584-py3-none-any.whl", hash = "sha256:4786cf88687f2d5c973eb8913645b5a3ddad0774b9513cc7d518da6ccf5b7822"},
+    {file = "atoti-0.6.4-0_60cc8df-py3-none-any.whl", hash = "sha256:9af61f17253cb127bb8403b899919eaa77813264247960e9485ce7d5350e2903"},
+]
+atoti-core = [
+    {file = "atoti_core-0.6.4-0_60cc8df-py3-none-any.whl", hash = "sha256:8267ab1e05c32c3c7eedcf13d8d4c852d7a38b9efb6b445f2489f19a33e7d315"},
+]
+atoti-query = [
+    {file = "atoti_query-0.6.4-0_60cc8df-py3-none-any.whl", hash = "sha256:6c20a30f649d643a0034e454a0b278290cb78ee7d6a0a89f41a4db48a7a3d18c"},
 ]
 atoti-sql = [
-    {file = "atoti_sql-0.6.3-0_bb62584-py3-none-any.whl", hash = "sha256:7e07a53daccd3c9826f62372f1841e230e2e33a6c5b76064ef7c9038f40422b9"},
+    {file = "atoti_sql-0.6.4-0_60cc8df-py3-none-any.whl", hash = "sha256:bf1209747d532d644e09bfc20717c4c6f058a2ef6e00ae3929a89d578c8f8503"},
 ]
 attrs = [
     {file = "attrs-21.4.0-py2.py3-none-any.whl", hash = "sha256:2d27e3784d7a565d36ab851fe94887c5eccd6a463168875832a1be79c82828b4"},
