@@ -21,8 +21,7 @@ def _create_station_cube(session: tt.Session, /) -> None:
     h, l, m = cube.hierarchies, cube.levels, cube.measures
 
     h.update(
-        # There is a problem in atoti's annotated types.
-        {  # type: ignore[arg-type]
+        {
             StationCubeHierarchy.BIKE_TYPE.value: {
                 StationCubeBikeTypeLevel.BIKE_TYPE.value: station_status_table[
                     StationStatusTableColumn.BIKE_TYPE.value
