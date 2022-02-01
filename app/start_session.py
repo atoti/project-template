@@ -15,6 +15,9 @@ def create_session(*, config: Config) -> tt.Session:
         "logging": {"destination": sys.stdout},
     }
 
+    if config.basic_authentication_users:
+        session_config["authentication"] = {"basic": {}}
+
     if config.port is not None:
         session_config["port"] = config.port
 
@@ -25,7 +28,12 @@ def create_session(*, config: Config) -> tt.Session:
             else config.user_content_storage
         )
 
-    return tt.create_session(config=session_config)
+    session = tt.create_session(config=session_config)
+
+    for username, password in config.basic_authentication_users:
+        session.security.basic.create_user(username, password=password)
+
+    return session
 
 
 def start_session(*, config: Config) -> tt.Session:
