@@ -32,7 +32,14 @@ def docker_image_name_fixture(docker_bin: str) -> Generator[str, None, None]:
     # BuildKit is not supported by Docker's Python SDK.
     # See https://github.com/docker/docker-py/issues/2230.
     build_image_output = run_command(
-        [docker_bin, "build", "--tag", name, "."], env={"DOCKER_BUILDKIT": "1"}
+        [
+            docker_bin,
+            "build",
+            "--tag",
+            name,
+            ".",
+        ],
+        env={"DOCKER_BUILDKIT": "1"},
     )
     assert f"naming to docker.io/library/{name}" in build_image_output
     yield name
