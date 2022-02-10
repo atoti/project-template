@@ -4,12 +4,6 @@
     {
       "name": "atoti-session",
       "essential": true,
-      "healthCheck": {
-        "retries": 3,
-        "command": ["curl --fail http://localhost/versions/rest || exit 1"],
-        "timeout": 5,
-        "interval": 30
-      },
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
