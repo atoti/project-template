@@ -25,6 +25,13 @@ pylint = "*"
 pytest = "*"
 types-requests = "*"
 
+[tool.poetry.scripts]
+format = "scripts.commands:format"
+lint = "scripts.commands:lint"
+sort-imports = "scripts.commands:sort_imports"
+test = "scripts.commands:test"
+typecheck = "scripts.commands:typecheck"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

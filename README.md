@@ -4,6 +4,7 @@ This template can be used to start atoti projects where the goal is to go into p
 
 On top of the `atoti` package, it comes with:
 
+- Settings management with [pydantic](https://pydantic-docs.helpmanual.io/usage/settings/)
 - Dependency management with [Poetry](https://python-poetry.org/)
 - Testing with [pytest](https://docs.pytest.org/)
 - Type checking with [mypy](http://mypy-lang.org/)
@@ -39,25 +40,25 @@ On top of the `atoti` package, it comes with:
 - Check the types:
 
   ```bash
-  poetry run mypy --package app --package tests --show-error-codes
+  poetry run typecheck
   ```
 
 - Sort the imports:
 
   ```bash
-  poetry run isort app/ tests/
+  poetry run sort-imports --fix
   ```
 
 - Format the code:
 
   ```bash
-  poetry run black app/ tests/
+  poetry run format --fix
   ```
 
 - Lint the code:
 
   ```bash
-  poetry run pylint app/ tests/
+  poetry run lint
   ```
 
 ## Variants
