@@ -427,11 +427,11 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pytest"
-version = "6.2.5"
+version = "7.1.0"
 description = "pytest: simple powerful testing with Python"
 category = "dev"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
 atomicwrites = {version = ">=1.0", markers = "sys_platform == \"win32\""}
@@ -441,10 +441,10 @@ iniconfig = "*"
 packaging = "*"
 pluggy = ">=0.12,<2.0"
 py = ">=1.8.2"
-toml = "*"
+tomli = ">=1.0.0"
 
 [package.extras]
-testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
+testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "xmlschema"]
 
 [[package]]
 name = "python-dateutil"
@@ -695,6 +695,9 @@ jdk4py = [
     {file = "jdk4py-11.0.13.1-0-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:677259f8b3596cdfcfedc80df47b74ed33f22e319ee27c7db64d975fb1bfbf69"},
     {file = "jdk4py-11.0.13.1-0-py3-none-manylinux1_x86_64.whl", hash = "sha256:25fcbebbe54dfe36ab9e406f5dc560d50931f751fc6032c5ecd1fa44a24f2036"},
     {file = "jdk4py-11.0.13.1-0-py3-none-win_amd64.whl", hash = "sha256:f64f85d4124fc039f879b537a3be7168ce8c29f30ef74dc21e02b87ad91e95b2"},
+    {file = "jdk4py-11.0.13.1-1-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:06389882c079751be902fdcd47759b5ee3b3d91d2710432a698444312796922b"},
+    {file = "jdk4py-11.0.13.1-1-py3-none-manylinux1_x86_64.whl", hash = "sha256:5ae9d31cf694099790ae231a639255f31fefbd60b42ec66fe662eabad21a3f4f"},
+    {file = "jdk4py-11.0.13.1-1-py3-none-win_amd64.whl", hash = "sha256:27babb9eb45d81eee73145dd79ab7abeb86e86cc2f8820ecb397b6aa034b62f5"},
 ]
 lazy-object-proxy = [
     {file = "lazy-object-proxy-1.7.1.tar.gz", hash = "sha256:d609c75b986def706743cdebe5e47553f4a5a1da9c5ff66d76013ef396b5a8a4"},
@@ -924,8 +927,8 @@ pyparsing = [
     {file = "pyparsing-3.0.7.tar.gz", hash = "sha256:18ee9022775d270c55187733956460083db60b37d0d0fb357445f3094eed3eea"},
 ]
 pytest = [
-    {file = "pytest-6.2.5-py3-none-any.whl", hash = "sha256:7310f8d27bc79ced999e760ca304d69f6ba6c6649c0b60fb0e04a4a77cacc134"},
-    {file = "pytest-6.2.5.tar.gz", hash = "sha256:131b36680866a76e6781d13f101efb86cf674ebb9762eb70d3082b6f29889e89"},
+    {file = "pytest-7.1.0-py3-none-any.whl", hash = "sha256:b555252a95bbb2a37a97b5ac2eb050c436f7989993565f5e0c9128fcaacadd0e"},
+    {file = "pytest-7.1.0.tar.gz", hash = "sha256:f1089d218cfcc63a212c42896f1b7fbf096874d045e1988186861a1a87d27b47"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
