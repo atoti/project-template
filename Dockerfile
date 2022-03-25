@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.2
-FROM python:3.9.7-slim AS builder
+FROM python:3.9.12-slim AS builder
 
 RUN --mount=type=cache,target=/root/.cache pip install poetry==1.1.12
 RUN poetry config virtualenvs.create false
