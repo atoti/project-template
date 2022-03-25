@@ -4,8 +4,8 @@ This template can be used to start atoti projects where the goal is to go into p
 
 On top of the `atoti` package, it comes with:
 
-- Settings management with [pydantic](https://pydantic-docs.helpmanual.io/usage/settings/)
 - Dependency management with [Poetry](https://python-poetry.org/)
+- Settings management with [pydantic](https://pydantic-docs.helpmanual.io/usage/settings/)
 - Testing with [pytest](https://docs.pytest.org/)
 - Type checking with [mypy](http://mypy-lang.org/)
 - Formatting with [Black](https://black.readthedocs.io/) and [isort](https://pycqa.github.io/isort/)
@@ -25,40 +25,26 @@ On top of the `atoti` package, it comes with:
 
 ### Commands
 
-- Start the session:
+The [`pyproject.toml` file](pyproject.toml) contains a `[tool.poetry.scripts]` section listing the commands that can be executed to interact with the project.
+Some of these commands are fixable.
+A few examples:
+
+- Start the app:
 
   ```bash
-  poetry run python -m app
+  poetry run start
   ```
 
-- Run the tests:
+- Launch the tests:
 
   ```bash
-  poetry run pytest
+  poetry run test
   ```
 
-- Check the types:
-
-  ```bash
-  poetry run typecheck
-  ```
-
-- Sort the imports:
-
-  ```bash
-  poetry run sort-imports --fix
-  ```
-
-- Format the code:
+- Reformat the code:
 
   ```bash
   poetry run format --fix
-  ```
-
-- Lint the code:
-
-  ```bash
-  poetry run lint
   ```
 
 ## Variants
@@ -66,4 +52,5 @@ On top of the `atoti` package, it comes with:
 This repository has the following long-lived branches showcasing different aspects:
 
 - [`atoti-plus`](https://github.com/atoti/project-template/tree/atoti-plus) for upgrading to Atoti+.
+- [`deploy-to-aws`](https://github.com/atoti/project-template/tree/deploy-to-aws) for deploying on AWS ECS.
 - [`deploy-to-heroku`](https://github.com/atoti/project-template/tree/deploy-to-heroku) for a one-click deploy to Heroku.

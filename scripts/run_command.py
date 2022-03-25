@@ -1,6 +1,6 @@
 from shlex import join
-from sys import argv
 from subprocess import run
+from sys import argv
 from typing import Iterable
 
 

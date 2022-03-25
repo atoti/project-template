@@ -61,9 +61,7 @@ def create_station_cube(session: tt.Session, /) -> None:
                 station_status_table[StationStatusTableColumn.BIKES.value]
             ),
             StationCubeMeasure.CAPACITY.value: tt.agg.sum(
-                # mypy considers `from .sub import *` as not re-exporting everything from `sub`.
-                # See https://github.com/python/mypy/issues/11856.
-                tt.value(  # type: ignore[attr-defined]
+                tt.value(
                     station_details_table[StationDetailsTableColumn.CAPACITY.value]
                 ),
                 scope=tt.scope.origin(l[StationCubeStationLevel.ID.value]),
