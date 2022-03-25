@@ -21,39 +21,41 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "atoti"
-version = "0.6.4"
+version = "0.6.5"
 description = "Design, explore and deploy efficient and flexible data models"
 category = "main"
 optional = false
-python-versions = ">=3.7.1"
+python-versions = ">=3.8, !=3.9.7"
 
 [package.dependencies]
-atoti-core = "0.6.4"
-atoti-query = "0.6.4"
-atoti-sql = {version = "0.6.4", optional = true, markers = "extra == \"sql\""}
+atoti-core = "0.6.5"
+atoti-query = "0.6.5"
+atoti-sql = {version = "0.6.5", optional = true, markers = "extra == \"sql\""}
 jdk4py = ">=11.0,<12.0"
-numpy = "!=1.19.4"
+numpy = ">=1.22,<2.0"
 pandas = "*"
 py4j = ">=0.10.9,<0.11.0"
-pyarrow = ">=6.0,<7.0"
+pyarrow = "*"
+typeguard = "*"
+typing-extensions = "*"
 
 [package.extras]
-aws = ["atoti-aws (==0.6.4)"]
-azure = ["atoti-azure (==0.6.4)"]
-dev = ["pyspark", "requests", "scipy"]
-gcp = ["atoti-gcp (==0.6.4)"]
-jupyterlab = ["atoti-jupyterlab (==0.6.4)"]
-kafka = ["atoti-kafka (==0.6.4)"]
-plus = ["atoti-plus (==0.6.4)"]
-sql = ["atoti-sql (==0.6.4)"]
+aws = ["atoti-aws (==0.6.5)"]
+azure = ["atoti-azure (==0.6.5)"]
+dev = ["pyspark", "pytest", "requests", "scipy", "test-utils"]
+gcp = ["atoti-gcp (==0.6.5)"]
+jupyterlab = ["atoti-jupyterlab (==0.6.5)"]
+kafka = ["atoti-kafka (==0.6.5)"]
+plus = ["atoti-plus (==0.6.5)"]
+sql = ["atoti-sql (==0.6.5)"]
 
 [[package]]
 name = "atoti-core"
-version = "0.6.4"
+version = "0.6.5"
 description = "Package containing private symbols shared by the other atoti packages"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 
 [package.dependencies]
 importlib-metadata = ">=4.10,<5.0"
@@ -61,33 +63,39 @@ pandas = "*"
 typing-extensions = ">=4.0.1"
 
 [package.extras]
-dev = ["pandas-stubs"]
+dev = ["atoti", "pandas-stubs", "pytest", "test-utils"]
 
 [[package]]
 name = "atoti-query"
-version = "0.6.4"
+version = "0.6.5"
 description = "Package to query remote atoti sessions."
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8, !=3.9.7"
 
 [package.dependencies]
-atoti-core = "0.6.4"
+atoti-core = "0.6.5"
+pandas = "*"
+pyarrow = ">=6.0,<7.0"
 typeguard = ">=2.12,<3.0"
 
 [package.extras]
-dev = ["premailer"]
+dev = ["atoti", "premailer", "pytest", "test-utils"]
 
 [[package]]
 name = "atoti-sql"
-version = "0.6.4"
+version = "0.6.5"
 description = "Plugin to load the results of SQL queries into atoti tables"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 
 [package.dependencies]
-atoti = "0.6.4"
+atoti = "0.6.5"
+atoti-core = "0.6.5"
+
+[package.extras]
+dev = ["pytest"]
 
 [[package]]
 name = "attrs"
@@ -610,8 +618,8 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.9"
-content-hash = "d0967b5d93cf054c883a838b08ba493ffbb6427420819bfadb4137dd8d48e1b3"
+python-versions = "^3.9, !=3.9.7"
+content-hash = "235fc34f31ac32ec14f88cf1bc8b1af1ff1e53fe56f23da43a260e85a2ed2d6e"
 
 [metadata.files]
 astroid = [
@@ -623,16 +631,16 @@ atomicwrites = [
     {file = "atomicwrites-1.4.0.tar.gz", hash = "sha256:ae70396ad1a434f9c7046fd2dd196fc04b12f9e91ffb859164193be8b6168a7a"},
 ]
 atoti = [
-    {file = "atoti-0.6.4-0_60cc8df-py3-none-any.whl", hash = "sha256:9af61f17253cb127bb8403b899919eaa77813264247960e9485ce7d5350e2903"},
+    {file = "atoti-0.6.5-0_5b6c9b1-py3-none-any.whl", hash = "sha256:6af54867c50ec0288e5121ad23e1ee9a676d245d09ae01de8bbb4708aa1185ef"},
 ]
 atoti-core = [
-    {file = "atoti_core-0.6.4-0_60cc8df-py3-none-any.whl", hash = "sha256:8267ab1e05c32c3c7eedcf13d8d4c852d7a38b9efb6b445f2489f19a33e7d315"},
+    {file = "atoti_core-0.6.5-0_5b6c9b1-py3-none-any.whl", hash = "sha256:35694ff73e1bfc3060ea86ee7790b0ff8f65e0839b636da2d624048fc0b5d437"},
 ]
 atoti-query = [
-    {file = "atoti_query-0.6.4-0_60cc8df-py3-none-any.whl", hash = "sha256:6c20a30f649d643a0034e454a0b278290cb78ee7d6a0a89f41a4db48a7a3d18c"},
+    {file = "atoti_query-0.6.5-0_5b6c9b1-py3-none-any.whl", hash = "sha256:cdb73201b069704c0e378babc4b99123101d4738bfed822063a8d665b3ef05e5"},
 ]
 atoti-sql = [
-    {file = "atoti_sql-0.6.4-0_60cc8df-py3-none-any.whl", hash = "sha256:bf1209747d532d644e09bfc20717c4c6f058a2ef6e00ae3929a89d578c8f8503"},
+    {file = "atoti_sql-0.6.5-0_5b6c9b1-py3-none-any.whl", hash = "sha256:f4b1f2272b5f318c2f6adb9d087f009dea02e9aef24af00288db94cf0aef57cc"},
 ]
 attrs = [
     {file = "attrs-21.4.0-py2.py3-none-any.whl", hash = "sha256:2d27e3784d7a565d36ab851fe94887c5eccd6a463168875832a1be79c82828b4"},
@@ -704,9 +712,9 @@ isort = [
     {file = "isort-5.10.1.tar.gz", hash = "sha256:e8443a5e7a020e9d7f97f1d7d9cd17c88bcb3bc7e218bf9cf5095fe550be2951"},
 ]
 jdk4py = [
-    {file = "jdk4py-11.0.13.1-0-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:677259f8b3596cdfcfedc80df47b74ed33f22e319ee27c7db64d975fb1bfbf69"},
-    {file = "jdk4py-11.0.13.1-0-py3-none-manylinux1_x86_64.whl", hash = "sha256:25fcbebbe54dfe36ab9e406f5dc560d50931f751fc6032c5ecd1fa44a24f2036"},
-    {file = "jdk4py-11.0.13.1-0-py3-none-win_amd64.whl", hash = "sha256:f64f85d4124fc039f879b537a3be7168ce8c29f30ef74dc21e02b87ad91e95b2"},
+    {file = "jdk4py-11.0.13.1-1-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:06389882c079751be902fdcd47759b5ee3b3d91d2710432a698444312796922b"},
+    {file = "jdk4py-11.0.13.1-1-py3-none-manylinux1_x86_64.whl", hash = "sha256:5ae9d31cf694099790ae231a639255f31fefbd60b42ec66fe662eabad21a3f4f"},
+    {file = "jdk4py-11.0.13.1-1-py3-none-win_amd64.whl", hash = "sha256:27babb9eb45d81eee73145dd79ab7abeb86e86cc2f8820ecb397b6aa034b62f5"},
 ]
 lazy-object-proxy = [
     {file = "lazy-object-proxy-1.7.1.tar.gz", hash = "sha256:d609c75b986def706743cdebe5e47553f4a5a1da9c5ff66d76013ef396b5a8a4"},
