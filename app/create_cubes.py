@@ -13,7 +13,7 @@ from .constants import (
 )
 
 
-def _create_station_cube(session: tt.Session, /) -> None:
+def create_station_cube(session: tt.Session, /) -> None:
     station_details_table = session.tables[Table.STATION_DETAILS.value]
     station_status_table = session.tables[Table.STATION_STATUS.value]
 
@@ -61,9 +61,7 @@ def _create_station_cube(session: tt.Session, /) -> None:
                 station_status_table[StationStatusTableColumn.BIKES.value]
             ),
             StationCubeMeasure.CAPACITY.value: tt.agg.sum(
-                # mypy considers `from .sub import *` as not re-exporting everything from `sub`.
-                # See https://github.com/python/mypy/issues/11856.
-                tt.value(  # type: ignore[attr-defined]
+                tt.value(
                     station_details_table[StationDetailsTableColumn.CAPACITY.value]
                 ),
                 scope=tt.scope.origin(l[StationCubeStationLevel.ID.value]),
@@ -73,4 +71,4 @@ def _create_station_cube(session: tt.Session, /) -> None:
 
 
 def create_cubes(session: tt.Session, /) -> None:
-    _create_station_cube(session)
+    create_station_cube(session)

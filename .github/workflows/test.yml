@@ -26,8 +26,8 @@ jobs:
         run: poetry install --no-interaction --no-root
       - name: Install project root
         run: poetry install --no-interaction
-      - run: poetry run black --check app/ tests/
-      - run: poetry run isort --check app/ tests/
-      - run: poetry run pylint app/ tests/
-      - run: poetry run mypy --package app --package tests --show-error-codes
-      - run: poetry run pytest
+      - run: poetry run format
+      - run: poetry run sort-imports
+      - run: poetry run lint
+      - run: poetry run typecheck
+      - run: poetry run test
