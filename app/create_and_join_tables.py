@@ -3,7 +3,7 @@ import atoti as tt
 from .constants import StationDetailsTableColumn, StationStatusTableColumn, Table
 
 
-def _create_station_status_table(session: tt.Session, /) -> None:
+def create_station_status_table(session: tt.Session, /) -> None:
     session.create_table(
         Table.STATION_STATUS.value,
         keys=[
@@ -18,7 +18,7 @@ def _create_station_status_table(session: tt.Session, /) -> None:
     )
 
 
-def _create_station_details_table(session: tt.Session, /) -> None:
+def create_station_details_table(session: tt.Session, /) -> None:
     session.create_table(
         Table.STATION_DETAILS.value,
         keys=[
@@ -37,7 +37,7 @@ def _create_station_details_table(session: tt.Session, /) -> None:
     )
 
 
-def _join_tables(session: tt.Session, /) -> None:
+def join_tables(session: tt.Session, /) -> None:
     session.tables[Table.STATION_STATUS.value].join(
         session.tables[Table.STATION_DETAILS.value],
         mapping={
@@ -47,6 +47,6 @@ def _join_tables(session: tt.Session, /) -> None:
 
 
 def create_and_join_tables(session: tt.Session, /) -> None:
-    _create_station_status_table(session)
-    _create_station_details_table(session)
-    _join_tables(session)
+    create_station_status_table(session)
+    create_station_details_table(session)
+    join_tables(session)
