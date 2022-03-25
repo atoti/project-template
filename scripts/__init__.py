@@ -1,1 +1,1 @@
-from .commands import *
+from .commands import *  # pylint: disable=redefined-builtin
