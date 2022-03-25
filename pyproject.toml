@@ -26,12 +26,12 @@ pytest = "*"
 types-requests = "*"
 
 [tool.poetry.scripts]
-format = "scripts.commands:format"
-lint = "scripts.commands:lint"
-sort-imports = "scripts.commands:sort_imports"
-start = "scripts.commands:start"
-test = "scripts.commands:test"
-typecheck = "scripts.commands:typecheck"
+format = "scripts:format"
+lint = "scripts:lint"
+sort-imports = "scripts:sort_imports"
+start = "scripts:start"
+test = "scripts:test"
+typecheck = "scripts:typecheck"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
