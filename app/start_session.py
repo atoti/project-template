@@ -1,5 +1,4 @@
 import sys
-from typing import Any, Dict
 
 import atoti as tt
 from pydantic import AnyUrl
@@ -11,24 +10,19 @@ from .load_tables import load_tables
 
 
 def create_session(*, config: Config) -> tt.Session:
-    session_config: Dict[str, Any] = {
-        "logging": {"destination": sys.stdout},
-    }
-
-    if config.basic_authentication_users:
-        session_config["authentication"] = {"basic": {}}
-
-    if config.port is not None:
-        session_config["port"] = config.port
-
-    if config.user_content_storage:
-        session_config["user_content_storage"] = (
-            {"url": str(config.user_content_storage)}
+    session = tt.Session(
+        authentication=tt.BasicAuthenticationConfig()
+        if config.basic_authentication_users
+        else None,
+        logging=tt.LoggingConfig(destination=sys.stdout),
+        port=config.port,
+        user_content_storage=config.user_content_storage
+        and (
+            tt.UserContentStorageConfig(url=str(config.user_content_storage))
             if isinstance(config.user_content_storage, AnyUrl)
             else config.user_content_storage
-        )
-
-    session = tt.create_session(config=session_config)
+        ),
+    )
 
     for username, password in config.basic_authentication_users:
         session.security.basic.create_user(username, password=password)

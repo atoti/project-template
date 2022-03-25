@@ -88,7 +88,7 @@ def docker_container_fixture(
         name=str(uuid4()),
         publish_all_ports=True,
     )
-    while "Session running" not in str(container.logs()):
+    while "Session listening on port" not in str(container.logs()):
         sleep(1)
     yield container
     container.stop()
