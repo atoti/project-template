@@ -14,7 +14,7 @@ def config_fixture() -> Config:
     return Config(
         data_refresh_period=None,
         reverse_geocoding_path=TEST_DATA_PATH / "station_location.csv",
-        port=None,
+        port=0,
         user_content_storage=None,
         velib_data_base_path=TEST_DATA_PATH,
     )
