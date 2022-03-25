@@ -12,11 +12,14 @@ from pydantic import (
     validator,
 )
 
-from .util import normalize_postgresql_dsn_for_atoti_sql
+from .util import normalize_postgres_dsn_for_atoti_sql
 
 
 class Config(BaseSettings):
-    """Hold all the configuration properties of the app, not only the ones related to atoti."""
+    """Hold all the configuration properties of the app, not only the ones related to atoti.
+
+    See https://pydantic-docs.helpmanual.io/usage/settings/.
+    """
 
     basic_authentication_users: Collection[Tuple[str, str]] = Field(
         default_factory=list
@@ -25,7 +28,7 @@ class Config(BaseSettings):
     data_refresh_period: Optional[timedelta] = timedelta(minutes=1)
 
     # The $PORT environment variable is used by most PaaS to indicate the port the app server should bind to.
-    port: Optional[int] = 9090
+    port: int = 9090
 
     reverse_geocoding_path: Union[HttpUrl, FilePath] = Field(
         default="https://api-adresse.data.gouv.fr/reverse/csv/"
@@ -46,7 +49,7 @@ class Config(BaseSettings):
     @classmethod
     def normalize_postgresql_dsn(cls, value: Union[PostgresDsn, Any]) -> Any:
         return (
-            normalize_postgresql_dsn_for_atoti_sql(value)
+            normalize_postgres_dsn_for_atoti_sql(value)
             if isinstance(value, PostgresDsn)
             else value
         )
