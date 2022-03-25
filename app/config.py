@@ -24,7 +24,7 @@ class Config(BaseSettings):
     data_refresh_period: Optional[timedelta] = timedelta(minutes=1)
 
     # The $PORT environment variable is used by most PaaS to indicate the port the app server should bind to.
-    port: Optional[int] = 9090
+    port: int = 9090
 
     reverse_geocoding_path: Union[HttpUrl, FilePath] = Field(
         default="https://api-adresse.data.gouv.fr/reverse/csv/"
