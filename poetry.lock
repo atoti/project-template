@@ -337,7 +337,7 @@ test = ["hypothesis (>=5.5.3)", "pytest (>=6.0)", "pytest-xdist (>=1.31)"]
 
 [[package]]
 name = "pandas-stubs"
-version = "1.2.0.53"
+version = "1.2.0.54"
 description = "Type annotations for Pandas"
 category = "dev"
 optional = false
@@ -712,6 +712,9 @@ isort = [
     {file = "isort-5.10.1.tar.gz", hash = "sha256:e8443a5e7a020e9d7f97f1d7d9cd17c88bcb3bc7e218bf9cf5095fe550be2951"},
 ]
 jdk4py = [
+    {file = "jdk4py-11.0.13.1-0-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:677259f8b3596cdfcfedc80df47b74ed33f22e319ee27c7db64d975fb1bfbf69"},
+    {file = "jdk4py-11.0.13.1-0-py3-none-manylinux1_x86_64.whl", hash = "sha256:25fcbebbe54dfe36ab9e406f5dc560d50931f751fc6032c5ecd1fa44a24f2036"},
+    {file = "jdk4py-11.0.13.1-0-py3-none-win_amd64.whl", hash = "sha256:f64f85d4124fc039f879b537a3be7168ce8c29f30ef74dc21e02b87ad91e95b2"},
     {file = "jdk4py-11.0.13.1-1-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:06389882c079751be902fdcd47759b5ee3b3d91d2710432a698444312796922b"},
     {file = "jdk4py-11.0.13.1-1-py3-none-manylinux1_x86_64.whl", hash = "sha256:5ae9d31cf694099790ae231a639255f31fefbd60b42ec66fe662eabad21a3f4f"},
     {file = "jdk4py-11.0.13.1-1-py3-none-win_amd64.whl", hash = "sha256:27babb9eb45d81eee73145dd79ab7abeb86e86cc2f8820ecb397b6aa034b62f5"},
@@ -838,8 +841,8 @@ pandas = [
     {file = "pandas-1.4.1.tar.gz", hash = "sha256:8db93ec98ac7cb5f8ac1420c10f5e3c43533153f253fe7fb6d891cf5aa2b80d2"},
 ]
 pandas-stubs = [
-    {file = "pandas-stubs-1.2.0.53.tar.gz", hash = "sha256:04d9f4dbc2fd9f38a491e533a076867c86fbfc5d7999116ce32852054e1d44db"},
-    {file = "pandas_stubs-1.2.0.53-py3-none-any.whl", hash = "sha256:ac87379dca9b66cfd71f05ab5fcd2646078f24e8e90b730413445e0275a00ad9"},
+    {file = "pandas-stubs-1.2.0.54.tar.gz", hash = "sha256:f3077a096a6410cd4cbe1742bd16369f8d470dafb72e62421892709309546049"},
+    {file = "pandas_stubs-1.2.0.54-py3-none-any.whl", hash = "sha256:0da61432823d90c3e1ee1c5284ff54cac5f4ba85415b4d21fbf6c5a7f8da3c88"},
 ]
 pathspec = [
     {file = "pathspec-0.9.0-py2.py3-none-any.whl", hash = "sha256:7d15c4ddb0b5c802d161efc417ec1a2558ea2653c2e8ad9c19098201dc1c993a"},
