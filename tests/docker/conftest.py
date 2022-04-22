@@ -18,7 +18,7 @@ def run_command(
     args: Iterable[str], /, *, env: Optional[Mapping[str, str]] = None
 ) -> str:
     try:
-        return check_output(args, env=env, stderr=STDOUT, text=True)
+        return check_output(list(args), env=env, stderr=STDOUT, text=True)
     except CalledProcessError as error:
         raise RuntimeError(f"Command {error.cmd} failed:\n{error.output}") from error
 
