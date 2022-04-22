@@ -13,8 +13,9 @@ _Coordinates = Tuple[float, float]  # (latitude, longitude)
 @lru_cache
 def _cached_reverse_geocode(
     stable_coordinates: Tuple[_Coordinates, ...],
+    /,
     *,
-    reverse_geocoding_path: Union[HttpUrl, Path]
+    reverse_geocoding_path: Union[HttpUrl, Path],
 ) -> pd.DataFrame:
     data: Union[StringIO, Path]
 
@@ -56,7 +57,7 @@ def _cached_reverse_geocode(
 
 
 def reverse_geocode(
-    data: Iterable[_Coordinates], *, reverse_geocoding_path: Union[HttpUrl, Path]
+    data: Iterable[_Coordinates], /, *, reverse_geocoding_path: Union[HttpUrl, Path]
 ) -> pd.DataFrame:
     return _cached_reverse_geocode(
         tuple(sorted(data)), reverse_geocoding_path=reverse_geocoding_path
