@@ -15,3 +15,7 @@ jobs:
       - run: poetry run app lint
       - run: poetry run app typecheck
       - run: poetry run app test
+        env:
+          ATOTI_LICENSE: ${{ secrets.ATOTI_PLUS_LICENSE }}
+          ATOTI_PLUS_REPOSITORY_PASSWORD: ${{ secrets.ATOTI_PLUS_REPOSITORY_PASSWORD }}
+          ATOTI_PLUS_REPOSITORY_USERNAME: ${{ secrets.ATOTI_PLUS_REPOSITORY_USERNAME }}

@@ -12,6 +12,7 @@ TEST_DATA_PATH = Path(__file__).parent / "data"
 @pytest.fixture(name="config", scope="session")
 def config_fixture() -> Config:
     return Config(
+        basic_authentication_users=[("user", "passwd")],
         data_refresh_period=None,
         reverse_geocoding_path=TEST_DATA_PATH / "station_location.csv",
         port=0,

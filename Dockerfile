@@ -6,7 +6,7 @@ RUN poetry config virtualenvs.create false
 
 COPY poetry.lock pyproject.toml ./
 
-RUN --mount=type=cache,target=/root/.cache poetry install --no-ansi --no-dev --no-interaction --no-root
+RUN --mount=type=cache,target=/root/.cache --mount=type=secret,id=poetry_auth_toml,required=true,target=/root/.config/pypoetry/auth.toml poetry install --no-ansi --no-dev --no-interaction --no-root
 
 FROM python:3.9.12-slim AS runner
 

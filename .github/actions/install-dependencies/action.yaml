@@ -18,6 +18,9 @@ runs:
     - name: Install dependencies
       if: steps.cached-poetry-venv.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --no-root
+      env:
+        POETRY_HTTP_BASIC_ATOTI_PLUS_PASSWORD: ${{ secrets.ATOTI_PLUS_REPOSITORY_PASSWORD }}
+        POETRY_HTTP_BASIC_ATOTI_PLUS_USERNAME: ${{ secrets.ATOTI_PLUS_REPOSITORY_USERNAME }}
       shell: bash
     - name: Install project root
       run: poetry install --no-interaction
