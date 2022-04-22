@@ -49,3 +49,6 @@ class Config(BaseSettings):
             if isinstance(value, PostgresDsn)
             else value
         )
+
+    class Config:
+        allow_mutation = False

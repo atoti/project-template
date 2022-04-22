@@ -16,6 +16,7 @@ jobs:
     environment: deploy-to-aws
     steps:
       - uses: actions/checkout@v2
+      - uses: ./.github/actions/install-dependencies
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/atoti-project-template-deployment
@@ -29,7 +30,7 @@ jobs:
           ECR_REPOSITORY: atoti-project-template
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          DOCKER_BUILDKIT=1 docker build --tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          poetry run app build-docker $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
       - name: Inline variables in the task definition
