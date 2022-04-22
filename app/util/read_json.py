@@ -6,7 +6,7 @@ import requests
 from pydantic import HttpUrl
 
 
-def read_json(base_path: Union[HttpUrl, Path], file_path: Path) -> Any:
+def read_json(base_path: Union[HttpUrl, Path], file_path: Path, /) -> Any:
     if isinstance(base_path, HttpUrl):
         url = f"{base_path}/{file_path.as_posix()}"
         response = requests.get(url)

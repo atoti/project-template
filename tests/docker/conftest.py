@@ -1,3 +1,5 @@
+import re
+from datetime import timedelta
 from shutil import which
 from subprocess import STDOUT, CalledProcessError, check_output
 from time import sleep
@@ -9,42 +11,44 @@ import docker
 import pytest
 from docker.models.containers import Container
 
+from .timeout import Timeout
+
 
 def run_command(
     args: Iterable[str], /, *, env: Optional[Mapping[str, str]] = None
 ) -> str:
     try:
-        return check_output(args, env=env, stderr=STDOUT, text=True)
+        return check_output(list(args), env=env, stderr=STDOUT, text=True)
     except CalledProcessError as error:
         raise RuntimeError(f"Command {error.cmd} failed:\n{error.output}") from error
 
 
-@pytest.fixture(name="docker_bin", scope="session")
-def docker_bin_fixture() -> str:
-    docker_bin = which("docker")
-    assert docker_bin
-    return docker_bin
+@pytest.fixture(name="docker_executable_path", scope="session")
+def docker_executable_path_fixture() -> str:
+    docker_executable_path = which("docker")
+    assert docker_executable_path
+    return docker_executable_path
+
+
+@pytest.fixture(name="poetry_executable_path", scope="session")
+def poetry_executable_path_fixture() -> str:
+    poetry_executable_path = which("poetry")
+    assert poetry_executable_path
+    return poetry_executable_path
 
 
 @pytest.fixture(name="docker_image_name", scope="session")
-def docker_image_name_fixture(docker_bin: str) -> Generator[str, None, None]:
-    name = f"atoti-project-template:{uuid4()}"
-    # BuildKit is not supported by Docker's Python SDK.
-    # See https://github.com/docker/docker-py/issues/2230.
+def docker_image_name_fixture(
+    docker_executable_path: str, poetry_executable_path: str
+) -> Generator[str, None, None]:
+    tag = f"atoti-project:{uuid4()}"
     build_image_output = run_command(
-        [
-            docker_bin,
-            "build",
-            "--tag",
-            name,
-            ".",
-        ],
-        env={"DOCKER_BUILDKIT": "1"},
+        [poetry_executable_path, "run", "app", "build-docker", tag]
     )
-    assert f"naming to docker.io/library/{name}" in build_image_output
-    yield name
-    remove_image_output = run_command([docker_bin, "image", "rm", name])
-    assert "Deleted" in remove_image_output
+    assert f"naming to docker.io/library/{tag}" in build_image_output
+    yield tag
+    remove_image_output = run_command([docker_executable_path, "image", "rm", tag])
+    assert re.match("(Deleted|Untagged)", remove_image_output)
 
 
 @pytest.fixture(
@@ -63,17 +67,23 @@ def docker_container_fixture(
         name=str(uuid4()),
         publish_all_ports=True,
     )
-    while "Session listening on port" not in str(container.logs()):
-        sleep(1)
-    yield container
-    container.stop()
-    container.remove()
+
+    try:
+        timeout = Timeout(timedelta(minutes=1))
+        while "Session listening on port" not in str(container.logs()):
+            if timeout.timed_out:
+                raise RuntimeError(f"Session start timed out:\n{container.logs()}")
+            sleep(1)
+        yield container
+    finally:
+        container.stop()
+        container.remove()
 
 
 @pytest.fixture(name="host_port", scope="session")
-def host_port_fixture(docker_bin: str, docker_container: Container) -> int:
+def host_port_fixture(docker_executable_path: str, docker_container: Container) -> int:
     container_port_output = run_command(
-        [docker_bin, "container", "port", docker_container.name]
+        [docker_executable_path, "container", "port", docker_container.name]
     )
     return int(container_port_output.rsplit(":", maxsplit=1)[-1].strip())
 

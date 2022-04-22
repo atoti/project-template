@@ -1,0 +1,16 @@
+name: Sync branches
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    name: Sync branches
+    runs-on: ubuntu-20.04
+    if: >
+      !github.event.deleted
+    steps:
+      - uses: tibdex/sync-branches@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}

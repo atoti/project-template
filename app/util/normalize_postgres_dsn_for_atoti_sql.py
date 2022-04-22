@@ -4,7 +4,7 @@ from urllib.parse import urlencode, urlparse
 from pydantic import PostgresDsn
 
 
-def normalize_postgres_dsn_for_atoti_sql(url: PostgresDsn) -> Any:
+def normalize_postgres_dsn_for_atoti_sql(url: PostgresDsn, /) -> Any:
     parts = urlparse(url)
 
     query_parts: List[str] = []
