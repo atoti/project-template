@@ -9,23 +9,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: "3.9"
-      - uses: snok/install-poetry@v1
-        with:
-          version: "1.1.12"
-          virtualenvs-in-project: true
-      - uses: actions/cache@v2
-        id: cached-poetry-venv
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
-      - name: Install dependencies
-        if: steps.cached-poetry-venv.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
-      - name: Install project root
-        run: poetry install --no-interaction
+      - uses: ./.github/actions/install-dependencies
       - run: poetry run app format --check
       - run: poetry run app sort-imports --check
       - run: poetry run app lint
