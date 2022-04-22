@@ -1,5 +1,12 @@
 name: Install dependencies
 description: Install Poetry and the project's dependencies
+inputs:
+  atoti-plus-repository-username:
+    description: The username to use to download the `atoti-plus` plugin.
+    required: true
+  atoti-plus-repository-password:
+    description: The password to use to download the `atoti-plus` plugin.
+    required: true
 runs:
   using: "composite"
   steps:
@@ -19,8 +26,8 @@ runs:
       if: steps.cached-poetry-venv.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --no-root
       env:
-        POETRY_HTTP_BASIC_ATOTI_PLUS_PASSWORD: ${{ secrets.ATOTI_PLUS_REPOSITORY_PASSWORD }}
-        POETRY_HTTP_BASIC_ATOTI_PLUS_USERNAME: ${{ secrets.ATOTI_PLUS_REPOSITORY_USERNAME }}
+        POETRY_HTTP_BASIC_ATOTI_PLUS_USERNAME: ${{ inputs.atoti-plus-repository-username }}
+        POETRY_HTTP_BASIC_ATOTI_PLUS_PASSWORD: ${{ inputs.atoti-plus-repository-password }}
       shell: bash
     - name: Install project root
       run: poetry install --no-interaction

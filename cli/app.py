@@ -22,8 +22,8 @@ def build_docker(tag: str) -> None:
     with TemporaryDirectory() as directory:
         poetry_auth_toml = create_poetry_auth_toml(
             Path(directory),
-            atoti_plus_repository_password=os.environ["ATOTI_PLUS_REPOSITORY_PASSWORD"],
             atoti_plus_repository_username=os.environ["ATOTI_PLUS_REPOSITORY_USERNAME"],
+            atoti_plus_repository_password=os.environ["ATOTI_PLUS_REPOSITORY_PASSWORD"],
         )
         run_command(
             [

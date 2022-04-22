@@ -10,6 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/install-dependencies
+        with:
+          atoti-plus-repository-username: ${{ secrets.ATOTI_PLUS_REPOSITORY_USERNAME }}
+          atoti-plus-repository-password: ${{ secrets.ATOTI_PLUS_REPOSITORY_PASSWORD }}
       - run: poetry run app format --check
       - run: poetry run app sort-imports --check
       - run: poetry run app lint
@@ -17,5 +20,5 @@ jobs:
       - run: poetry run app test
         env:
           ATOTI_LICENSE: ${{ secrets.ATOTI_PLUS_LICENSE }}
-          ATOTI_PLUS_REPOSITORY_PASSWORD: ${{ secrets.ATOTI_PLUS_REPOSITORY_PASSWORD }}
           ATOTI_PLUS_REPOSITORY_USERNAME: ${{ secrets.ATOTI_PLUS_REPOSITORY_USERNAME }}
+          ATOTI_PLUS_REPOSITORY_PASSWORD: ${{ secrets.ATOTI_PLUS_REPOSITORY_PASSWORD }}
