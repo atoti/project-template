@@ -30,7 +30,7 @@ jobs:
           ECR_REPOSITORY: atoti-project-template
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          poetry run app build-docker $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          poetry run app build-docker $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
       - name: Inline variables in the task definition
