@@ -4,7 +4,7 @@ from typing import Callable, Optional
 
 
 def run_periodically(
-    callback: Callable[[], None], *, daemon: Optional[bool] = None, period: timedelta
+    callback: Callable[[], None], /, *, daemon: Optional[bool] = None, period: timedelta
 ) -> Callable[[], None]:
     period_in_seconds = period.total_seconds()
     stopped = Event()

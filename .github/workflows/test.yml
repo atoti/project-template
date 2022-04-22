@@ -5,8 +5,8 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
     name: Test
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -26,8 +26,8 @@ jobs:
         run: poetry install --no-interaction --no-root
       - name: Install project root
         run: poetry install --no-interaction
-      - run: poetry run format
-      - run: poetry run sort-imports
-      - run: poetry run lint
-      - run: poetry run typecheck
-      - run: poetry run test
+      - run: poetry run app format --check
+      - run: poetry run app sort-imports --check
+      - run: poetry run app lint
+      - run: poetry run app typecheck
+      - run: poetry run app test

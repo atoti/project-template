@@ -6,8 +6,6 @@ authors = []
 
 [tool.poetry.dependencies]
 atoti = {extras = ["sql"], version = "*"}
-# Poetry deletes this package when the --no-dev flag is enabled because it is a dependency of requests, however it is needed for package installation.
-certifi = "*"
 numpy = "*"
 pandas = "*"
 pydantic = "*"
@@ -17,21 +15,19 @@ requests = "*"
 
 [tool.poetry.dev-dependencies]
 black = "*"
+colorama = "*"
 docker = "*"
 isort = "*"
 mypy = "*"
 pandas-stubs = "*"
 pylint = "*"
 pytest = "*"
+pytest-xdist = "*"
 types-requests = "*"
+typer = "*"
 
 [tool.poetry.scripts]
-format = "scripts:format"
-lint = "scripts:lint"
-sort-imports = "scripts:sort_imports"
-start = "scripts:start"
-test = "scripts:test"
-typecheck = "scripts:typecheck"
+app = "cli:app"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -42,6 +38,7 @@ profile = "black"
 combine_as_imports = "True"
 
 [tool.mypy]
+plugins = "pydantic.mypy"
 strict = true
 
 [[tool.mypy.overrides]]
