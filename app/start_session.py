@@ -10,7 +10,10 @@ from .load_tables import load_tables
 
 
 def create_session(*, config: Config) -> tt.Session:
-    return tt.Session(
+    session = tt.Session(
+        authentication=tt.BasicAuthenticationConfig()
+        if config.basic_authentication_users
+        else None,
         logging=tt.LoggingConfig(destination=sys.stdout),
         port=config.port,
         user_content_storage=config.user_content_storage
@@ -20,6 +23,11 @@ def create_session(*, config: Config) -> tt.Session:
             else config.user_content_storage
         ),
     )
+
+    for username, password in config.basic_authentication_users:
+        session.security.basic.create_user(username, password=password)
+
+    return session
 
 
 def start_session(*, config: Config) -> tt.Session:

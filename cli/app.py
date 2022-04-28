@@ -1,5 +1,10 @@
+import os
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
 import typer
 
+from .create_poetry_auth_toml import create_poetry_auth_toml
 from .get_executable_path import get_executable_path
 from .run_command import run_command
 
@@ -14,10 +19,24 @@ _CHECK_OPTION = typer.Option(False, "--check/--fix")
 
 @app.command(help="Build the Docker image.")
 def build_docker(tag: str) -> None:
-    run_command(
-        [get_executable_path("docker"), "build", "--tag", tag, "."],
-        env={"DOCKER_BUILDKIT": "1"},
-    )
+    with TemporaryDirectory() as directory:
+        poetry_auth_toml = create_poetry_auth_toml(
+            Path(directory),
+            atoti_plus_repository_username=os.environ["ATOTI_PLUS_REPOSITORY_USERNAME"],
+            atoti_plus_repository_password=os.environ["ATOTI_PLUS_REPOSITORY_PASSWORD"],
+        )
+        run_command(
+            [
+                get_executable_path("docker"),
+                "build",
+                "--secret",
+                f"id=poetry_auth_toml,src={str(poetry_auth_toml.absolute())}",
+                "--tag",
+                tag,
+                ".",
+            ],
+            env={"DOCKER_BUILDKIT": "1"},
+        )
 
 
 @app.command(help="Format the project files.")

@@ -29,6 +29,7 @@ python-versions = ">=3.8, !=3.9.7"
 
 [package.dependencies]
 atoti-core = "0.6.5"
+atoti-plus = {version = "0.6.5", optional = true, markers = "extra == \"plus\""}
 atoti-query = "0.6.5"
 atoti-sql = {version = "0.6.5", optional = true, markers = "extra == \"sql\""}
 jdk4py = ">=11.0,<12.0"
@@ -64,6 +65,28 @@ typing-extensions = ">=4.0.1"
 
 [package.extras]
 dev = ["atoti", "pandas-stubs", "pytest", "test-utils"]
+
+[[package]]
+name = "atoti-plus"
+version = "0.6.5"
+description = "Plugin to access the Atoti+ features"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+atoti = "0.6.5"
+atoti-core = "0.6.5"
+py4j = "*"
+typeguard = "*"
+
+[package.extras]
+dev = ["atoti-query", "pandas", "pyjwt", "pytest", "requests", "test-utils"]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.atoti.io/simple"
+reference = "atoti-plus"
 
 [[package]]
 name = "atoti-query"
@@ -677,7 +700,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9, !=3.9.7"
-content-hash = "962f64d3c27abcee46cf5f166c66ef2d3df9faa54c6ca5943e93bdbd7d2d4ba5"
+content-hash = "4e275b71550c2efd5e6f53b6e5bddf7943b921a3c1152e3d2634d3db5e2dfb39"
 
 [metadata.files]
 astroid = [
@@ -693,6 +716,9 @@ atoti = [
 ]
 atoti-core = [
     {file = "atoti_core-0.6.5-0_5b6c9b1-py3-none-any.whl", hash = "sha256:35694ff73e1bfc3060ea86ee7790b0ff8f65e0839b636da2d624048fc0b5d437"},
+]
+atoti-plus = [
+    {file = "atoti_plus-0.6.5-0_5b6c9b1-py3-none-any.whl", hash = "sha256:cdfe7683f98f8f2827e27aa2c565c6e65ceebd5804bbe078a722c5132fde6454"},
 ]
 atoti-query = [
     {file = "atoti_query-0.6.5-0_5b6c9b1-py3-none-any.whl", hash = "sha256:cdb73201b069704c0e378babc4b99123101d4738bfed822063a8d665b3ef05e5"},
