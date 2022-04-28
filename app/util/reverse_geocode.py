@@ -1,7 +1,7 @@
 from functools import lru_cache
 from io import StringIO
 from pathlib import Path
-from typing import Iterable, Tuple, Union
+from typing import IO, Iterable, Tuple, Union
 
 import pandas as pd
 import requests
@@ -25,7 +25,8 @@ def _cached_reverse_geocode(
             file, index=False
         )
         file.seek(0)
-        response = requests.post(reverse_geocoding_path, files={"data": file})
+        _file: IO[str] = file  # To make Mypy happy.
+        response = requests.post(reverse_geocoding_path, files={"data": _file})
         response.raise_for_status()
         data = StringIO(response.text)
     else:

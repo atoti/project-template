@@ -6,7 +6,6 @@ authors = []
 
 [tool.poetry.dependencies]
 atoti = {extras = ["sql"], version = "*"}
-numpy = "*"
 pandas = "*"
 pydantic = "*"
 # Cannot use pinned version as it leads to NoCompatiblePythonVersionFound error when doing a fresh install.
@@ -23,8 +22,8 @@ pandas-stubs = "*"
 pylint = "*"
 pytest = "*"
 pytest-xdist = "*"
-types-requests = "*"
 typer = "*"
+types-requests = "*"
 
 [tool.poetry.scripts]
 app = "cli:app"
