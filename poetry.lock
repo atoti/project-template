@@ -603,7 +603,7 @@ test = ["shellingham (>=1.3.0,<2.0.0)", "pytest (>=4.4.0,<5.4.0)", "pytest-cov (
 
 [[package]]
 name = "types-requests"
-version = "2.27.22"
+version = "2.27.25"
 description = "Typing stubs for requests"
 category = "dev"
 optional = false
@@ -1064,8 +1064,8 @@ typer = [
     {file = "typer-0.4.1.tar.gz", hash = "sha256:5646aef0d936b2c761a10393f0384ee6b5c7fe0bb3e5cd710b17134ca1d99cff"},
 ]
 types-requests = [
-    {file = "types-requests-2.27.22.tar.gz", hash = "sha256:2e81a74d2db1e6d06baa4a9e1896720543739297a23daac0436a34e2fc732574"},
-    {file = "types_requests-2.27.22-py3-none-any.whl", hash = "sha256:58730c31469fb959a21496d97d2e59c06ca6de2ccdfecb583cb924b83cb0811e"},
+    {file = "types-requests-2.27.25.tar.gz", hash = "sha256:805ae7e38fd9d157153066dc4381cf585fd34dfa212f2fc1fece248c05aac571"},
+    {file = "types_requests-2.27.25-py3-none-any.whl", hash = "sha256:2444905c89731dbcb6bbcd6d873a04252445df7623917c640e463b2b28d2a708"},
 ]
 types-urllib3 = [
     {file = "types-urllib3-1.26.13.tar.gz", hash = "sha256:40f8fb5e8cd7d57e8aefdee3fdd5e930aa1a1bb4179cdadd55226cea588af790"},
