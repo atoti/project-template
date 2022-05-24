@@ -1,6 +1,6 @@
 # atoti Project Template
 
-This template can be used to start atoti projects where the goal is to go into production rather than prototyping in a notebook.
+This template can be used to start atoti projects where the goal is to [go into production rather than prototyping in a notebook](https://docs.atoti.io/latest/deployment/going_from_a_notebook_to_an_app.html).
 
 On top of the `atoti` package, it comes with:
 
