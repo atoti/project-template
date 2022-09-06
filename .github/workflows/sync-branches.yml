@@ -7,7 +7,7 @@ on:
 jobs:
   sync:
     name: Sync branches
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     if: >
       !github.event.deleted
     steps:

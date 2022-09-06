@@ -61,10 +61,10 @@ def create_station_cube(session: tt.Session, /) -> None:
                 station_status_table[StationStatusTableColumn.BIKES.value]
             ),
             StationCubeMeasure.CAPACITY.value: tt.agg.sum(
-                tt.value(
+                tt.agg.single_value(
                     station_details_table[StationDetailsTableColumn.CAPACITY.value]
                 ),
-                scope=tt.scope.origin(l[StationCubeStationLevel.ID.value]),
+                scope=tt.OriginScope(l[StationCubeStationLevel.ID.value]),
             ),
         }
     )
