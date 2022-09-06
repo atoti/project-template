@@ -34,6 +34,7 @@ def create_station_details_table(session: tt.Session, /) -> None:
             StationDetailsTableColumn.HOUSE_NUMBER.value: tt.type.STRING,
             StationDetailsTableColumn.CAPACITY.value: tt.type.INT,
         },
+        default_values={StationDetailsTableColumn.POSTCODE.value: 0},
     )
 
 

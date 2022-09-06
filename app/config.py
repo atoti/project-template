@@ -9,6 +9,7 @@ from pydantic import (
     FilePath,
     HttpUrl,
     PostgresDsn,
+    parse_obj_as,
     validator,
 )
 
@@ -26,8 +27,10 @@ class Config(BaseSettings):
     # The $PORT environment variable is used by most PaaS to indicate the port the app server should bind to.
     port: int = 9090
 
+    requests_timeout: timedelta = timedelta(seconds=30)
+
     reverse_geocoding_path: Union[HttpUrl, FilePath] = Field(
-        default="https://api-adresse.data.gouv.fr/reverse/csv/"
+        default=parse_obj_as(HttpUrl, "https://api-adresse.data.gouv.fr/reverse/csv/")
     )
 
     user_content_storage: Optional[Union[PostgresDsn, Path]] = Field(
@@ -38,7 +41,10 @@ class Config(BaseSettings):
     )
 
     velib_data_base_path: Union[HttpUrl, DirectoryPath] = Field(
-        default="https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole"
+        default=parse_obj_as(
+            HttpUrl,
+            "https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole",
+        )
     )
 
     @validator("user_content_storage")
