@@ -1,6 +1,6 @@
 from datetime import timedelta
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Collection, Optional, Tuple, Union
 
 from pydantic import (
     BaseSettings,
@@ -21,6 +21,10 @@ class Config(BaseSettings):
 
     See https://pydantic-docs.helpmanual.io/usage/settings/.
     """
+
+    basic_authentication_users: Collection[Tuple[str, str]] = Field(
+        default_factory=list
+    )
 
     data_refresh_period: Optional[timedelta] = timedelta(minutes=1)
 

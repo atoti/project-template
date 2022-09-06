@@ -1,3 +1,4 @@
+import os
 import re
 from datetime import timedelta
 from shutil import which
@@ -64,6 +65,7 @@ def docker_container_fixture(
     container = client.containers.run(
         docker_image_name,
         detach=True,
+        environment={name: os.environ[name] for name in ["ATOTI_LICENSE"]},
         name=str(uuid4()),
         publish_all_ports=True,
     )
