@@ -90,4 +90,4 @@ def host_port_fixture(docker_executable_path: str, docker_container: Container) 
 
 @pytest.fixture(name="query_session_inside_docker_container", scope="session")
 def query_session_inside_docker_container_fixture(host_port: int) -> tt.QuerySession:
-    return tt.open_query_session(f"http://localhost:{host_port}")
+    return tt.QuerySession(f"http://localhost:{host_port}")
