@@ -26,6 +26,8 @@ class Config(BaseSettings):
     # The $PORT environment variable is used by most PaaS to indicate the port the app server should bind to.
     port: int = 9090
 
+    requests_timeout: timedelta = timedelta(seconds=30)
+
     reverse_geocoding_path: Union[HttpUrl, FilePath] = Field(
         default="https://api-adresse.data.gouv.fr/reverse/csv/"
     )
