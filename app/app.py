@@ -26,8 +26,6 @@ class App:
             else None
         )
 
-        raise RuntimeError("Another test")
-
     @property
     def session(self) -> tt.Session:
         return self._session
