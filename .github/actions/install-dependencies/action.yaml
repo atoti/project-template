@@ -3,22 +3,13 @@ description: Install Poetry and the project's dependencies
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-python@v2
-      with:
-        python-version: "3.9"
-    - uses: snok/install-poetry@v1
-      with:
-        version: "1.2.2"
-        virtualenvs-in-project: true
-    - uses: actions/cache@v2
-      id: cached-poetry-venv
-      with:
-        path: .venv
-        key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
-    - name: Install dependencies
-      if: steps.cached-poetry-venv.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+    - name: Install Poetry
+      run: pipx install poetry==1.2.2
       shell: bash
-    - name: Install project root
+    - uses: actions/setup-python@v4
+      with:
+        cache: poetry
+        python-version: "3.9"
+    - name: Install dependencies
       run: poetry install --no-interaction
       shell: bash
