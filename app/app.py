@@ -15,7 +15,6 @@ class App:
     """Regroup the session with other resources so that they can be closed together."""
 
     def __init__(self, *, config: Config) -> None:
-        print("check that changing the app sources does not invalidate Poetry's cache.")
         # The config is kept private to deter passing an App to functions when a Config is all they need.
         self._session = start_session(config=config)
         self._stop_refreshing_data = (
@@ -26,6 +25,8 @@ class App:
             if config.data_refresh_period
             else None
         )
+
+        raise RuntimeError("Another test")
 
     @property
     def session(self) -> tt.Session:
