@@ -1,3 +1,4 @@
+from datetime import timedelta
 from functools import lru_cache
 from io import StringIO
 from pathlib import Path
@@ -16,6 +17,7 @@ def _cached_reverse_geocode(
     /,
     *,
     reverse_geocoding_path: Union[HttpUrl, Path],
+    timeout: timedelta,
 ) -> pd.DataFrame:
     data: Union[StringIO, Path]
 
@@ -26,7 +28,11 @@ def _cached_reverse_geocode(
         )
         file.seek(0)
         _file: IO[str] = file  # To make Mypy happy.
-        response = requests.post(reverse_geocoding_path, files={"data": _file})
+        response = requests.post(
+            reverse_geocoding_path,
+            files={"data": _file},
+            timeout=timeout.total_seconds(),
+        )
         response.raise_for_status()
         data = StringIO(response.text)
     else:
@@ -58,8 +64,14 @@ def _cached_reverse_geocode(
 
 
 def reverse_geocode(
-    data: Iterable[_Coordinates], /, *, reverse_geocoding_path: Union[HttpUrl, Path]
+    data: Iterable[_Coordinates],
+    /,
+    *,
+    reverse_geocoding_path: Union[HttpUrl, Path],
+    timeout: timedelta,
 ) -> pd.DataFrame:
     return _cached_reverse_geocode(
-        tuple(sorted(data)), reverse_geocoding_path=reverse_geocoding_path
+        tuple(sorted(data)),
+        reverse_geocoding_path=reverse_geocoding_path,
+        timeout=timeout,
     )
