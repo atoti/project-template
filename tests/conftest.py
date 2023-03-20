@@ -19,7 +19,7 @@ def project_name_fixture() -> str:
     with (_PROJECT_ROOT_DIRECTORY / "pyproject.toml").open("rb") as file:
         pyproject = tomli.load(file)
 
-    project_name = pyproject["tool.poetry"]["name"]
+    project_name = pyproject["tool"]["poetry"]["name"]
     assert isinstance(project_name, str)
     return project_name
 

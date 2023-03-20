@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "app"
+name = "atoti-project-template"
 version = "0.1.0"
 description = ""
 authors = []
