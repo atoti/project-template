@@ -8,7 +8,7 @@ authors = []
 atoti = {extras = ["sql"], version = "*"}
 pandas = "*"
 pydantic = "*"
-python = ">=3.9"
+python = ">=3.10"
 requests = "*"
 
 [tool.poetry.dev-dependencies]
@@ -75,7 +75,7 @@ ignore = [
   "TRY003", # Not worth the annoyance.
 ]
 select = ["ALL"]
-target-version = "py39"
+target-version = "py310"
 unfixable = [
   "ERA001", # To prevent deleting code commented while debugging.
 ]

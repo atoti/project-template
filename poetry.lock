@@ -157,7 +157,6 @@ packaging = ">=22.0"
 pathspec = ">=0.9.0"
 platformdirs = ">=2"
 tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
-typing-extensions = {version = ">=3.10.0.0", markers = "python_version < \"3.10\""}
 
 [package.extras]
 colorama = ["colorama (>=0.4.3)"]
@@ -477,7 +476,6 @@ files = [
 
 [package.dependencies]
 numpy = [
-    {version = ">=1.20.3", markers = "python_version < \"3.10\""},
     {version = ">=1.21.0", markers = "python_version >= \"3.10\""},
     {version = ">=1.23.2", markers = "python_version >= \"3.11\""},
 ]
@@ -943,5 +941,5 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.9"
-content-hash = "bf0350eaf403cb962fdcea1bcbd2d4c3c96289dc2241daa3383ca94e64dca429"
+python-versions = ">=3.10"
+content-hash = "ec19c228c30e90f0282f18fb89687c203add9ad96cc4a0ce848ae34f449afd57"

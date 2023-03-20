@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import timedelta
 from threading import Event, Thread
-from typing import Callable
 
 
 def run_periodically(
