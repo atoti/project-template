@@ -4,9 +4,7 @@ from collections.abc import Iterable, Mapping
 from subprocess import STDOUT, CalledProcessError, check_output
 
 
-def run_command(
-    args: Iterable[str], /, *, env: Mapping[str, str] | None = None
-) -> str:
+def run_command(args: Iterable[str], /, *, env: Mapping[str, str] | None = None) -> str:
     try:
         return check_output(list(args), env=env, stderr=STDOUT, text=True)
     except CalledProcessError as error:
