@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 
 # Disable atoti telemetry and EULA message before any import of `atoti`.

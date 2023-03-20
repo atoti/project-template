@@ -9,9 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/install-dependencies
+      - uses: ./.github/actions/setup
       - run: poetry run app format --check
-      - run: poetry run app sort-imports --check
-      - run: poetry run app lint
+      - run: poetry run app lint --check
       - run: poetry run app typecheck
       - run: poetry run app test
