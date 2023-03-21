@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from types import TracebackType
-from typing import Optional, Type
 
 import atoti as tt
 
@@ -40,8 +39,8 @@ class App:
 
     def __exit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         self.close()
