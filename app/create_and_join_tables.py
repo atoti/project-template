@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import atoti as tt
 
 from .constants import StationDetailsTableColumn, StationStatusTableColumn, Table
@@ -41,9 +43,12 @@ def create_station_details_table(session: tt.Session, /) -> None:
 def join_tables(session: tt.Session, /) -> None:
     session.tables[Table.STATION_STATUS.value].join(
         session.tables[Table.STATION_DETAILS.value],
-        mapping={
-            StationStatusTableColumn.STATION_ID.value: StationDetailsTableColumn.ID.value
-        },
+        session.tables[Table.STATION_STATUS.value][
+            StationStatusTableColumn.STATION_ID.value
+        ]
+        == session.tables[Table.STATION_DETAILS.value][
+            StationDetailsTableColumn.ID.value
+        ],
     )
 
 

@@ -1,25 +1,28 @@
+from __future__ import annotations
+
+from collections.abc import Iterable
 from datetime import timedelta
 from functools import lru_cache
 from io import StringIO
 from pathlib import Path
-from typing import IO, Iterable, Tuple, Union
+from typing import IO
 
 import pandas as pd
 import requests
 from pydantic import HttpUrl
 
-_Coordinates = Tuple[float, float]  # (latitude, longitude)
+_Coordinates = tuple[float, float]  # (latitude, longitude)
 
 
 @lru_cache
 def _cached_reverse_geocode(
-    stable_coordinates: Tuple[_Coordinates, ...],
+    stable_coordinates: tuple[_Coordinates, ...],
     /,
     *,
-    reverse_geocoding_path: Union[HttpUrl, Path],
+    reverse_geocoding_path: HttpUrl | Path,
     timeout: timedelta,
 ) -> pd.DataFrame:
-    data: Union[StringIO, Path]
+    data: StringIO | Path
 
     if isinstance(reverse_geocoding_path, HttpUrl):
         file = StringIO()
@@ -67,7 +70,7 @@ def reverse_geocode(
     data: Iterable[_Coordinates],
     /,
     *,
-    reverse_geocoding_path: Union[HttpUrl, Path],
+    reverse_geocoding_path: HttpUrl | Path,
     timeout: timedelta,
 ) -> pd.DataFrame:
     return _cached_reverse_geocode(
