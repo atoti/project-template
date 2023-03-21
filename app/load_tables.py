@@ -1,6 +1,9 @@
+from __future__ import annotations
+
+from collections.abc import Mapping
 from datetime import timedelta
 from pathlib import Path
-from typing import Any, List, Mapping, Tuple, Union, cast
+from typing import Any, cast
 
 import atoti as tt
 import pandas as pd
@@ -13,12 +16,15 @@ from .util import read_json, reverse_geocode
 
 def read_station_details(
     *,
-    reverse_geocoding_path: Union[HttpUrl, Path],
+    reverse_geocoding_path: HttpUrl | Path,
     timeout: timedelta,
-    velib_data_base_path: Union[HttpUrl, Path],
+    velib_data_base_path: HttpUrl | Path,
 ) -> pd.DataFrame:
-    stations_data = read_json(
-        velib_data_base_path, Path("station_information.json"), timeout=timeout
+    stations_data: Any = cast(
+        Any,
+        read_json(
+            velib_data_base_path, Path("station_information.json"), timeout=timeout
+        ),
     )["data"]["stations"]
     station_information_df = pd.DataFrame(stations_data)[
         ["station_id", "name", "capacity", "lat", "lon"]
@@ -38,7 +44,7 @@ def read_station_details(
     )
 
     coordinates = cast(
-        List[Tuple[float, float]],
+        list[tuple[float, float]],
         station_information_df[["latitude", "longitude"]].itertuples(
             index=False, name=None
         ),
@@ -62,15 +68,16 @@ def read_station_details(
 
 
 def read_station_status(
-    velib_data_base_path: Union[HttpUrl, Path],
+    velib_data_base_path: HttpUrl | Path,
     /,
     *,
     timeout: timedelta,
 ) -> pd.DataFrame:
-    stations_data = read_json(
-        velib_data_base_path, Path("station_status.json"), timeout=timeout
+    stations_data = cast(
+        Any,
+        read_json(velib_data_base_path, Path("station_status.json"), timeout=timeout),
     )["data"]["stations"]
-    station_statuses: List[Mapping[str, Any]] = []
+    station_statuses: list[Mapping[str, Any]] = []
     for station_status in stations_data:
         for num_bikes_available_types in station_status["num_bikes_available_types"]:
             if len(num_bikes_available_types) != 1:
@@ -87,8 +94,7 @@ def read_station_status(
                     StationStatusTableColumn.BIKES.value: bikes,
                 }
             )
-    station_statuses_df = pd.DataFrame(station_statuses)
-    return station_statuses_df
+    return pd.DataFrame(station_statuses)
 
 
 def load_tables(session: tt.Session, /, *, config: Config) -> None:

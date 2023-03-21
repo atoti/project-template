@@ -1,13 +1,14 @@
-from typing import Any, List
+from __future__ import annotations
+
 from urllib.parse import urlencode, urlparse
 
 from pydantic import PostgresDsn
 
 
-def normalize_postgres_dsn_for_atoti_sql(url: PostgresDsn, /) -> Any:
+def normalize_postgres_dsn_for_atoti_sql(url: PostgresDsn, /) -> object:
     parts = urlparse(url)
 
-    query_parts: List[str] = []
+    query_parts: list[str] = []
 
     if parts.query:
         query_parts.append(parts.query)
@@ -18,7 +19,7 @@ def normalize_postgres_dsn_for_atoti_sql(url: PostgresDsn, /) -> Any:
         )
 
     return PostgresDsn(
-        # This is how pydantic creates an instance from parts.
+        # This is how Pydantic creates an instance from parts.
         None,
         scheme="postgresql",
         host=str(parts.hostname),
