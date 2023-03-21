@@ -5,7 +5,6 @@ from pathlib import Path
 
 import atoti as tt
 import pytest
-import tomli
 
 from app import App, Config
 
@@ -16,12 +15,7 @@ _PROJECT_ROOT_DIRECTORY = _TESTS_DIRECTORY.parent
 
 @pytest.fixture(name="project_name", scope="session")
 def project_name_fixture() -> str:
-    with (_PROJECT_ROOT_DIRECTORY / "pyproject.toml").open("rb") as file:
-        pyproject = tomli.load(file)
-
-    project_name = pyproject["tool"]["poetry"]["name"]
-    assert isinstance(project_name, str)
-    return project_name
+    return _PROJECT_ROOT_DIRECTORY.name
 
 
 @pytest.fixture(name="config", scope="session")
