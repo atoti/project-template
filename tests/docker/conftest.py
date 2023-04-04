@@ -31,7 +31,7 @@ def poetry_executable_path_fixture() -> str:
 
 
 @pytest.fixture(name="docker_image_name", scope="session")
-def docker_image_tag_fixture(
+def docker_image_name_fixture(
     docker_executable_path: str, poetry_executable_path: str, project_name: str
 ) -> Generator[str, None, None]:
     tag = f"{project_name}:{uuid4()}"
