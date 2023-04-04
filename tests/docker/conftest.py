@@ -11,7 +11,7 @@ import docker
 import pytest
 from docker.models.containers import Container
 
-from ._docker_container import docker_container
+from ._docker_container import docker_container as _docker_container
 from ._run_command import run_command
 from ._timeout import Timeout
 
@@ -31,7 +31,7 @@ def poetry_executable_path_fixture() -> str:
 
 
 @pytest.fixture(name="docker_image_name", scope="session")
-def docker_image_name_fixture(
+def docker_image_tag_fixture(
     docker_executable_path: str, poetry_executable_path: str, project_name: str
 ) -> Generator[str, None, None]:
     tag = f"{project_name}:{uuid4()}"
@@ -60,7 +60,7 @@ def docker_container_fixture(
 ) -> Generator[Container, None, None]:
     timeout = Timeout(timedelta(minutes=1))
 
-    with docker_container(docker_image_name, client=docker_client) as container:
+    with _docker_container(docker_image_name, client=docker_client) as container:
         logs = container.logs(stream=True)
 
         while "Session listening on port" not in next(logs).decode():
