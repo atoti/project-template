@@ -10,7 +10,6 @@
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
     "python.analysis.autoImportCompletions": true,
-    "python.analysis.autoImportUserSymbols": true,
     "python.formatting.provider": "black",
     "python.languageServer": "Pylance",
     "python.linting.mypyCategorySeverity.note": "Error",
