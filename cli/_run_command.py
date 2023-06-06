@@ -20,4 +20,4 @@ def run_command(
         command = [get_executable_path("poetry"), "run", *command]
 
     typer.echo(f"$ {join(command)}", err=True)
-    run(command, check=True, env=env)
+    run(command, check=True, env=env)  # noqa: S603

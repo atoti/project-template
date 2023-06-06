@@ -18,7 +18,6 @@ docker = "*"
 mypy = "*"
 pandas-stubs = "*"
 pytest = "*"
-pytest-xdist = "*"
 ruff = "*"
 tomli = "*"
 typer = "*"
@@ -34,6 +33,9 @@ build-backend = "poetry.core.masonry.api"
 [tool.mypy]
 plugins = "pydantic.mypy"
 strict = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
 module = "tests.*"
@@ -79,6 +81,13 @@ target-version = "py39"
 unfixable = [
   "ERA001", # To prevent deleting code commented while debugging.
 ]
+
+[tool.ruff.flake8-import-conventions]
+banned-from = ["atoti"]
+
+[tool.ruff.flake8-import-conventions.aliases]
+atoti = "tt"
+pandas = "pd"
 
 [tool.ruff.isort]
 combine-as-imports = true
