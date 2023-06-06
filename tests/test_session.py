@@ -16,6 +16,7 @@ def test_total_capacity(session: tt.Session) -> None:
         data=[
             (44_980),
         ],
+        dtype="Int32",
     )
     pd.testing.assert_frame_equal(result, expected_result)
 
@@ -26,7 +27,7 @@ def test_departments(session: tt.Session) -> None:
         station_cube.measures["contributors.COUNT"],
         levels=[station_cube.levels[StationCubeLocationLevel.DEPARTMENT.value]],
     )
-    assert list(result.index.values) == [
+    assert list(result.index) == [
         "75, Paris, Île-de-France",
         "92, Hauts-de-Seine, Île-de-France",
         "93, Seine-Saint-Denis, Île-de-France",
