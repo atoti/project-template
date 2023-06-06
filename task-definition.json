@@ -1,0 +1,35 @@
+{
+  "executionRoleArn": "atoti-project-template-role",
+  "containerDefinitions": [
+    {
+      "name": "atoti-session",
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/atoti-project-template",
+          "awslogs-region": "AWS_REGION",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "protocol": "tcp",
+          "containerPort": 80
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DATABASE_URL",
+          "valueFrom": "arn:aws:secretsmanager:AWS_REGION:AWS_ACCOUNT_ID:secret:atoti-project-template/database-dsn-ZS3pzB"
+        }
+      ]
+    }
+  ],
+  "family": "atoti-project-template",
+  "cpu": "1024",
+  "memory": "2048",
+  "requiresCompatibilities": ["FARGATE"],
+  "networkMode": "awsvpc"
+}
