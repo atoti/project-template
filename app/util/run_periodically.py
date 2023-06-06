@@ -1,10 +1,12 @@
+from __future__ import annotations
+
+from collections.abc import Callable
 from datetime import timedelta
 from threading import Event, Thread
-from typing import Callable, Optional
 
 
 def run_periodically(
-    callback: Callable[[], None], /, *, daemon: Optional[bool] = None, period: timedelta
+    callback: Callable[[], None], /, *, daemon: bool | None = None, period: timedelta
 ) -> Callable[[], None]:
     period_in_seconds = period.total_seconds()
     stopped = Event()

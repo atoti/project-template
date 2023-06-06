@@ -1,4 +1,4 @@
-# atoti Project Template
+# Atoti Project Template
 
 Switch to the [default branch](https://github.com/atoti/project-template#readme) to learn how to use this template.
 

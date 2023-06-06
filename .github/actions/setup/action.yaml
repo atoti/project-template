@@ -1,0 +1,13 @@
+name: Setup the repository
+description: Set up Python, install Poetry and the dependencies
+runs:
+  using: "composite"
+  steps:
+    - run: pipx install poetry==1.5.1
+      shell: bash
+    - uses: actions/setup-python@v4
+      with:
+        cache: poetry
+        python-version: "3.9"
+    - run: poetry install
+      shell: bash

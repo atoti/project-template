@@ -1,22 +1,31 @@
+from __future__ import annotations
+
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
 import atoti as tt
 import pytest
 
 from app import App, Config
 
-TEST_DATA_PATH = Path(__file__).parent / "data"
+_TESTS_DIRECTORY = Path(__file__).parent
+_TESTS_DATA_PATH = _TESTS_DIRECTORY / "data"
+_PROJECT_DIRECTORY = _TESTS_DIRECTORY.parent
+
+
+@pytest.fixture(name="project_name", scope="session")
+def project_name_fixture() -> str:
+    return _PROJECT_DIRECTORY.name
 
 
 @pytest.fixture(name="config", scope="session")
 def config_fixture() -> Config:
     return Config(
         data_refresh_period=None,
-        reverse_geocoding_path=TEST_DATA_PATH / "station_location.csv",
+        reverse_geocoding_path=_TESTS_DATA_PATH / "station_location.csv",
         port=0,
         user_content_storage=None,
-        velib_data_base_path=TEST_DATA_PATH,
+        velib_data_base_path=_TESTS_DATA_PATH,
     )
 
 
