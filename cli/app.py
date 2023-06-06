@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Annotated
+
 import typer
 
 from ._get_executable_path import get_executable_path
@@ -8,7 +10,7 @@ from ._run_command import run_command
 _APP_PACKAGE = "app"
 _PACKAGES = (_APP_PACKAGE, "cli", "tests")
 
-_CHECK_OPTION = typer.Option(False, "--check/--fix")  # noqa: FBT003
+_CheckOption = Annotated[bool, typer.Option("--check/--fix")]
 
 app = typer.Typer()
 
@@ -22,12 +24,12 @@ def build_docker(tag: str) -> None:
 
 
 @app.command(help="Format the project files.")
-def format(*, check: bool = _CHECK_OPTION) -> None:  # noqa: A001
+def format(*, check: _CheckOption = False) -> None:  # noqa: A001
     run_command(["black", *(["--check"] if check else []), "."], run_with_poetry=True)
 
 
 @app.command(help="Lint the project files.")
-def lint(*, check: bool = _CHECK_OPTION) -> None:
+def lint(*, check: _CheckOption = False) -> None:
     run_command(
         ["ruff", "check", ".", *([] if check else ["--fix"])], run_with_poetry=True
     )
@@ -40,9 +42,7 @@ def start() -> None:
 
 @app.command(help="Run the test suite.")
 def test() -> None:
-    run_command(
-        ["pytest", "--capture=no", "--numprocesses", "auto"], run_with_poetry=True
-    )
+    run_command(["pytest", "--capture=no"], run_with_poetry=True)
 
 
 @app.command(help="Statically check the Python types.")
@@ -50,7 +50,6 @@ def typecheck() -> None:
     run_command(
         [
             "mypy",
-            "--show-error-codes",
             *[arg for package in _PACKAGES for arg in ["--package", package]],
         ],
         run_with_poetry=True,
