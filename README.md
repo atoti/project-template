@@ -1,4 +1,4 @@
-# Atoti Python API Project Template
+# Atoti Project Template
 
 This template can be used to start Atoti projects where the goal is to [go into production rather than prototyping in a notebook](https://docs.atoti.io/latest/deployment/going_from_a_notebook_to_an_app.html).
 
