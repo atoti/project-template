@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from datetime import timedelta
 from pathlib import Path
 from typing import Any, cast
@@ -38,14 +38,16 @@ def read_station_details(
         }
     )
 
+    coordinates_column_names = ["latitude", "longitude"]
+
     # Drop some precision to ensure stability of reverse geocoding results.
     station_information_df = station_information_df.round(
-        {"latitude": 6, "longitude": 6}
+        {column_name: 6 for column_name in coordinates_column_names}
     )
 
     coordinates = cast(
-        list[tuple[float, float]],
-        station_information_df[["latitude", "longitude"]].itertuples(
+        Iterable[tuple[float, float]],
+        station_information_df[coordinates_column_names].itertuples(
             index=False, name=None
         ),
     )
@@ -63,8 +65,8 @@ def read_station_details(
     )
 
     return station_information_df.merge(
-        reverse_geocoded_df, how="left", on=["latitude", "longitude"]
-    ).drop(columns=["latitude", "longitude"])
+        reverse_geocoded_df, how="left", on=coordinates_column_names
+    ).drop(columns=coordinates_column_names)
 
 
 def read_station_status(
