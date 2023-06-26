@@ -2,15 +2,19 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from datetime import timedelta
-from functools import lru_cache
+from functools import wraps
 from io import StringIO
 from pathlib import Path
+from typing import AbstractSet, Any, Callable, TypeVar, cast
 
 import pandas as pd
 import requests
 from pydantic import HttpUrl
+from typing_extensions import ParamSpec
 
 _Coordinates = tuple[float, float]  # (latitude, longitude)
+
+_COORDINATES_COLUMN_NAMES: Iterable[str] = ["latitude", "longitude"]
 
 _COLUMN_NAME_MAPPING: Mapping[str, str] = {
     "result_context": "department",
@@ -20,17 +24,42 @@ _COLUMN_NAME_MAPPING: Mapping[str, str] = {
     "result_housenumber": "house_number",
 }
 
+_P = ParamSpec("_P")
+_R = TypeVar("_R")
 
-@lru_cache
-def _cached_reverse_geocode(
-    stable_coordinates: tuple[_Coordinates, ...],
+
+def _cache(function: Callable[_P, _R], /) -> Callable[_P, _R]:
+    cache: dict[_Coordinates, dict[str, str]] = {}
+
+    @wraps(function)
+    def function_wrapper(
+        *args: _P.args,
+        **kwargs: _P.kwargs,
+    ) -> _R:
+        coordinates, *tail = args
+        assert isinstance(coordinates, AbstractSet)
+        new_coordinates = coordinates - set(cache)
+        new_args = cast(_P.args, (new_coordinates, *tail))
+        result = function(*new_args, **kwargs)
+        cache.update(cast(Any, result))
+        return result
+
+    return function_wrapper
+
+
+@_cache
+def _reverse_geocode(
+    coordinates: AbstractSet[_Coordinates],
     /,
     *,
     reverse_geocoding_path: HttpUrl | Path,
     timeout: timedelta,
-) -> pd.DataFrame:
+) -> dict[_Coordinates, dict[str, str]]:
+    if not coordinates:
+        return {}
+
     data: StringIO | Path
-    coordinates_df = pd.DataFrame(stable_coordinates, columns=["latitude", "longitude"])
+    coordinates_df = pd.DataFrame(coordinates, columns=list(_COORDINATES_COLUMN_NAMES))
 
     if isinstance(reverse_geocoding_path, Path):
         data = reverse_geocoding_path
@@ -51,24 +80,29 @@ def _cached_reverse_geocode(
 
     results_df = pd.read_csv(data)
     assert len(results_df) == len(coordinates_df)
-    results_df = results_df.rename(columns=_COLUMN_NAME_MAPPING)
 
-    # Overwrite coordinates with original ones to allow merging this DataFrame with the one of the station information.
+    # The returned coordinates are not strictly equal to the input ones.
+    # They may have slightly moved.
+    # Using input ones to allow the caller to look up the addresses of the coordinates it has.
     for column_name in coordinates_df.columns:
         results_df[column_name] = coordinates_df[column_name]
 
-    return results_df
+    results_df = results_df.set_index(list(coordinates_df.columns))
+    results_df = results_df.rename(columns=_COLUMN_NAME_MAPPING)
+    return results_df.to_dict("index")  # type: ignore[return-value]
 
 
 def reverse_geocode(
-    data: Iterable[_Coordinates],
+    coordinates: Iterable[_Coordinates],
     /,
     *,
     reverse_geocoding_path: HttpUrl | Path,
     timeout: timedelta,
 ) -> pd.DataFrame:
-    return _cached_reverse_geocode(
-        tuple(sorted(data)),
-        reverse_geocoding_path=reverse_geocoding_path,
-        timeout=timeout,
+    result = _reverse_geocode(
+        set(coordinates), reverse_geocoding_path=reverse_geocoding_path, timeout=timeout
     )
+    result_df = pd.DataFrame.from_dict(result, orient="index")
+    index = result_df.index.set_names(_COORDINATES_COLUMN_NAMES)
+    result_df.index = index
+    return result_df.reset_index()

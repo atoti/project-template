@@ -40,11 +40,6 @@ def read_station_details(
 
     coordinates_column_names = ["latitude", "longitude"]
 
-    # Drop some precision to ensure stability of reverse geocoding results.
-    station_information_df = station_information_df.round(
-        {column_name: 6 for column_name in coordinates_column_names}
-    )
-
     coordinates = cast(
         Iterable[tuple[float, float]],
         station_information_df[coordinates_column_names].itertuples(
