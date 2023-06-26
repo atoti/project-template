@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Set
 from datetime import timedelta
 from functools import wraps
 from io import StringIO
 from pathlib import Path
-from typing import AbstractSet, Any, Callable, TypeVar, cast
+from typing import Any, Callable, TypeVar, cast
 
 import pandas as pd
 import requests
@@ -37,7 +37,7 @@ def _cache(function: Callable[_P, _R], /) -> Callable[_P, _R]:
         **kwargs: _P.kwargs,
     ) -> _R:
         coordinates, *tail = args
-        assert isinstance(coordinates, AbstractSet)
+        assert isinstance(coordinates, Set)
         new_coordinates = coordinates - set(cache)
         new_args = cast(_P.args, (new_coordinates, *tail))
         result = function(*new_args, **kwargs)
@@ -49,7 +49,7 @@ def _cache(function: Callable[_P, _R], /) -> Callable[_P, _R]:
 
 @_cache
 def _reverse_geocode(
-    coordinates: AbstractSet[_Coordinates],
+    coordinates: Set[_Coordinates],
     /,
     *,
     reverse_geocoding_path: HttpUrl | Path,
