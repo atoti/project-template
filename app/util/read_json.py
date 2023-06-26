@@ -15,7 +15,6 @@ def read_json(
         url = f"{base_path}/{file_path.as_posix()}"
         response = requests.get(url, timeout=timeout.total_seconds())
         response.raise_for_status()
-        body = response.json()
-        return body
+        return response.json()
 
     return json.loads((base_path / file_path).read_bytes())
