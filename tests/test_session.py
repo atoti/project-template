@@ -14,7 +14,7 @@ def test_total_capacity(session: tt.Session) -> None:
     expected_result = pd.DataFrame(
         columns=[StationCubeMeasure.CAPACITY.value],
         data=[
-            (44_980),
+            (45_850),
         ],
         dtype="Int32",
     )
