@@ -5,14 +5,16 @@ from datetime import timedelta
 from functools import wraps
 from io import StringIO
 from pathlib import Path
-from typing import Any, Callable, TypeVar, cast
+from typing import Callable
 
 import pandas as pd
 import requests
 from pydantic import HttpUrl
-from typing_extensions import ParamSpec
+from typing_extensions import Concatenate, ParamSpec
 
 _Coordinates = tuple[float, float]  # (latitude, longitude)
+
+_ReverseGeocodedCoordinates = dict[_Coordinates, dict[str, str]]
 
 _COORDINATES_COLUMN_NAMES: Iterable[str] = ["latitude", "longitude"]
 
@@ -24,25 +26,27 @@ _COLUMN_NAME_MAPPING: Mapping[str, str] = {
     "result_housenumber": "house_number",
 }
 
+
 _P = ParamSpec("_P")
-_R = TypeVar("_R")
 
 
-def _cache(function: Callable[_P, _R], /) -> Callable[_P, _R]:
-    cache: dict[_Coordinates, dict[str, str]] = {}
+def _cache(
+    function: Callable[Concatenate[Set[_Coordinates], _P], _ReverseGeocodedCoordinates],
+    /,
+) -> Callable[Concatenate[Set[_Coordinates], _P], _ReverseGeocodedCoordinates]:
+    cache: _ReverseGeocodedCoordinates = {}
 
     @wraps(function)
     def function_wrapper(
+        coordinates: Set[_Coordinates],
+        /,
         *args: _P.args,
         **kwargs: _P.kwargs,
-    ) -> _R:
-        coordinates, *tail = args
-        assert isinstance(coordinates, Set)
-        new_coordinates = coordinates - set(cache)
-        new_args = cast(_P.args, (new_coordinates, *tail))
-        result = function(*new_args, **kwargs)
-        cache.update(cast(Any, result))
-        return result
+    ) -> _ReverseGeocodedCoordinates:
+        uncached_coordinates = coordinates - set(cache)
+        result = function(uncached_coordinates, *args, **kwargs)
+        cache.update(result)
+        return {key: value for key, value in cache.items() if key in coordinates}
 
     return function_wrapper
 
@@ -54,7 +58,7 @@ def _reverse_geocode(
     *,
     reverse_geocoding_path: HttpUrl | Path,
     timeout: timedelta,
-) -> dict[_Coordinates, dict[str, str]]:
+) -> _ReverseGeocodedCoordinates:
     if not coordinates:
         return {}
 
