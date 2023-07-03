@@ -2,18 +2,18 @@
 
 [[package]]
 name = "atoti"
-version = "0.8.1"
+version = "0.8.2"
 description = "Design, explore and deploy efficient and flexible data models"
 optional = false
 python-versions = "*"
 files = [
-    {file = "atoti-0.8.1-0_ad0cf24-py3-none-any.whl", hash = "sha256:2d837fac854ff5273bab78ba5ac3ea16f10fdcd0cb10ac4db1eb74b6006b76e2"},
+    {file = "atoti-0.8.2-0_80138c9-py3-none-any.whl", hash = "sha256:ff894d84b1112c9f69070f213295dcea036621707cb6724a26a634a952915b2c"},
 ]
 
 [package.dependencies]
-atoti-core = "0.8.1"
-atoti-query = "0.8.1"
-atoti-sql = {version = "0.8.1", optional = true, markers = "extra == \"sql\""}
+atoti-core = "0.8.2"
+atoti-query = "0.8.2"
+atoti-sql = {version = "0.8.2", optional = true, markers = "extra == \"sql\""}
 jdk4py = ">=17.0.3.0,<18"
 numpy = "*"
 pandas = "*"
@@ -24,28 +24,29 @@ typeguard = "*"
 typing-extensions = "*"
 
 [package.extras]
-aws = ["atoti-aws (==0.8.1)"]
-azure = ["atoti-azure (==0.8.1)"]
+aws = ["atoti-aws (==0.8.2)"]
+azure = ["atoti-azure (==0.8.2)"]
 dev = ["pyjwt[crypto]", "pyspark", "pytest", "pytz", "requests", "scipy", "test-utils"]
-directquery-bigquery = ["atoti-directquery-bigquery (==0.8.1)"]
-directquery-clickhouse = ["atoti-directquery-clickhouse (==0.8.1)"]
-directquery-mssql = ["atoti-directquery-mssql (==0.8.1)"]
-directquery-redshift = ["atoti-directquery-redshift (==0.8.1)"]
-directquery-snowflake = ["atoti-directquery-snowflake (==0.8.1)"]
-directquery-synapse = ["atoti-directquery-synapse (==0.8.1)"]
-gcp = ["atoti-gcp (==0.8.1)"]
+directquery-bigquery = ["atoti-directquery-bigquery (==0.8.2)"]
+directquery-clickhouse = ["atoti-directquery-clickhouse (==0.8.2)"]
+directquery-databricks = ["atoti-directquery-databricks (==0.8.2)"]
+directquery-mssql = ["atoti-directquery-mssql (==0.8.2)"]
+directquery-redshift = ["atoti-directquery-redshift (==0.8.2)"]
+directquery-snowflake = ["atoti-directquery-snowflake (==0.8.2)"]
+directquery-synapse = ["atoti-directquery-synapse (==0.8.2)"]
+gcp = ["atoti-gcp (==0.8.2)"]
 jupyterlab3 = ["atoti-jupyterlab3 (>=0.8.0)"]
-kafka = ["atoti-kafka (==0.8.1)"]
-sql = ["atoti-sql (==0.8.1)"]
+kafka = ["atoti-kafka (==0.8.2)"]
+sql = ["atoti-sql (==0.8.2)"]
 
 [[package]]
 name = "atoti-core"
-version = "0.8.1"
+version = "0.8.2"
 description = "Package containing private symbols shared by the other Atoti packages"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "atoti_core-0.8.1-0_ad0cf24-py3-none-any.whl", hash = "sha256:f57768b75ae2f1ba0e2883aa90585b7d5d05f47ce99c58d91a6f0cf8678f12ca"},
+    {file = "atoti_core-0.8.2-0_80138c9-py3-none-any.whl", hash = "sha256:c58c992c794d1d1975de64a7af65bfa31864debef7e6cfd615f375811fe9bc4c"},
 ]
 
 [package.dependencies]
@@ -59,16 +60,16 @@ dev = ["atoti", "pandas-stubs (>=1.5.3)", "pytest", "pytz", "test-utils"]
 
 [[package]]
 name = "atoti-query"
-version = "0.8.1"
+version = "0.8.2"
 description = "Package to query Atoti sessions."
 optional = false
 python-versions = "*"
 files = [
-    {file = "atoti_query-0.8.1-0_ad0cf24-py3-none-any.whl", hash = "sha256:e42736bae7a8109f2165c8c9276c2be88d53c23518c137e0b1f05ceea1acf162"},
+    {file = "atoti_query-0.8.2-0_80138c9-py3-none-any.whl", hash = "sha256:c35cbb7c64d88aab8f70fb5f5774ace5ef20edd22028c5b824feb5210582646e"},
 ]
 
 [package.dependencies]
-atoti-core = "0.8.1"
+atoti-core = "0.8.2"
 pandas = "*"
 pyarrow = ">=11.0.0"
 typeguard = ">=2.13.3,<3"
@@ -79,17 +80,17 @@ dev = ["atoti", "premailer", "pytest", "test-utils"]
 
 [[package]]
 name = "atoti-sql"
-version = "0.8.1"
+version = "0.8.2"
 description = "Plugin to load the results of SQL queries into Atoti tables"
 optional = false
 python-versions = "*"
 files = [
-    {file = "atoti_sql-0.8.1-0_ad0cf24-py3-none-any.whl", hash = "sha256:2e4fb2480ea0c836f171604fea0b42e98371882ea82cf111b9eb08a063dbc528"},
+    {file = "atoti_sql-0.8.2-0_80138c9-py3-none-any.whl", hash = "sha256:5576c4c3b6f54c7d502b5ec9c2cc52f877de7bf29933982782a63ba21a84db7b"},
 ]
 
 [package.dependencies]
-atoti = "0.8.1"
-atoti-core = "0.8.1"
+atoti = "0.8.2"
+atoti-core = "0.8.2"
 
 [package.extras]
 dev = ["pytest", "test-utils"]
