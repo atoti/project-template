@@ -72,7 +72,7 @@ def _reverse_geocode(
         coordinates_df.to_csv(file, index=False)
         file.seek(0)
         response = requests.post(
-            reverse_geocoding_path,
+            str(reverse_geocoding_path),
             data=[
                 ("result_columns", column_name) for column_name in _COLUMN_NAME_MAPPING
             ],
