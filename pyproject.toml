@@ -8,6 +8,7 @@ authors = []
 atoti = {extras = ["sql"], version = "*"}
 pandas = "*"
 pydantic = "*"
+pydantic-settings = "*"
 python = ">=3.9"
 requests = "*"
 typing-extensions = "*"
@@ -32,7 +33,6 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
-plugins = "pydantic.mypy"
 strict = true
 warn_redundant_casts = true
 warn_unused_configs = true
@@ -81,6 +81,8 @@ select = ["ALL"]
 target-version = "py39"
 unfixable = [
   "ERA001", # To prevent deleting code commented while debugging.
+  "F401", # To prevent deleting code commented while debugging.
+  "F841", # To prevent deleting code commented while debugging.
 ]
 
 [tool.ruff.flake8-import-conventions]
