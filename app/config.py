@@ -23,12 +23,12 @@ from .util import normalize_postgres_dsn_for_atoti_sql
 
 
 class Config(BaseSettings):
-    model_config = SettingsConfigDict(frozen=True)
-
     """Hold all the configuration properties of the app, not only the ones related to Atoti.
 
     See https://pydantic-docs.helpmanual.io/usage/settings/.
     """
+
+    model_config = SettingsConfigDict(frozen=True)
 
     data_refresh_period: Optional[timedelta] = timedelta(minutes=1)
 
