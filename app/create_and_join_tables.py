@@ -13,9 +13,9 @@ def create_station_status_table(session: tt.Session, /) -> None:
             StationStatusTableColumn.BIKE_TYPE.value,
         ],
         types={
-            StationStatusTableColumn.STATION_ID.value: tt.type.LONG,
-            StationStatusTableColumn.BIKE_TYPE.value: tt.type.STRING,
-            StationStatusTableColumn.BIKES.value: tt.type.INT,
+            StationStatusTableColumn.STATION_ID.value: tt.LONG,
+            StationStatusTableColumn.BIKE_TYPE.value: tt.STRING,
+            StationStatusTableColumn.BIKES.value: tt.INT,
         },
     )
 
@@ -27,14 +27,14 @@ def create_station_details_table(session: tt.Session, /) -> None:
             StationDetailsTableColumn.ID.value,
         ],
         types={
-            StationDetailsTableColumn.ID.value: tt.type.LONG,
-            StationDetailsTableColumn.NAME.value: tt.type.STRING,
-            StationDetailsTableColumn.DEPARTMENT.value: tt.type.STRING,
-            StationDetailsTableColumn.CITY.value: tt.type.STRING,
-            StationDetailsTableColumn.POSTCODE.value: tt.type.INT,
-            StationDetailsTableColumn.STREET.value: tt.type.STRING,
-            StationDetailsTableColumn.HOUSE_NUMBER.value: tt.type.STRING,
-            StationDetailsTableColumn.CAPACITY.value: tt.type.INT,
+            StationDetailsTableColumn.ID.value: tt.LONG,
+            StationDetailsTableColumn.NAME.value: tt.STRING,
+            StationDetailsTableColumn.DEPARTMENT.value: tt.STRING,
+            StationDetailsTableColumn.CITY.value: tt.STRING,
+            StationDetailsTableColumn.POSTCODE.value: tt.INT,
+            StationDetailsTableColumn.STREET.value: tt.STRING,
+            StationDetailsTableColumn.HOUSE_NUMBER.value: tt.STRING,
+            StationDetailsTableColumn.CAPACITY.value: tt.INT,
         },
         default_values={StationDetailsTableColumn.POSTCODE.value: 0},
     )
