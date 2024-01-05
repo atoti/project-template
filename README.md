@@ -1,58 +1,7 @@
 # Atoti Project Template
 
-This template can be used to start Atoti projects where the goal is to [go into production rather than prototyping in a notebook](https://docs.atoti.io/latest/deployment/going_from_a_notebook_to_an_app.html).
+Switch to the [default branch](https://github.com/atoti/project-template#readme) to learn how to use this template.
 
-On top of the `atoti` package, it comes with:
+## Deploy to AWS
 
-- Dependency management with [Poetry](https://python-poetry.org)
-- Settings management with [Pydantic](https://docs.pydantic.dev/2.5/concepts/pydantic_settings)
-- Testing with [pytest](https://docs.pytest.org)
-- Type checking with [mypy](http://mypy-lang.org)
-- Formatting and linting with [Ruff](https://beta.ruff.rs)
-- Continuous testing with [GitHub Actions](https://github.com/features/actions)
-
-## Usage
-
-### Installation
-
-- [Install `poetry`](https://python-poetry.org/docs/#installation)
-- Install the dependencies:
-
-  ```bash
-  poetry install
-  ```
-
-### Commands
-
-To get a list of the commands that can be executed to interact with the project, run:
-
-```bash
-poetry run app --help
-```
-
-A few examples:
-
-- Start the app:
-
-  ```bash
-  poetry run app start
-  ```
-
-- Launch the tests:
-
-  ```bash
-  poetry run app test
-  ```
-
-- Reformat the code:
-
-  ```bash
-  poetry run app format
-  ```
-
-## Variants
-
-This repository has the following long-lived branches showcasing different aspects:
-
-- [`deploy-to-aws`](https://github.com/atoti/project-template/tree/deploy-to-aws) for deploying on AWS ECS.
-- [`deploy-to-heroku`](https://github.com/atoti/project-template/tree/deploy-to-heroku) for a one-click deploy to Heroku.
+This branch shows [the modifications](https://github.com/atoti/project-template/compare/deploy-to-aws) required to deploy a project to Amazon ECS.
