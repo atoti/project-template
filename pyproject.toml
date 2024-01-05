@@ -5,7 +5,7 @@ description = ""
 authors = []
 
 [tool.poetry.dependencies]
-atoti = {extras = ["sql"], version = "*"}
+atoti = { extras = ["sql"], version = "*" }
 pandas = "*"
 pydantic = "*"
 pydantic-settings = "*"
@@ -14,7 +14,6 @@ requests = "*"
 typing-extensions = "*"
 
 [tool.poetry.dev-dependencies]
-black = "*"
 colorama = "*"
 docker = "*"
 mypy = "*"
@@ -51,14 +50,14 @@ filterwarnings = ["error"]
 
 [tool.ruff]
 ignore = [
-  # The type checkers can infer the following `ANN` rules.
+  # Type checkers can infer the following `ANN` rules.
   "ANN101",
   "ANN102",
-  "COM812", # Covered by Black.
-  "E501", # Covered by Black.
-  "E741", # `l` is used for level (consistency with `h` for hierarchy and `m` for measure).
-  "EM101", # Not worth the annoyance.
-  "EM102", # Not worth the annoyance.
+  "COM812", # Covered by the formatter.
+  "E501",
+  "E741",   # `l` is used for level (consistency with `h` for hierarchy and `m` for measure).
+  "EM101",  # Not worth the annoyance.
+  "EM102",  # Not worth the annoyance.
   # The following `D` rules are unnecessary.
   "D100",
   "D101",
@@ -70,23 +69,24 @@ ignore = [
   "D107",
   "D203",
   "D213",
-  "F403", # Useful to reexport all public symbols from an imported modules in an `__init__.py`.
-  "PLC0414", # redundant imports are used for re-exporting (See https://peps.python.org/pep-0484/#stub-files).
-  "PT004", # Useless distinction.
-  "S101", # `assert` is useful when used correctly (https://realpython.com/python-assert-statement).
-  "TCH", # Circular dependencies of any kind must be avoided.
-  "TRY003", # Not worth the annoyance.
+  "F403",    # Useful to reexport all public symbols from an imported modules in an `__init__.py`.
+  "ISC001",  # Covered by the formatter.
+  "PLC0414", # Redundant imports are used for re-exporting (See https://peps.python.org/pep-0484/#stub-files).
+  "PT004",   # Useless distinction.
+  "S101",    # `assert` is useful when used correctly (https://realpython.com/python-assert-statement).
+  "TCH",     # Circular dependencies of any kind must be avoided.
+  "TRY003",  # Not worth the annoyance.
 ]
 select = ["ALL"]
 target-version = "py39"
 unfixable = [
   "ERA001", # To prevent deleting code commented while debugging.
-  "F401", # To prevent deleting code commented while debugging.
-  "F841", # To prevent deleting code commented while debugging.
+  "F401",   # To prevent deleting code commented while debugging.
+  "F841",   # To prevent deleting code commented while debugging.
 ]
 
 [tool.ruff.flake8-import-conventions]
-banned-from = ["atoti"]
+banned-from = ["atoti", "pandas"]
 
 [tool.ruff.flake8-import-conventions.aliases]
 atoti = "tt"

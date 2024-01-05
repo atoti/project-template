@@ -3,6 +3,7 @@ from __future__ import annotations
 from types import TracebackType
 
 import atoti as tt
+from typing_extensions import Self
 
 from .config import Config
 from .load_tables import load_tables
@@ -34,7 +35,7 @@ class App:
             self._stop_refreshing_data()
         self.session.close()
 
-    def __enter__(self) -> App:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(

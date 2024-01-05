@@ -53,7 +53,7 @@ class Config(BaseSettings):
     velib_data_base_path: Union[HttpUrl, DirectoryPath] = TypeAdapter(
         HttpUrl
     ).validate_python(
-        "https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole"
+        "https://velib-metropole-opendata.smovengo.cloud/opendata/Velib_Metropole"
     )
 
     @field_validator("user_content_storage")
