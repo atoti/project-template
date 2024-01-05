@@ -25,7 +25,9 @@ def build_docker(tag: str) -> None:
 
 @app.command(help="Format the project files.")
 def format(*, check: _CheckOption = False) -> None:  # noqa: A001
-    run_command(["black", *(["--check"] if check else []), "."], run_with_poetry=True)
+    run_command(
+        ["ruff", "format", *(["--check"] if check else []), "."], run_with_poetry=True
+    )
 
 
 @app.command(help="Lint the project files.")

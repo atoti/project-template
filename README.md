@@ -5,11 +5,10 @@ This template can be used to start Atoti projects where the goal is to [go into 
 On top of the `atoti` package, it comes with:
 
 - Dependency management with [Poetry](https://python-poetry.org)
-- Settings management with [Pydantic](https://docs.pydantic.dev/latest/usage/settings)
+- Settings management with [Pydantic](https://docs.pydantic.dev/2.5/concepts/pydantic_settings)
 - Testing with [pytest](https://docs.pytest.org)
 - Type checking with [mypy](http://mypy-lang.org)
-- Formatting with [Black](https://black.readthedocs.io)
-- Linting with [Ruff](https://beta.ruff.rs)
+- Formatting and linting with [Ruff](https://beta.ruff.rs)
 - Continuous testing with [GitHub Actions](https://github.com/features/actions)
 
 ## Usage

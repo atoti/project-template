@@ -1,25 +1,21 @@
 {
     "[python]": {
         "editor.codeActionsOnSave": {
-            "source.fixAll": true,
-            "source.organizeImports": true
+            "source.fixAll": "explicit",
+            "source.organizeImports": "explicit"
         },
-        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.formatOnType": true
     },
-    "black-formatter.importStrategy": "fromEnvironment",
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
     "python.analysis.autoImportCompletions": true,
-    "python.formatting.provider": "black",
     "python.languageServer": "Pylance",
-    "python.linting.mypyCategorySeverity.note": "Error",
-    "python.linting.mypyEnabled": true,
     "python.testing.pytestArgs": [
-        "--capture=no", "--verbose"
+        "--capture=no",
+        "--verbose"
     ],
     "python.testing.pytestEnabled": true,
-    "python.testing.unittestEnabled": false,
-    "ruff.importStrategy": "fromEnvironment"
+    "python.testing.unittestEnabled": false
 }
