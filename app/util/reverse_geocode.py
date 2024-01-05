@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping, Set
+from collections.abc import Iterable, Mapping, Set as AbstractSet
 from datetime import timedelta
 from functools import wraps
 from io import StringIO
@@ -31,14 +31,16 @@ _P = ParamSpec("_P")
 
 
 def _cache(
-    function: Callable[Concatenate[Set[_Coordinates], _P], _ReverseGeocodedCoordinates],
+    function: Callable[
+        Concatenate[AbstractSet[_Coordinates], _P], _ReverseGeocodedCoordinates
+    ],
     /,
-) -> Callable[Concatenate[Set[_Coordinates], _P], _ReverseGeocodedCoordinates]:
+) -> Callable[Concatenate[AbstractSet[_Coordinates], _P], _ReverseGeocodedCoordinates]:
     cache: _ReverseGeocodedCoordinates = {}
 
     @wraps(function)
     def function_wrapper(
-        coordinates: Set[_Coordinates],
+        coordinates: AbstractSet[_Coordinates],
         /,
         *args: _P.args,
         **kwargs: _P.kwargs,
@@ -53,7 +55,7 @@ def _cache(
 
 @_cache
 def _reverse_geocode(
-    coordinates: Set[_Coordinates],
+    coordinates: AbstractSet[_Coordinates],
     /,
     *,
     reverse_geocoding_path: HttpUrl | Path,
