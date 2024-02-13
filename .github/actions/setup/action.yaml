@@ -8,6 +8,6 @@ runs:
     - uses: actions/setup-python@v5
       with:
         cache: poetry
-        python-version: "3.9"
+        python-version: "3.9.18"
     - run: poetry install
       shell: bash
