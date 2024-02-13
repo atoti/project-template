@@ -32,11 +32,11 @@ def poetry_executable_path_fixture() -> str:
 
 @pytest.fixture(name="docker_image_name", scope="session")
 def docker_image_name_fixture(
-    docker_executable_path: str, poetry_executable_path: str, project_name: str
+    docker_executable_path: str, project_name: str
 ) -> Generator[str, None, None]:
     tag = f"{project_name}:{uuid4()}"
     build_image_output = run_command(
-        [poetry_executable_path, "run", "app", "build-docker", tag]
+        [docker_executable_path, "build", "--tag", tag, "."]
     )
     assert f"naming to docker.io/library/{tag}" in build_image_output
     yield tag
