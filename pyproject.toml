@@ -21,9 +21,6 @@ pytest = "*"
 ruff = "*"
 types-requests = "*"
 
-[tool.poetry.scripts]
-app = "cli:app"
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

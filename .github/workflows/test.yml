@@ -10,6 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
+      - run: poetry check --lock
       - run: poetry run ruff format --check
       - run: poetry run ruff check
       - run: poetry run mypy
