@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.2
 FROM python:3.9.12-slim AS builder
 
-RUN --mount=type=cache,target=/root/.cache pip install poetry==1.7.0
+RUN --mount=type=cache,target=/root/.cache pip install poetry==1.7.1
 RUN poetry config virtualenvs.create false
 
 COPY poetry.lock pyproject.toml ./
@@ -16,6 +16,6 @@ ENV PORT=80
 COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 COPY app app
 
-ENTRYPOINT ["python", "-u", "-m", "app"]
+ENTRYPOINT ["python", "-O", "-u", "-m", "app"]
 
 EXPOSE $PORT

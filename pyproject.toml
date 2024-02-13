@@ -14,14 +14,11 @@ requests = "*"
 typing-extensions = "*"
 
 [tool.poetry.dev-dependencies]
-colorama = "*"
 docker = "*"
 mypy = "*"
 pandas-stubs = "*"
 pytest = "*"
 ruff = "*"
-tomli = "*"
-typer = "*"
 types-requests = "*"
 
 [tool.poetry.scripts]
@@ -32,14 +29,11 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
+packages = "app,tests"
 strict = true
 warn_redundant_casts = true
 warn_unused_configs = true
 warn_unused_ignores = true
-
-[[tool.mypy.overrides]]
-module = "tests.*"
-disallow_untyped_calls = false
 
 [[tool.mypy.overrides]]
 module = ["docker", "docker.*"]
@@ -49,6 +43,9 @@ ignore_missing_imports = true
 filterwarnings = ["error"]
 
 [tool.ruff]
+target-version = "py39"
+
+[tool.ruff.lint]
 ignore = [
   # Type checkers can infer the following `ANN` rules.
   "ANN101",
@@ -78,20 +75,19 @@ ignore = [
   "TRY003",  # Not worth the annoyance.
 ]
 select = ["ALL"]
-target-version = "py39"
 unfixable = [
   "ERA001", # To prevent deleting code commented while debugging.
   "F401",   # To prevent deleting code commented while debugging.
   "F841",   # To prevent deleting code commented while debugging.
 ]
 
-[tool.ruff.flake8-import-conventions]
+[tool.ruff.lint.flake8-import-conventions]
 banned-from = ["atoti", "pandas"]
 
-[tool.ruff.flake8-import-conventions.aliases]
+[tool.ruff.lint.flake8-import-conventions.aliases]
 atoti = "tt"
 pandas = "pd"
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 combine-as-imports = true
 required-imports = ["from __future__ import annotations"]
