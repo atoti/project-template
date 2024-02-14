@@ -6,7 +6,7 @@ from pathlib import Path
 import atoti as tt
 import pytest
 
-from app import App, Config
+from app import Config, start_app
 
 _TESTS_DIRECTORY = Path(__file__).parent
 _TESTS_DATA_PATH = _TESTS_DIRECTORY / "data"
@@ -30,15 +30,10 @@ def config_fixture() -> Config:
 
 
 @pytest.fixture(
-    name="app",
+    name="session",
     # Don't use this fixture in tests mutating the app or its underlying session.
     scope="session",
 )
-def app_fixture(config: Config) -> Generator[App, None, None]:
-    with App(config=config) as app:
-        yield app
-
-
-@pytest.fixture(name="session", scope="session")
-def session_fixture(app: App) -> tt.Session:
-    return app.session
+def session_fixture(config: Config) -> Generator[tt.Session, None, None]:
+    with start_app(config=config) as session:
+        yield session

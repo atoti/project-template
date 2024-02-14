@@ -1,14 +1,15 @@
 # syntax=docker/dockerfile:1.2
-FROM python:3.9.12-slim AS builder
 
-RUN --mount=type=cache,target=/root/.cache pip install poetry==1.7.0
-RUN poetry config virtualenvs.create false
+# `--platform=linux/am64` is required to build this image on macOS with Apple Silicon until https://github.com/activeviam/jdk4py/issues/73 is done.
+FROM --platform=linux/amd64 python:3.9.18-slim AS builder
+
+RUN pip install poetry==1.7.1
 
 COPY poetry.lock pyproject.toml ./
 
-RUN --mount=type=cache,target=/root/.cache poetry install --no-root --only main --sync
+RUN POETRY_VIRTUALENVS_CREATE=false poetry install --no-cache --no-root --only main --sync
 
-FROM python:3.9.12-slim AS runner
+FROM --platform=linux/amd64 python:3.9.18-slim AS runner
 
 ENV ATOTI_HIDE_EULA_MESSAGE=true
 ENV PORT=80
