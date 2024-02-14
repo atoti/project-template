@@ -1,11 +1,13 @@
 # syntax=docker/dockerfile:1.2
 FROM python:3.9.18-slim AS builder
 
-RUN --mount=type=cache,target=/root/.cache pip install poetry==1.7.1
+ENV POETRY_VENV_PATH=/usr/local/poetry
+RUN python -m venv $POETRY_VENV_PATH
+RUN $POETRY_VENV_PATH/bin/pip install poetry==1.7.1
 
 COPY poetry.lock pyproject.toml ./
 
-RUN --mount=type=cache,target=/root/.cache POETRY_VIRTUALENVS_CREATE=false poetry install --no-cache --no-root --only main --sync
+RUN POETRY_VIRTUALENVS_CREATE=false $POETRY_VENV_PATH/bin/poetry install --no-cache --no-root --only main --sync
 
 FROM python:3.9.18-slim AS runner
 
