@@ -15,6 +15,6 @@ ENV PORT=80
 COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 COPY app app
 
-ENTRYPOINT ["python", "-O", "-u", "-m", "app"]
+ENTRYPOINT ["python", "-u", "-m", "app"]
 
 EXPOSE $PORT
