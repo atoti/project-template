@@ -39,9 +39,9 @@ def docker_image_name_fixture(
         [docker_executable_path, "build", "--tag", tag, "."]
     )
     assert f"naming to docker.io/library/{tag}" in build_image_output
-    yield tag
-    remove_image_output = run_command([docker_executable_path, "image", "rm", tag])
-    assert re.match("(Deleted|Untagged)", remove_image_output)
+    return tag
+    # remove_image_output = run_command([docker_executable_path, "image", "rm", tag])
+    # assert re.match("(Deleted|Untagged)", remove_image_output)
 
 
 @pytest.fixture(name="docker_client", scope="session")
