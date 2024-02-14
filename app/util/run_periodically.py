@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Generator
+from contextlib import contextmanager
 from datetime import timedelta
 from threading import Event, Thread
 
 
+@contextmanager
 def run_periodically(
     callback: Callable[[], None], /, *, daemon: bool | None = None, period: timedelta
-) -> Callable[[], None]:
+) -> Generator[None, None, None]:
     period_in_seconds = period.total_seconds()
     stopped = Event()
 
@@ -17,4 +19,6 @@ def run_periodically(
 
     Thread(target=loop, daemon=daemon).start()
 
-    return stopped.set
+    yield
+
+    stopped.set()

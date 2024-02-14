@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from . import App, Config
+from . import Config, start_app
 
-config = Config()
-
-with App(config=config) as app:
-    print(f"Session listening on port {app.session.port}")  # noqa: T201
-    app.session.wait()
+with start_app(config=Config()) as session:
+    print(f"Session listening on port {session.port}")  # noqa: T201
+    input("Press Enter to stop the application")
