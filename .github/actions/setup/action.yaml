@@ -3,11 +3,11 @@ description: Set up Python, install Poetry and the dependencies
 runs:
   using: "composite"
   steps:
-    - run: pipx install poetry==1.7.0
+    - run: pipx install poetry==1.7.1
       shell: bash
     - uses: actions/setup-python@v5
       with:
         cache: poetry
-        python-version: "3.9"
+        python-version: "3.9.18"
     - run: poetry install
       shell: bash
