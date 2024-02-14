@@ -31,15 +31,18 @@ def poetry_executable_path_fixture() -> str:
 
 
 @pytest.fixture(name="docker_image_name", scope="session")
-def docker_image_name_fixture(docker_executable_path: str, project_name: str) -> str:
+def docker_image_name_fixture(
+    docker_executable_path: str,
+    project_name: str,
+) -> Generator[str, None, None]:
     tag = f"{project_name}:{uuid4()}"
     build_image_output = run_command(
         [docker_executable_path, "build", "--tag", tag, "."]
     )
     assert f"naming to docker.io/library/{tag}" in build_image_output
-    return tag
-    # remove_image_output = run_command([docker_executable_path, "image", "rm", tag])
-    # assert re.match("(Deleted|Untagged)", remove_image_output)
+    yield tag
+    remove_image_output = run_command([docker_executable_path, "image", "rm", tag])
+    assert re.match("(Deleted|Untagged)", remove_image_output)
 
 
 @pytest.fixture(name="docker_client", scope="session")
