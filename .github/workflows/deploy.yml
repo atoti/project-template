@@ -1,9 +1,10 @@
 name: Deploy
 
-on: [push]
-  # push:
-  #   branches:
-  #     - main
+on:
+  push:
+    branches:
+      - main
+      - update-to-0.9.0
 
 permissions:
   id-token: write
