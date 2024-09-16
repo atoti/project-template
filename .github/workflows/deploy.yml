@@ -32,8 +32,7 @@ jobs:
           docker push $TAG
           echo "image=$TAG" >> $GITHUB_OUTPUT
       - name: Inline variables in the task definition
-        run: sed -i -e 's/AWS_ACCOUNT_ID/${{ secrets.AWS_ACCOUNT_ID }}/g' -e 's/AWS_DATABASE_URL_SECRET_NAME/${{ vars.AWS_DATABASE_URL_SECRET_NAME }}/g' -e 's/AWS_EXECUTION_ROLE/${{ vars.AWS_EXECUTION_ROLE }}/g' -e 's/AWS_REGION/${{ secrets.AWS_REGION }}/g' task-definition.json
-      - run: cat task-definition.json
+        run: sed -i -e 's/AWS_ACCOUNT_ID/${{ secrets.AWS_ACCOUNT_ID }}/g' -e 's/AWS_DATABASE_URL_SECRET_NAME/${{ vars.AWS_DATABASE_URL_SECRET_NAME }}/g' -e 's/AWS_EXECUTION_ROLE/${{ vars.AWS_EXECUTION_ROLE }}/g' -e 's/AWS_REGION/${{ vars.AWS_REGION }}/g' task-definition.json
       - uses: aws-actions/amazon-ecs-render-task-definition@v1
         id: render-task-definition
         with:
