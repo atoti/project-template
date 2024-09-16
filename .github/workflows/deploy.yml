@@ -26,15 +26,14 @@ jobs:
       - name: Build, tag, and push Docker image to Amazon ECR
         id: build-tag-and-push-docker-image
         env:
-          ECR_REGISTRY: ${{ steps.log-into-ecr.outputs.registry }}
-          ECR_REPOSITORY: atoti-project-template
-          IMAGE_TAG: ${{ github.sha }}
+          TAG: ${{ steps.log-into-ecr.outputs.registry }}/atoti-project-template:${{ github.sha }}
         run: |
-          docker build --tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image={$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG}" >> $GITHUB_OUTPUT
+          docker build --tag $TAG .
+          docker push $TAG
+          echo "image={$TAG}" >> $GITHUB_OUTPUT
       - name: Inline variables in the task definition
         run: sed -i -e 's/AWS_ACCOUNT_ID/${{ secrets.AWS_ACCOUNT_ID }}/g' -e 's/AWS_DATABASE_URL_SECRET_NAME/${{ vars.AWS_DATABASE_URL_SECRET_NAME }}/g' -e 's/AWS_EXECUTION_ROLE/${{ vars.AWS_EXECUTION_ROLE }}/g' task-definition.json
+      - run: cat task-definition.json
       - uses: aws-actions/amazon-ecs-render-task-definition@v1
         id: render-task-definition
         with:
