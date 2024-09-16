@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from datetime import timedelta

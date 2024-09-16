@@ -4,7 +4,7 @@ This template can be used to start Atoti projects where the goal is to [go into 
 
 On top of the `atoti` package, it comes with:
 
-- Dependency management with [Poetry](https://python-poetry.org)
+- Dependency management with [uv](https://docs.astral.sh/uv)
 - Config management with [Pydantic Settings](https://docs.pydantic.dev/2.6/concepts/pydantic_settings)
 - Testing with [pytest](https://docs.pytest.org)
 - Type checking with [mypy](http://mypy-lang.org)
@@ -15,11 +15,11 @@ On top of the `atoti` package, it comes with:
 
 ### Installation
 
-- [Install `poetry`](https://python-poetry.org/docs/#installation)
+- [Install `uv`](https://docs.astral.sh/uv/getting-started/installation)
 - Install the dependencies:
 
   ```bash
-  poetry install
+  uv sync
   ```
 
 ### Commands
@@ -27,14 +27,12 @@ On top of the `atoti` package, it comes with:
 To start the app:
 
 ```bash
-poetry run python -m main
+uv run python -m app
 ```
 
 Other useful commands can be found in [`test.yml`](.github/workflows/test.yml).
 
-## Variants
+## Deployment
 
-This repository has the following long-lived branches showcasing different aspects:
-
-- [`deploy-to-aws`](https://github.com/atoti/project-template/tree/deploy-to-aws) for deploying on AWS ECS.
-- [`deploy-to-heroku`](https://github.com/atoti/project-template/tree/deploy-to-heroku) for a one-click deploy to Heroku.
+This repository is configured to continuously deploy to AWS ECS.
+To deploy somewhere else, delete [`task-definition.json`][task-definition.json] and adapt [`deploy.yml`](.github/workflows/deploy.yml).

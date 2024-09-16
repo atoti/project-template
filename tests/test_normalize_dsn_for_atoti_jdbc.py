@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 import pytest
 from pydantic import PostgresDsn, TypeAdapter
 
-from app.util import normalize_postgres_dsn_for_atoti_sql
+from app.util import normalize_postgres_dsn_for_atoti_jdbc
 
 
 @pytest.mark.parametrize(
@@ -27,7 +25,7 @@ from app.util import normalize_postgres_dsn_for_atoti_sql
         ),
     ],
 )
-def test_normalize_dsn_for_atoti_sql(value: str, expected_output: str) -> None:
+def test_normalize_dsn_for_atoti_jdbc(value: str, expected_output: str) -> None:
     validated_value: PostgresDsn = TypeAdapter(PostgresDsn).validate_python(value)
-    output = str(normalize_postgres_dsn_for_atoti_sql(validated_value))
+    output = str(normalize_postgres_dsn_for_atoti_jdbc(validated_value))
     assert output == expected_output

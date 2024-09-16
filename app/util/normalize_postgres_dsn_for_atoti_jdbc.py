@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 from urllib.parse import urlencode, urlparse
 
 from pydantic import PostgresDsn, TypeAdapter
 
 
-def normalize_postgres_dsn_for_atoti_sql(url: PostgresDsn, /) -> PostgresDsn:
+def normalize_postgres_dsn_for_atoti_jdbc(url: PostgresDsn, /) -> PostgresDsn:
     parts = urlparse(str(url))
 
     parts = parts._replace(scheme="postgresql")
