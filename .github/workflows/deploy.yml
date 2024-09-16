@@ -20,7 +20,7 @@ jobs:
       - uses: ./.github/actions/setup
       - uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ vars.AWS_ROLE_NAME }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ vars.AWS_DEPLOYMENT_NAME }}
           aws-region: ${{ vars.AWS_REGION }}
       - uses: aws-actions/amazon-ecr-login@v2
         id: log-into-ecr
@@ -35,7 +35,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image={$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG}" >> $GITHUB_OUTPUT
       - name: Inline variables in the task definition
-        run: sed -i -e 's/AWS_ACCOUNT_ID/${{ secrets.AWS_ACCOUNT_ID }}/g' -e 's/AWS_DATABASE_URL_SECRET_NAME/${{ vars.AWS_DATABASE_URL_SECRET_NAME }}/g' -e 's/AWS_ROLE_NAME/${{ vars.AWS_ROLE_NAME }}/g' task-definition.json
+        run: sed -i -e 's/AWS_ACCOUNT_ID/${{ secrets.AWS_ACCOUNT_ID }}/g' -e 's/AWS_DATABASE_URL_SECRET_NAME/${{ vars.AWS_DATABASE_URL_SECRET_NAME }}/g' -e 's/AWS_EXECUTION_ROLE/${{ vars.AWS_EXECUTION_ROLE }}/g' task-definition.json
       - uses: aws-actions/amazon-ecs-render-task-definition@v1
         id: render-task-definition
         with:

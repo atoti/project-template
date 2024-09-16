@@ -1,5 +1,5 @@
 {
-    "executionRoleArn": "AWS_ROLE_NAME",
+    "executionRoleArn": "AWS_EXECUTION_ROLE",
     "containerDefinitions": [
         {
             "name": "atoti-session",
