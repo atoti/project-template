@@ -34,5 +34,5 @@ Other useful commands can be found in [`test.yml`](.github/workflows/test.yml).
 
 ## Deployment
 
-This repository is configured to continuously deploy to AWS ECS.
+This repository automatically deploys to [AWS ECS](https://aws.amazon.com/ecs/).
 To deploy somewhere else, delete [`task-definition.json`][task-definition.json] and adapt [`deploy.yml`](.github/workflows/deploy.yml).

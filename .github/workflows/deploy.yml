@@ -1,0 +1,49 @@
+name: Deploy
+
+on: [push]
+  # push:
+  #   branches:
+  #     - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    environment: deploy-to-aws
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ vars.AWS_ROLE_NAME }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - uses: aws-actions/amazon-ecr-login@v2
+        id: log-into-ecr
+      - name: Build, tag, and push Docker image to Amazon ECR
+        id: build-tag-and-push-docker-image
+        env:
+          ECR_REGISTRY: ${{ steps.log-into-ecr.outputs.registry }}
+          ECR_REPOSITORY: atoti-project-template
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build --tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image={$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG}" >> $GITHUB_OUTPUT
+      - name: Inline variables in the task definition
+        run: sed -i -e 's/AWS_ACCOUNT_ID/${{ secrets.AWS_ACCOUNT_ID }}/g' -e 's/AWS_DATABASE_URL_SECRET_NAME/${{ vars.AWS_DATABASE_URL_SECRET_NAME }}/g' -e 's/AWS_ROLE_NAME/${{ vars.AWS_ROLE_NAME }}/g' task-definition.json
+      - uses: aws-actions/amazon-ecs-render-task-definition@v1
+        id: render-task-definition
+        with:
+          task-definition: task-definition.json
+          container-name: atoti-session
+          image: ${{ steps.build-tag-and-push-docker-image.outputs.image }}
+      - uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
+          service: atoti-project-template
+          cluster: atoti-project-template
+          wait-for-service-stability: true
