@@ -9,9 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup
-      - run: poetry check --lock
-      - run: poetry run ruff format --check
-      - run: poetry run ruff check
-      - run: poetry run mypy
-      - run: poetry run pytest
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          version: "0.4.10"
+      - run: uv python install 3.10
+      - run: uv sync --locked
+      - run: uv run ruff format --check
+      - run: uv run ruff check
+      - run: uv run mypy
+      - run: uv run pytest

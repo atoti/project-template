@@ -1,0 +1,46 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to AWS
+    environment: deploy-to-aws
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ vars.AWS_DEPLOYMENT_ROLE }}
+      - uses: aws-actions/amazon-ecr-login@v2
+        id: log-into-ecr
+      - name: Build, tag, and push Docker image to Amazon ECR
+        id: build-tag-and-push-docker-image
+        env:
+          TAG: ${{ steps.log-into-ecr.outputs.registry }}/atoti-project-template:${{ github.sha }}
+        run: |
+          docker build --tag $TAG .
+          docker push $TAG
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+      - name: Inline variables in the task definition
+        run: sed -i -e 's/AWS_ACCOUNT_ID/${{ secrets.AWS_ACCOUNT_ID }}/g' -e 's/AWS_DATABASE_URL_SECRET_NAME/${{ vars.AWS_DATABASE_URL_SECRET_NAME }}/g' -e 's/AWS_EXECUTION_ROLE/${{ vars.AWS_EXECUTION_ROLE }}/g' -e 's/AWS_REGION/${{ vars.AWS_REGION }}/g' task-definition.json
+      - uses: aws-actions/amazon-ecs-render-task-definition@v1
+        id: render-task-definition
+        with:
+          container-name: atoti-session
+          image: ${{ steps.build-tag-and-push-docker-image.outputs.tag }}
+          task-definition: task-definition.json
+      - uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          cluster: atoti-project-template
+          service: atoti-project-template
+          task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
+          wait-for-service-stability: true

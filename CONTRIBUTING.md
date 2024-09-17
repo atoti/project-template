@@ -4,4 +4,4 @@
 
 This project is not intended to become a showcase of all Atoti's features.
 It should have just enough structure to show how to start a project on sound and modular foundations, not more.
-https://docs.atoti.io is the right place to discover and learn what Atoti can do.
+The right place to teach everything Atoti can do is https://docs.atoti.io.

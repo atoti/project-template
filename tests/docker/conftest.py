@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 from collections.abc import Generator
 from datetime import timedelta
+from pathlib import Path
 from shutil import which
 from uuid import uuid4
 
@@ -9,8 +8,16 @@ import atoti as tt
 import docker
 import pytest
 
-from ._docker_container import docker_container as _docker_container
+from ._docker_container import docker_container
+from ._run_command import run_command
 from ._timeout import Timeout
+
+
+@pytest.fixture(name="docker_bin", scope="session")
+def docker_bin_fixture() -> Path:
+    docker_bin = which("docker")
+    assert docker_bin
+    return Path(docker_bin)
 
 
 @pytest.fixture(name="docker_client", scope="session")
@@ -18,33 +25,36 @@ def docker_client_fixture() -> docker.DockerClient:
     return docker.from_env()
 
 
-@pytest.fixture(name="poetry_executable_path", scope="session")
-def poetry_executable_path_fixture() -> str:
-    poetry_executable_path = which("poetry")
-    assert poetry_executable_path
-    return poetry_executable_path
-
-
 @pytest.fixture(name="docker_image_name", scope="session")
 def docker_image_name_fixture(
-    docker_client: docker.DockerClient, project_name: str
+    docker_bin: Path, docker_client: docker.DockerClient, project_name: str
 ) -> Generator[str, None, None]:
     tag = f"{project_name}:{uuid4()}"
-    docker_client.images.build(path=".", rm=True, tag=tag)
+
+    # BuildKit is enabled by default for all users on Docker Desktop.
+    # See https://docs.docker.com/build/buildkit/#getting-started.
+    is_buildkit_already_enabled = (
+        "docker desktop" in run_command([str(docker_bin), "version"]).lower()
+    )
+
+    # BuildKit is not supported by Docker's Python SDK so `docker_client.images.build` cannot be used.
+    # See https://github.com/docker/docker-py/issues/2230.
+    output = run_command(
+        [str(docker_bin), "build", "--tag", tag, "."],
+        env=None if is_buildkit_already_enabled else {"DOCKER_BUILDKIT": "1"},
+    )
+    assert f"naming to docker.io/library/{tag}" in output
     yield tag
     docker_client.images.remove(tag)
 
 
-@pytest.fixture(
-    name="query_session_inside_docker_container",
-    scope="session",
-)
-def query_session_inside_docker_container_fixture(
+@pytest.fixture(name="session_inside_docker_container", scope="session")
+def session_inside_docker_container_fixture(
     docker_client: docker.DockerClient, docker_image_name: str
-) -> Generator[tt.QuerySession, None, None]:
+) -> Generator[tt.Session, None, None]:
     timeout = Timeout(timedelta(minutes=1))
 
-    with _docker_container(docker_image_name, client=docker_client) as container:
+    with docker_container(docker_image_name, client=docker_client) as container:
         logs = container.logs(stream=True)
 
         while "Session listening on port" not in next(logs).decode():
@@ -57,6 +67,5 @@ def query_session_inside_docker_container_fixture(
                 "HostPort"
             ]
         )
-        query_session = tt.QuerySession(f"http://localhost:{host_port}")
-
-        yield query_session
+        session = tt.Session.connect(f"http://localhost:{host_port}")
+        yield session

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import atoti as tt
 
 from .constants import (
@@ -57,19 +55,16 @@ def create_station_cube(session: tt.Session, /) -> None:
         }
     )
 
-    m.update(
-        {
-            StationCubeMeasure.BIKES.value: tt.agg.sum(
-                station_status_table[StationStatusTableColumn.BIKES.value]
+    with session.data_model_transaction():
+        m[StationCubeMeasure.BIKES.value] = tt.agg.sum(
+            station_status_table[StationStatusTableColumn.BIKES.value]
+        )
+        m[StationCubeMeasure.CAPACITY.value] = tt.agg.sum(
+            tt.agg.single_value(
+                station_details_table[StationDetailsTableColumn.CAPACITY.value]
             ),
-            StationCubeMeasure.CAPACITY.value: tt.agg.sum(
-                tt.agg.single_value(
-                    station_details_table[StationDetailsTableColumn.CAPACITY.value]
-                ),
-                scope=tt.OriginScope(l[StationCubeStationLevel.ID.value]),
-            ),
-        }
-    )
+            scope=tt.OriginScope({l[StationCubeStationLevel.ID.value]}),
+        )
 
 
 def create_cubes(session: tt.Session, /) -> None:

@@ -1,22 +1,28 @@
-# syntax=docker/dockerfile:1.2
+# Inspired from https://github.com/astral-sh/uv-docker-example/blob/dee88a8c43be3b16b0ad58f0daee5eaee7e2157a/multistage.Dockerfile.
 
-# `--platform=linux/am64` is required to build this image on macOS with Apple Silicon until https://github.com/activeviam/jdk4py/issues/73 is done.
-FROM --platform=linux/amd64 python:3.9.18-slim AS builder
+FROM ghcr.io/astral-sh/uv:0.4.10-python3.10-bookworm-slim AS builder
 
-RUN pip install poetry==1.7.1
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 
-COPY poetry.lock pyproject.toml ./
+WORKDIR /venv
 
-RUN POETRY_VIRTUALENVS_CREATE=false poetry install --no-cache --no-root --only main --sync
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-dev --no-install-project
 
-FROM --platform=linux/amd64 python:3.9.18-slim AS runner
+# Keep this synced with the builder image.
+FROM python:3.10-slim-bookworm
+
+COPY --from=builder /venv app
+
+ENV PATH="/app/.venv/bin:$PATH"
+
+COPY app app
 
 ENV ATOTI_HIDE_EULA_MESSAGE=true
 ENV PORT=80
 
-COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
-COPY app app
-
-ENTRYPOINT ["python", "-u", "-m", "app"]
-
 EXPOSE $PORT
+
+CMD ["python", "-u", "-m", "app"]

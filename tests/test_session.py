@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import atoti as tt
 import pandas as pd
 

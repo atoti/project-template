@@ -1,16 +1,12 @@
-from __future__ import annotations
-
-from collections.abc import Iterable, Mapping, Set as AbstractSet
-from datetime import timedelta
+from collections.abc import Callable, Iterable, Mapping, Set as AbstractSet
 from functools import wraps
-from io import StringIO
+from io import BytesIO, StringIO
 from pathlib import Path
-from typing import Callable
+from typing import Concatenate, ParamSpec
 
+import httpx
 import pandas as pd
-import requests
 from pydantic import HttpUrl
-from typing_extensions import Concatenate, ParamSpec
 
 _Coordinates = tuple[float, float]  # (latitude, longitude)
 
@@ -59,7 +55,6 @@ def _reverse_geocode(
     /,
     *,
     reverse_geocoding_path: HttpUrl | Path,
-    timeout: timedelta,
 ) -> _ReverseGeocodedCoordinates:
     if not coordinates:
         return {}
@@ -70,18 +65,14 @@ def _reverse_geocode(
     if isinstance(reverse_geocoding_path, Path):
         data = reverse_geocoding_path
     else:
-        file = StringIO()
+        file = BytesIO()
         coordinates_df.to_csv(file, index=False)
         file.seek(0)
-        response = requests.post(
+        response = httpx.post(
             str(reverse_geocoding_path),
-            data=[
-                ("result_columns", column_name) for column_name in _COLUMN_NAME_MAPPING
-            ],
+            data={"result_columns": list(_COLUMN_NAME_MAPPING)},
             files={"data": file},
-            timeout=timeout.total_seconds(),
-        )
-        response.raise_for_status()
+        ).raise_for_status()
         data = StringIO(response.text)
 
     results_df = pd.read_csv(data)
@@ -103,10 +94,9 @@ def reverse_geocode(
     /,
     *,
     reverse_geocoding_path: HttpUrl | Path,
-    timeout: timedelta,
 ) -> pd.DataFrame:
     result = _reverse_geocode(
-        set(coordinates), reverse_geocoding_path=reverse_geocoding_path, timeout=timeout
+        set(coordinates), reverse_geocoding_path=reverse_geocoding_path
     )
     result_df = pd.DataFrame.from_dict(result, orient="index")
     index = result_df.index.set_names(_COORDINATES_COLUMN_NAMES)

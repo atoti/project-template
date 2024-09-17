@@ -1,7 +1,8 @@
-from __future__ import annotations
+from urllib.parse import urlparse
 
 from . import Config, start_app
 
 with start_app(config=Config()) as session:
-    print(f"Session listening on port {session.port}")  # noqa: T201
+    port = urlparse(session.url) or 80
+    print(f"Session listening on port {port}")  # noqa: T201
     session.wait()

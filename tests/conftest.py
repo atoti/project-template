@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from collections.abc import Generator
 from pathlib import Path
 
@@ -9,7 +7,7 @@ import pytest
 from app import Config, start_app
 
 _TESTS_DIRECTORY = Path(__file__).parent
-_TESTS_DATA_PATH = _TESTS_DIRECTORY / "data"
+_TESTS_RESOURCES_DIRECTORY = _TESTS_DIRECTORY / "__resources__"
 _PROJECT_DIRECTORY = _TESTS_DIRECTORY.parent
 
 
@@ -22,10 +20,10 @@ def project_name_fixture() -> str:
 def config_fixture() -> Config:
     return Config(
         data_refresh_period=None,
-        reverse_geocoding_path=_TESTS_DATA_PATH / "station_location.csv",
+        reverse_geocoding_path=_TESTS_RESOURCES_DIRECTORY / "station_location.csv",
         port=0,
         user_content_storage=None,
-        velib_data_base_path=_TESTS_DATA_PATH,
+        velib_data_base_path=_TESTS_RESOURCES_DIRECTORY,
     )
 
 
