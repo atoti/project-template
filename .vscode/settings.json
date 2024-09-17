@@ -16,8 +16,5 @@
     "python.analysis.autoImportCompletions": true,
     "python.languageServer": "Pylance",
     "python.testing.pytestEnabled": true,
-    "python.testing.unittestEnabled": false,
-    "yaml.schemas": {
-        "https://json.schemastore.org/github-workflow.json": "file:///Users/tibdex/repositories/project-template/.github/workflows/deploy.yml"
-    }
+    "python.testing.unittestEnabled": false
 }
