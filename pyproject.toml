@@ -11,8 +11,7 @@ dependencies = [
 ]
 
 [tool.mypy]
-# Remove once https://github.com/python/mypy/issues/10428 is fixed.
-files = "app,tests"
+files = "app,tests"         # Remove once https://github.com/python/mypy/issues/10428 is fixed.
 strict = true
 warn_redundant_casts = true
 warn_unused_configs = true

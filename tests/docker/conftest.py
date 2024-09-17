@@ -1,25 +1,16 @@
-from collections.abc import Generator, Mapping, Sequence
+from collections.abc import Generator
 from datetime import timedelta
 from pathlib import Path
 from shutil import which
-from subprocess import STDOUT, CalledProcessError, check_output
 from uuid import uuid4
 
 import atoti as tt
 import docker
 import pytest
 
-from ._docker_container import docker_container as _docker_container
+from ._docker_container import docker_container
+from ._run_command import run_command
 from ._timeout import Timeout
-
-
-def _run_command(
-    args: Sequence[str], /, *, env: Mapping[str, str] | None = None
-) -> str:
-    try:
-        return check_output(args, env=env, stderr=STDOUT, text=True)  # noqa: S603
-    except CalledProcessError as error:
-        raise RuntimeError(f"Command `{error.cmd}` failed:\n{error.output}") from error
 
 
 @pytest.fixture(name="docker_bin", scope="session")
@@ -43,12 +34,12 @@ def docker_image_name_fixture(
     # BuildKit is enabled by default for all users on Docker Desktop.
     # See https://docs.docker.com/build/buildkit/#getting-started.
     is_buildkit_already_enabled = (
-        "docker desktop" in _run_command([str(docker_bin), "version"]).lower()
+        "docker desktop" in run_command([str(docker_bin), "version"]).lower()
     )
 
     # BuildKit is not supported by Docker's Python SDK so `docker_client.images.build` cannot be used.
     # See https://github.com/docker/docker-py/issues/2230.
-    output = _run_command(
+    output = run_command(
         [str(docker_bin), "build", "--tag", tag, "."],
         env=None if is_buildkit_already_enabled else {"DOCKER_BUILDKIT": "1"},
     )
@@ -63,7 +54,7 @@ def session_inside_docker_container_fixture(
 ) -> Generator[tt.Session, None, None]:
     timeout = Timeout(timedelta(minutes=1))
 
-    with _docker_container(docker_image_name, client=docker_client) as container:
+    with docker_container(docker_image_name, client=docker_client) as container:
         logs = container.logs(stream=True)
 
         while "Session listening on port" not in next(logs).decode():

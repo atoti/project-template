@@ -5,7 +5,7 @@ This template can be used to start Atoti projects where the goal is to [go into 
 On top of the `atoti` package, it comes with:
 
 - Dependency management with [uv](https://docs.astral.sh/uv)
-- Config management with [Pydantic Settings](https://docs.pydantic.dev/2.6/concepts/pydantic_settings)
+- Config management with [Pydantic](https://docs.pydantic.dev/2.6/concepts/pydantic_settings)
 - Testing with [pytest](https://docs.pytest.org)
 - Type checking with [mypy](http://mypy-lang.org)
 - Formatting and linting with [Ruff](https://docs.astral.sh/ruff)
