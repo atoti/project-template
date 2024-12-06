@@ -1,4 +1,4 @@
-from collections.abc import Generator
+from collections.abc import AsyncGenerator
 from pathlib import Path
 
 import atoti as tt
@@ -32,6 +32,6 @@ def config_fixture() -> Config:
     # Don't use this fixture in tests mutating the app or its underlying session.
     scope="session",
 )
-def session_fixture(config: Config) -> Generator[tt.Session, None, None]:
-    with start_app(config=config) as session:
+async def session_fixture(config: Config) -> AsyncGenerator[tt.Session]:
+    async with start_app(config=config) as session:
         yield session

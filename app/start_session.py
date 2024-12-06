@@ -1,9 +1,10 @@
 import sys
-from collections.abc import Generator
-from contextlib import contextmanager
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 import atoti as tt
+import httpx
 from atoti_jdbc import UserContentStorageConfig
 
 from .config import Config
@@ -29,12 +30,16 @@ def get_session_config(config: Config, /) -> tt.SessionConfig:
     )
 
 
-@contextmanager
-def start_session(*, config: Config) -> Generator[tt.Session, None, None]:
+@asynccontextmanager
+async def start_session(
+    *,
+    config: Config,
+    http_client: httpx.AsyncClient,
+) -> AsyncGenerator[tt.Session]:
     """Start the session, declare the data model and load the initial data."""
     session_config = get_session_config(config)
     with tt.Session.start(session_config) as session:
         create_and_join_tables(session)
         create_cubes(session)
-        load_tables(session, config=config)
+        await load_tables(session, config=config, http_client=http_client)
         yield session

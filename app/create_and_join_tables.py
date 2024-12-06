@@ -6,14 +6,14 @@ from .constants import StationDetailsTableColumn, StationStatusTableColumn, Tabl
 def create_station_status_table(session: tt.Session, /) -> None:
     session.create_table(
         Table.STATION_STATUS.value,
-        keys=[
-            StationStatusTableColumn.STATION_ID.value,
-            StationStatusTableColumn.BIKE_TYPE.value,
-        ],
-        types={
+        data_types={
             StationStatusTableColumn.STATION_ID.value: tt.LONG,
             StationStatusTableColumn.BIKE_TYPE.value: tt.STRING,
             StationStatusTableColumn.BIKES.value: tt.INT,
+        },
+        keys={
+            StationStatusTableColumn.STATION_ID.value,
+            StationStatusTableColumn.BIKE_TYPE.value,
         },
     )
 
@@ -21,10 +21,7 @@ def create_station_status_table(session: tt.Session, /) -> None:
 def create_station_details_table(session: tt.Session, /) -> None:
     session.create_table(
         Table.STATION_DETAILS.value,
-        keys=[
-            StationDetailsTableColumn.ID.value,
-        ],
-        types={
+        data_types={
             StationDetailsTableColumn.ID.value: tt.LONG,
             StationDetailsTableColumn.NAME.value: tt.STRING,
             StationDetailsTableColumn.DEPARTMENT.value: tt.STRING,
@@ -35,6 +32,9 @@ def create_station_details_table(session: tt.Session, /) -> None:
             StationDetailsTableColumn.CAPACITY.value: tt.INT,
         },
         default_values={StationDetailsTableColumn.POSTCODE.value: 0},
+        keys={
+            StationDetailsTableColumn.ID.value,
+        },
     )
 
 
