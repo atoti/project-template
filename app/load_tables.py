@@ -1,8 +1,10 @@
+import asyncio
 from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any, cast
 
 import atoti as tt
+import httpx
 import pandas as pd
 from pydantic import HttpUrl
 
@@ -11,14 +13,19 @@ from .constants import StationDetailsTableColumn, StationStatusTableColumn, Tabl
 from .util import read_json, reverse_geocode
 
 
-def read_station_details(
+async def read_station_details(
     *,
+    http_client: httpx.AsyncClient,
     reverse_geocoding_path: HttpUrl | Path,
     velib_data_base_path: HttpUrl | Path,
 ) -> pd.DataFrame:
     stations_data: Any = cast(
         Any,
-        read_json(velib_data_base_path, Path("station_information.json")),
+        await read_json(
+            velib_data_base_path,
+            Path("station_information.json"),
+            http_client=http_client,
+        ),
     )["data"]["stations"]
     station_information_df = pd.DataFrame(stations_data)[
         ["station_id", "name", "capacity", "lat", "lon"]
@@ -58,10 +65,19 @@ def read_station_details(
     ).drop(columns=coordinates_column_names)
 
 
-def read_station_status(velib_data_base_path: HttpUrl | Path, /) -> pd.DataFrame:
+async def read_station_status(
+    velib_data_base_path: HttpUrl | Path,
+    /,
+    *,
+    http_client: httpx.AsyncClient,
+) -> pd.DataFrame:
     stations_data = cast(
         Any,
-        read_json(velib_data_base_path, Path("station_status.json")),
+        await read_json(
+            velib_data_base_path,
+            Path("station_status.json"),
+            http_client=http_client,
+        ),
     )["data"]["stations"]
     station_statuses: list[Mapping[str, Any]] = []
     for station_status in stations_data:
@@ -83,15 +99,27 @@ def read_station_status(velib_data_base_path: HttpUrl | Path, /) -> pd.DataFrame
     return pd.DataFrame(station_statuses)
 
 
-def load_tables(session: tt.Session, /, *, config: Config) -> None:
-    station_details_df = read_station_details(
-        reverse_geocoding_path=config.reverse_geocoding_path,
-        velib_data_base_path=config.velib_data_base_path,
-    )
-    station_status_df = read_station_status(
-        config.velib_data_base_path,
+async def load_tables(
+    session: tt.Session,
+    /,
+    *,
+    config: Config,
+    http_client: httpx.AsyncClient,
+) -> None:
+    station_details_df, station_status_df = await asyncio.gather(
+        read_station_details(
+            http_client=http_client,
+            reverse_geocoding_path=config.reverse_geocoding_path,
+            velib_data_base_path=config.velib_data_base_path,
+        ),
+        read_station_status(
+            config.velib_data_base_path,
+            http_client=http_client,
+        ),
     )
 
     with session.tables.data_transaction():
-        session.tables[Table.STATION_DETAILS.value].load_pandas(station_details_df)
-        session.tables[Table.STATION_STATUS.value].load_pandas(station_status_df)
+        await asyncio.gather(
+            session.tables[Table.STATION_DETAILS.value].load_async(station_details_df),
+            session.tables[Table.STATION_STATUS.value].load_async(station_status_df),
+        )

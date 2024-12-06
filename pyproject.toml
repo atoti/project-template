@@ -22,6 +22,9 @@ module = ["docker", "docker.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
+addopts = "--strict-markers"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_mode = "auto"
 filterwarnings = ["error"]
 
 [tool.ruff.lint]
@@ -59,4 +62,11 @@ pandas = "pd"
 combine-as-imports = true
 
 [tool.uv]
-dev-dependencies = ["docker", "mypy", "pandas-stubs", "pytest", "ruff"]
+dev-dependencies = [
+    "docker",
+    "mypy",
+    "pandas-stubs",
+    "pytest",
+    "pytest-asyncio",
+    "ruff",
+]

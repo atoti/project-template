@@ -1,7 +1,8 @@
-from collections.abc import Generator
-from contextlib import contextmanager, nullcontext
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager, nullcontext
 
 import atoti as tt
+import httpx
 
 from .config import Config
 from .load_tables import load_tables
@@ -9,12 +10,13 @@ from .start_session import start_session
 from .util import run_periodically
 
 
-@contextmanager
-def start_app(*, config: Config) -> Generator[tt.Session, None, None]:
-    with (
-        start_session(config=config) as session,
+@asynccontextmanager
+async def start_app(*, config: Config) -> AsyncGenerator[tt.Session]:
+    async with (
+        httpx.AsyncClient() as http_client,
+        start_session(config=config, http_client=http_client) as session,
         run_periodically(
-            lambda: load_tables(session, config=config),
+            lambda: load_tables(session, config=config, http_client=http_client),
             period=config.data_refresh_period,
         )
         if config.data_refresh_period
