@@ -1,69 +1,70 @@
 import atoti as tt
 
-from .constants import (
-    Cube,
-    StationCubeBikeTypeLevel,
-    StationCubeHierarchy,
-    StationCubeLocationLevel,
-    StationCubeMeasure,
-    StationCubeStationLevel,
-    StationDetailsTableColumn,
-    StationStatusTableColumn,
-    Table,
-)
+from .skeleton import SKELETON
+from .util.skeleton import column
 
 
 def create_station_cube(session: tt.Session, /) -> None:
-    station_details_table = session.tables[Table.STATION_DETAILS.value]
-    station_status_table = session.tables[Table.STATION_STATUS.value]
+    tables = SKELETON.tables
+    skeleton = SKELETON.cubes.STATION
 
-    cube = session.create_cube(station_status_table, Cube.STATION.value, mode="manual")
+    cube = session.create_cube(
+        session.tables[tables.STATION_STATUS.key],
+        skeleton.name,
+        mode="manual",
+    )
     h, l, m = cube.hierarchies, cube.levels, cube.measures
 
     h.update(
         {
-            StationCubeHierarchy.BIKE_TYPE.value: {
-                StationCubeBikeTypeLevel.BIKE_TYPE.value: station_status_table[
-                    StationStatusTableColumn.BIKE_TYPE.value
-                ]
+            skeleton.dimensions.STATION_STATUS.hierarchies.BIKE_TYPE.key: {
+                skeleton.dimensions.STATION_STATUS.hierarchies.BIKE_TYPE.levels.BIKE_TYPE.name: column(
+                    session, tables.STATION_STATUS.columns.BIKE_TYPE
+                )
             },
-            StationCubeHierarchy.LOCATION.value: {
-                StationCubeLocationLevel.DEPARTMENT.value: station_details_table[
-                    StationDetailsTableColumn.DEPARTMENT.value
-                ],
-                StationCubeLocationLevel.CITY.value: station_details_table[
-                    StationDetailsTableColumn.CITY.value
-                ],
-                StationCubeLocationLevel.POSTCODE.value: station_details_table[
-                    StationDetailsTableColumn.POSTCODE.value
-                ],
-                StationCubeLocationLevel.STREET.value: station_details_table[
-                    StationDetailsTableColumn.STREET.value
-                ],
-                StationCubeLocationLevel.HOUSE_NUMBER.value: station_details_table[
-                    StationDetailsTableColumn.HOUSE_NUMBER.value
-                ],
+            skeleton.dimensions.STATION_DETAILS.hierarchies.LOCATION.key: {
+                skeleton.dimensions.STATION_DETAILS.hierarchies.LOCATION.levels.DEPARTMENT.name: column(
+                    session, tables.STATION_DETAILS.columns.DEPARTMENT
+                ),
+                skeleton.dimensions.STATION_DETAILS.hierarchies.LOCATION.levels.CITY.name: column(
+                    session, tables.STATION_DETAILS.columns.CITY
+                ),
+                skeleton.dimensions.STATION_DETAILS.hierarchies.LOCATION.levels.POSTCODE.name: column(
+                    session, tables.STATION_DETAILS.columns.POSTCODE
+                ),
+                skeleton.dimensions.STATION_DETAILS.hierarchies.LOCATION.levels.STREET.name: column(
+                    session, tables.STATION_DETAILS.columns.STREET
+                ),
+                skeleton.dimensions.STATION_DETAILS.hierarchies.LOCATION.levels.HOUSE_NUMBER.name: column(
+                    session, tables.STATION_DETAILS.columns.HOUSE_NUMBER
+                ),
             },
-            StationCubeHierarchy.STATION.value: {
-                StationCubeStationLevel.NAME.value: station_details_table[
-                    StationDetailsTableColumn.NAME.value
-                ],
-                StationCubeStationLevel.ID.value: station_status_table[
-                    StationStatusTableColumn.STATION_ID.value
-                ],
+            skeleton.dimensions.STATION_DETAILS.hierarchies.STATION.key: {
+                skeleton.dimensions.STATION_DETAILS.hierarchies.STATION.levels.NAME.name: column(
+                    session, tables.STATION_DETAILS.columns.NAME
+                ),
+                skeleton.dimensions.STATION_DETAILS.hierarchies.STATION.levels.ID.name: column(
+                    session, tables.STATION_STATUS.columns.STATION_ID
+                ),
             },
         }
     )
 
     with session.data_model_transaction():
-        m[StationCubeMeasure.BIKES.value] = tt.agg.sum(
-            station_status_table[StationStatusTableColumn.BIKES.value]
+        m[skeleton.measures.BIKES.key] = tt.agg.sum(
+            column(session, tables.STATION_STATUS.columns.BIKES)
         )
-        m[StationCubeMeasure.CAPACITY.value] = tt.agg.sum(
+        m[skeleton.measures.CAPACITY.key] = tt.agg.sum(
             tt.agg.single_value(
-                station_details_table[StationDetailsTableColumn.CAPACITY.value]
+                column(session, tables.STATION_DETAILS.columns.CAPACITY)
             ),
-            scope=tt.OriginScope({l[StationCubeStationLevel.ID.value]}),
+            scope=tt.OriginScope(
+                {
+                    l[
+                        skeleton.dimensions.STATION_DETAILS.hierarchies.STATION.levels.ID.key
+                    ]
+                }
+            ),
         )
 
 
