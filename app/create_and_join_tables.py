@@ -1,52 +1,54 @@
 import atoti as tt
 
-from .constants import StationDetailsTableColumn, StationStatusTableColumn, Table
+from .skeleton import SKELETON
+from .util.skeleton import column
 
 
 def create_station_status_table(session: tt.Session, /) -> None:
+    skeleton = SKELETON.tables.STATION_STATUS
+    columns = skeleton.columns
     session.create_table(
-        Table.STATION_STATUS.value,
+        skeleton.name,
         data_types={
-            StationStatusTableColumn.STATION_ID.value: tt.LONG,
-            StationStatusTableColumn.BIKE_TYPE.value: tt.STRING,
-            StationStatusTableColumn.BIKES.value: tt.INT,
+            columns.STATION_ID.name: tt.LONG,
+            columns.BIKE_TYPE.name: tt.STRING,
+            columns.BIKES.name: tt.INT,
         },
         keys={
-            StationStatusTableColumn.STATION_ID.value,
-            StationStatusTableColumn.BIKE_TYPE.value,
+            columns.STATION_ID.name,
+            columns.BIKE_TYPE.name,
         },
     )
 
 
 def create_station_details_table(session: tt.Session, /) -> None:
+    skeleton = SKELETON.tables.STATION_DETAILS
+    columns = skeleton.columns
     session.create_table(
-        Table.STATION_DETAILS.value,
+        skeleton.name,
         data_types={
-            StationDetailsTableColumn.ID.value: tt.LONG,
-            StationDetailsTableColumn.NAME.value: tt.STRING,
-            StationDetailsTableColumn.DEPARTMENT.value: tt.STRING,
-            StationDetailsTableColumn.CITY.value: tt.STRING,
-            StationDetailsTableColumn.POSTCODE.value: tt.INT,
-            StationDetailsTableColumn.STREET.value: tt.STRING,
-            StationDetailsTableColumn.HOUSE_NUMBER.value: tt.STRING,
-            StationDetailsTableColumn.CAPACITY.value: tt.INT,
+            columns.ID.name: tt.LONG,
+            columns.NAME.name: tt.STRING,
+            columns.DEPARTMENT.name: tt.STRING,
+            columns.CITY.name: tt.STRING,
+            columns.POSTCODE.name: tt.INT,
+            columns.STREET.name: tt.STRING,
+            columns.HOUSE_NUMBER.name: tt.STRING,
+            columns.CAPACITY.name: tt.INT,
         },
-        default_values={StationDetailsTableColumn.POSTCODE.value: 0},
+        default_values={columns.POSTCODE.name: 0},
         keys={
-            StationDetailsTableColumn.ID.value,
+            columns.ID.name,
         },
     )
 
 
 def join_tables(session: tt.Session, /) -> None:
-    session.tables[Table.STATION_STATUS.value].join(
-        session.tables[Table.STATION_DETAILS.value],
-        session.tables[Table.STATION_STATUS.value][
-            StationStatusTableColumn.STATION_ID.value
-        ]
-        == session.tables[Table.STATION_DETAILS.value][
-            StationDetailsTableColumn.ID.value
-        ],
+    tables = SKELETON.tables
+    session.tables[tables.STATION_STATUS.key].join(
+        session.tables[tables.STATION_DETAILS.key],
+        column(session, tables.STATION_STATUS.columns.STATION_ID)
+        == column(session, tables.STATION_DETAILS.columns.ID),
     )
 
 

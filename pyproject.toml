@@ -8,6 +8,7 @@ dependencies = [
     "pandas",
     "pydantic",
     "pydantic-settings",
+    "typing-extensions",
 ]
 
 [tool.mypy]
@@ -22,10 +23,13 @@ module = ["docker", "docker.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-addopts = "--strict-markers"
+addopts = "--doctest-modules --strict-markers"
 asyncio_default_fixture_loop_scope = "session"
 asyncio_mode = "auto"
 filterwarnings = ["error"]
+
+[tool.ruff.format]
+docstring-code-format = true
 
 [tool.ruff.lint]
 ignore = [
