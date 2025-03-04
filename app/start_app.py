@@ -12,15 +12,14 @@ from .util import run_periodically
 
 @asynccontextmanager
 async def start_app(*, config: Config) -> AsyncGenerator[tt.Session]:
-    with tt.mapping_lookup(check=__debug__):
-        async with (
-            httpx.AsyncClient() as http_client,
-            start_session(config=config, http_client=http_client) as session,
-            run_periodically(
-                lambda: load_tables(session, config=config, http_client=http_client),
-                period=config.data_refresh_period,
-            )
-            if config.data_refresh_period
-            else nullcontext(),
-        ):
-            yield session
+    async with (
+        httpx.AsyncClient() as http_client,
+        start_session(config=config, http_client=http_client) as session,
+        run_periodically(
+            lambda: load_tables(session, config=config, http_client=http_client),
+            period=config.data_refresh_period,
+        )
+        if config.data_refresh_period
+        else nullcontext(),
+    ):
+        yield session
