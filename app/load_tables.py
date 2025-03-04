@@ -9,7 +9,7 @@ import pandas as pd
 from pydantic import HttpUrl
 
 from .config import Config
-from .constants import StationDetailsTableColumn, StationStatusTableColumn, Table
+from .skeleton import SKELETON
 from .util import read_json, reverse_geocode
 
 
@@ -19,6 +19,7 @@ async def read_station_details(
     reverse_geocoding_path: HttpUrl | Path,
     velib_data_base_path: HttpUrl | Path,
 ) -> pd.DataFrame:
+    columns = SKELETON.tables.STATION_DETAILS.columns
     stations_data: Any = cast(
         Any,
         await read_json(
@@ -31,9 +32,9 @@ async def read_station_details(
         ["station_id", "name", "capacity", "lat", "lon"]
     ].rename(
         columns={
-            "station_id": StationDetailsTableColumn.ID.value,
-            "name": StationDetailsTableColumn.NAME.value,
-            "capacity": StationDetailsTableColumn.CAPACITY.value,
+            "station_id": columns.ID.name,
+            "name": columns.NAME.name,
+            "capacity": columns.CAPACITY.name,
             "lat": "latitude",
             "lon": "longitude",
         }
@@ -52,11 +53,11 @@ async def read_station_details(
         coordinates, reverse_geocoding_path=reverse_geocoding_path
     ).rename(
         columns={
-            "department": StationDetailsTableColumn.DEPARTMENT.value,
-            "city": StationDetailsTableColumn.CITY.value,
-            "postcode": StationDetailsTableColumn.POSTCODE.value,
-            "street": StationDetailsTableColumn.STREET.value,
-            "house_number": StationDetailsTableColumn.HOUSE_NUMBER.value,
+            "department": columns.DEPARTMENT.name,
+            "city": columns.CITY.name,
+            "postcode": columns.POSTCODE.name,
+            "street": columns.STREET.name,
+            "house_number": columns.HOUSE_NUMBER.name,
         }
     )
 
@@ -71,6 +72,7 @@ async def read_station_status(
     *,
     http_client: httpx.AsyncClient,
 ) -> pd.DataFrame:
+    columns = SKELETON.tables.STATION_STATUS.columns
     stations_data = cast(
         Any,
         await read_json(
@@ -89,11 +91,9 @@ async def read_station_status(
             bike_type, bikes = next(iter(num_bikes_available_types.items()))
             station_statuses.append(
                 {
-                    StationStatusTableColumn.STATION_ID.value: station_status[
-                        "station_id"
-                    ],
-                    StationStatusTableColumn.BIKE_TYPE.value: bike_type,
-                    StationStatusTableColumn.BIKES.value: bikes,
+                    columns.STATION_ID.name: station_status["station_id"],
+                    columns.BIKE_TYPE.name: bike_type,
+                    columns.BIKES.name: bikes,
                 }
             )
     return pd.DataFrame(station_statuses)
@@ -120,6 +120,10 @@ async def load_tables(
 
     with session.tables.data_transaction():
         await asyncio.gather(
-            session.tables[Table.STATION_DETAILS.value].load_async(station_details_df),
-            session.tables[Table.STATION_STATUS.value].load_async(station_status_df),
+            session.tables[SKELETON.tables.STATION_DETAILS.key].load_async(
+                station_details_df
+            ),
+            session.tables[SKELETON.tables.STATION_STATUS.key].load_async(
+                station_status_df
+            ),
         )
