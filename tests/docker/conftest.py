@@ -57,7 +57,10 @@ def session_inside_docker_container_fixture(
     with docker_container(
         docker_image_name,
         client=docker_client,
-        env={"DATA_REFRESH_PERIOD": "30"},
+        env={
+            # Test external APIs.
+            "DATA_REFRESH_PERIOD": "30"
+        },
     ) as container:
         logs = container.logs(stream=True)
 

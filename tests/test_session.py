@@ -4,17 +4,17 @@ import pandas as pd
 from app import SKELETON
 from app.util.skeleton import CONTRIBUTORS_COUNT
 
+from .total_capacity import TOTAL_CAPACITY
+
 
 def test_total_capacity(session: tt.Session) -> None:
     skeleton = SKELETON.cubes.STATION
     cube = session.cubes[skeleton.key]
     result = cube.query(cube.measures[skeleton.measures.CAPACITY.key])
     expected_result = pd.DataFrame(
-        columns=[skeleton.measures.CAPACITY.name],
-        data=[
-            (45_850),
-        ],
-        dtype="Int32",
+        {
+            skeleton.measures.CAPACITY.name: pd.Series([TOTAL_CAPACITY], dtype="Int32"),
+        }
     )
     pd.testing.assert_frame_equal(result, expected_result)
 
