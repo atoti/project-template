@@ -118,7 +118,7 @@ async def load_tables(
         ),
     )
 
-    with session.tables.data_transaction():
+    with tt.mapping_lookup(check=__debug__), session.tables.data_transaction():
         await asyncio.gather(
             session.tables[SKELETON.tables.STATION_DETAILS.key].load_async(
                 station_details_df

@@ -39,7 +39,8 @@ async def start_session(
     """Start the session, declare the data model and load the initial data."""
     session_config = get_session_config(config)
     with tt.Session.start(session_config) as session:
-        create_and_join_tables(session)
-        create_cubes(session)
+        with tt.mapping_lookup(check=__debug__):
+            create_and_join_tables(session)
+            create_cubes(session)
         await load_tables(session, config=config, http_client=http_client)
         yield session
