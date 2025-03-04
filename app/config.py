@@ -1,13 +1,9 @@
-from datetime import timedelta
 from pathlib import Path
 from typing import Annotated
 
 from pydantic import (
     AliasChoices,
-    DirectoryPath,
     Field,
-    FilePath,
-    HttpUrl,
     PostgresDsn,
     TypeAdapter,
     field_validator,
@@ -25,14 +21,16 @@ class Config(BaseSettings):
 
     model_config = SettingsConfigDict(frozen=True)
 
-    data_refresh_period: timedelta | None = timedelta(minutes=1)
+    check_mapping_lookups: bool = __debug__
+
+    data_refresh_period: float | None = None
+    """How often the station status data should be refreshed.
+
+    If ``None``, only local data will be used: no requests will be made to external APIs.
+    """
 
     # The $PORT environment variable is used by most PaaS to indicate the port the app server should bind to.
     port: int = 9090
-
-    reverse_geocoding_path: HttpUrl | FilePath = TypeAdapter(HttpUrl).validate_python(
-        "https://api-adresse.data.gouv.fr/reverse/csv/"
-    )
 
     user_content_storage: Annotated[
         PostgresDsn | Path | None,
@@ -42,12 +40,6 @@ class Config(BaseSettings):
             validation_alias=AliasChoices("user_content_storage", "database_url")
         ),
     ] = Path("content")
-
-    velib_data_base_path: HttpUrl | DirectoryPath = TypeAdapter(
-        HttpUrl
-    ).validate_python(
-        "https://velib-metropole-opendata.smovengo.cloud/opendata/Velib_Metropole"
-    )
 
     @field_validator("user_content_storage")
     @classmethod

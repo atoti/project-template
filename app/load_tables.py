@@ -6,9 +6,10 @@ from typing import Any, cast
 import atoti as tt
 import httpx
 import pandas as pd
-from pydantic import HttpUrl
+from pydantic import DirectoryPath, FilePath, HttpUrl
 
 from .config import Config
+from .path import RESOURCES_DIRECTORY
 from .skeleton import SKELETON
 from .util import read_json, reverse_geocode
 
@@ -106,19 +107,35 @@ async def load_tables(
     config: Config,
     http_client: httpx.AsyncClient,
 ) -> None:
+    if config.data_refresh_period is None:
+        reverse_geocoding_path: HttpUrl | FilePath = (
+            RESOURCES_DIRECTORY / "station_location.csv"
+        )
+        velib_data_base_path: HttpUrl | DirectoryPath = RESOURCES_DIRECTORY
+    else:
+        reverse_geocoding_path = HttpUrl(
+            "https://api-adresse.data.gouv.fr/reverse/csv/"
+        )
+        velib_data_base_path = HttpUrl(
+            "https://velib-metropole-opendata.smovengo.cloud/opendata/Velib_Metropole"
+        )
+
     station_details_df, station_status_df = await asyncio.gather(
         read_station_details(
             http_client=http_client,
-            reverse_geocoding_path=config.reverse_geocoding_path,
-            velib_data_base_path=config.velib_data_base_path,
+            reverse_geocoding_path=reverse_geocoding_path,
+            velib_data_base_path=velib_data_base_path,
         ),
         read_station_status(
-            config.velib_data_base_path,
+            velib_data_base_path,
             http_client=http_client,
         ),
     )
 
-    with tt.mapping_lookup(check=__debug__), session.tables.data_transaction():
+    with (
+        tt.mapping_lookup(check=config.check_mapping_lookups),
+        session.tables.data_transaction(),
+    ):
         await asyncio.gather(
             session.tables[SKELETON.tables.STATION_DETAILS.key].load_async(
                 station_details_df
