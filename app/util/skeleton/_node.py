@@ -52,9 +52,9 @@ class HeterogeneousNode(Generic[_KeyT]):
         assert get_origin(key_type) is tuple
         key_length = len(get_args(key_type))
         degenerated_tuple_length = 1
-        assert (
-            key_length > degenerated_tuple_length
-        ), "Use `str` instead of `tuple[str]`."
+        assert key_length > degenerated_tuple_length, (
+            "Use `str` instead of `tuple[str]`."
+        )
         return key_length
 
     @final
@@ -79,15 +79,15 @@ class HeterogeneousNode(Generic[_KeyT]):
             for name in dir(type(self))
             if not _is_private(name) and name not in {"key", "name"}
         }
-        assert (
-            attribute_names == set(child_from_attribute_name)
-        ), f"Expected `{type(self).__name__}` to have attributes {set(child_from_attribute_name)} but got {attribute_names}."
+        assert attribute_names == set(child_from_attribute_name), (
+            f"Expected `{type(self).__name__}` to have attributes {set(child_from_attribute_name)} but got {attribute_names}."
+        )
 
         for attribute_name, child in child_from_attribute_name.items():
             value = getattr(self, attribute_name)
             assert isinstance(value, child)
             assert isinstance(value, HomogeneousNode)
-            value._set_path(parent_path=self._path)
+            value._set_path(parent_path=self._path)  # noqa: SLF001
 
 
 class LeafNode(HeterogeneousNode[_KeyT]):
@@ -113,8 +113,8 @@ class HomogeneousNode:
         for name, value in getmembers(type(self)):
             if _is_private(name):
                 continue
-            assert isinstance(
-                value, self._child()
-            ), f"Expected `{type(self).__name__}.{name}` to be a `{self._child().__name__}` but got `{type(value).__name__}`."
+            assert isinstance(value, self._child()), (
+                f"Expected `{type(self).__name__}.{name}` to be a `{self._child().__name__}` but got `{type(value).__name__}`."
+            )
             assert isinstance(value, HeterogeneousNode)
-            value._set_path(parent_path=parent_path)
+            value._set_path(parent_path=parent_path)  # noqa: SLF001
