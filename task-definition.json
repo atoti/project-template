@@ -3,6 +3,12 @@
     "containerDefinitions": [
         {
             "name": "atoti-session",
+            "environment": [
+                {
+                    "name": "DATA_REFRESH_PERIOD",
+                    "value": "60"
+                }
+            ],
             "essential": true,
             "logConfiguration": {
                 "logDriver": "awslogs",

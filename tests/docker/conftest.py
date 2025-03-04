@@ -54,7 +54,11 @@ def session_inside_docker_container_fixture(
 ) -> Generator[tt.Session, None, None]:
     timeout = Timeout(timedelta(minutes=1))
 
-    with docker_container(docker_image_name, client=docker_client) as container:
+    with docker_container(
+        docker_image_name,
+        client=docker_client,
+        env={"DATA_REFRESH_PERIOD": "30"},
+    ) as container:
         logs = container.logs(stream=True)
 
         while "Session listening on port" not in next(logs).decode():

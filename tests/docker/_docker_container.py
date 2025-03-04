@@ -1,4 +1,4 @@
-from collections.abc import Generator
+from collections.abc import Generator, Mapping
 from contextlib import contextmanager
 from uuid import uuid4
 
@@ -13,10 +13,12 @@ def docker_container(
     *,
     client: docker.DockerClient,
     container_name: str | None = None,
+    env: Mapping[str, str] | None = None,
 ) -> Generator[Container, None, None]:
     container = client.containers.run(
         image_name,
         detach=True,
+        environment=env,
         name=container_name or str(uuid4()),
         publish_all_ports=True,
     )

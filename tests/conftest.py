@@ -7,7 +7,6 @@ import pytest
 from app import Config, start_app
 
 _TESTS_DIRECTORY = Path(__file__).parent
-_TESTS_RESOURCES_DIRECTORY = _TESTS_DIRECTORY / "__resources__"
 _PROJECT_DIRECTORY = _TESTS_DIRECTORY.parent
 
 
@@ -19,11 +18,8 @@ def project_name_fixture() -> str:
 @pytest.fixture(name="config", scope="session")
 def config_fixture() -> Config:
     return Config(
-        data_refresh_period=None,
-        reverse_geocoding_path=_TESTS_RESOURCES_DIRECTORY / "station_location.csv",
         port=0,
         user_content_storage=None,
-        velib_data_base_path=_TESTS_RESOURCES_DIRECTORY,
     )
 
 
