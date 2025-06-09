@@ -1,3 +1,5 @@
+from typing import Final
+
 from .util.skeleton import (
     Column,
     Columns,
@@ -122,7 +124,7 @@ class _Cubes(Cubes):
 
 class _Skeleton(Skeleton):
     cubes = _Cubes()
-    tables = _Tables()
+    tables: Final = _Tables()
 
 
 SKELETON = _Skeleton()

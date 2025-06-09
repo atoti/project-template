@@ -1,3 +1,13 @@
+[dependency-groups]
+dev = [
+    "docker",
+    "mypy",
+    "pandas-stubs",
+    "pytest",
+    "pytest-asyncio",
+    "ruff",
+]
+
 [project]
 name = "app"
 version = "0.1.0"
@@ -11,8 +21,9 @@ dependencies = [
     "typing-extensions",
 ]
 
+
 [tool.mypy]
-files = "app,tests"         # Remove once https://github.com/python/mypy/issues/10428 is fixed.
+files = "app,skeleton,tests" # Remove once https://github.com/python/mypy/issues/10428 is fixed.
 strict = true
 warn_redundant_casts = true
 warn_unused_configs = true
@@ -60,18 +71,8 @@ select = ["ALL"]
 banned-from = ["atoti", "pandas"]
 
 [tool.ruff.lint.flake8-import-conventions.aliases]
-atoti = "tt"
+atoti =  "tt"
 pandas = "pd"
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
-
-[tool.uv]
-dev-dependencies = [
-    "docker",
-    "mypy",
-    "pandas-stubs",
-    "pytest",
-    "pytest-asyncio",
-    "ruff",
-]
