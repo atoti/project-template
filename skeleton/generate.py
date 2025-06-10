@@ -41,7 +41,7 @@ _VALUE_PROPERTY_NAME = "value"
 
 
 def _generate_abstract_class(
-    kind: type,
+    kind: _ClassKind,
     /,
     *,
     key_type: str,
@@ -69,14 +69,12 @@ def _generate_abstract_class(
                 "@property",
                 "@abstractmethod",
                 f"def {_KEY_PROPERTY_NAME}(self) -> {key_type}: ...",
-                "",
                 "@final",
                 "@property",
                 f"def {_VALUE_PROPERTY_NAME}(self) -> tt.{kind}:",
                 _indent(f"return {parent}.{path}[self.{_KEY_PROPERTY_NAME}]"),
             ]
         ),
-        "",
     ]
 
 
@@ -93,7 +91,6 @@ def _generate_column(column_name: str, /, *, table_name: str) -> list[str]:
                 _indent(f'return r"""{column_name}"""'),
             ]
         ),
-        "",
     ]
 
 
@@ -107,10 +104,14 @@ def _generate_table(table: Table, /, *, name: str) -> list[str]:
         "@final",
         f"class {_class_name(name, kind='Table')}({_class_name(kind='Table')}):",
         *(
-            _indent(
-                f"{_identifier(column_name, kind='attribute')}: Final = {_class_name(name, column_name, kind='Column')}()"
-            )
-            for column_name in table
+            _indent(line)
+            for line in [
+                "def __init__(self) -> None:",
+                *(
+                    f"""{_indent(f"self.{_identifier(column_name, kind='attribute')}: Final = {_class_name(name, column_name, kind='Column')}(parent=self)")}"""
+                    for column_name in table
+                ),
+            ]
         ),
         *(
             _indent(line)
@@ -121,7 +122,6 @@ def _generate_table(table: Table, /, *, name: str) -> list[str]:
                 _indent(f'return r"""{name}"""'),
             ]
         ),
-        "",
     ]
 
 
@@ -135,12 +135,17 @@ def _generate_tables(tables: Tables, /) -> list[str]:
         "@final",
         f"class {_TABLES_CLASS_NAME}:",
         *(
-            _indent(
-                f"{_identifier(name, kind='attribute')}: Final = {_class_name(name, kind='Table')}()"
-            )
-            for name in tables
+            _indent(line)
+            for line in [
+                "def __init__(self) -> None:",
+                *(
+                    _indent(
+                        f"self.{_identifier(name, kind='attribute')}: Final = {_class_name(name, kind='Table')}()"
+                    )
+                    for name in tables
+                ),
+            ]
         ),
-        "",
     ]
 
 
@@ -159,24 +164,25 @@ def _generate_skeleton(skeleton: Skeleton, /) -> list[str]:
         *(
             _indent(line)
             for line in [
-                f"tables: Final = {_TABLES_CLASS_NAME}()",
-                "",
+                "def __init__(self) -> None:",
+                *(
+                    _indent(line)
+                    for line in [f"self.tables: Final = {_TABLES_CLASS_NAME}()"]
+                ),
                 "@contextmanager",
-                "@staticmethod",
-                "def of(session: tt.Session, /) -> Generator[None, None, None]:",
+                "def of(self, session: tt.Session, /) -> Generator[None, None, None]:",
                 *(
                     _indent(line)
                     for line in [
-                        "try:",
-                        _indent(f"token = {_CONTEXT_VAR_NAME}.set(session)"),
-                        _indent("yield None"),
-                        "finally:",
-                        _indent(f"{_CONTEXT_VAR_NAME}.reset(token)"),
+                        f"{_CONTEXT_VAR_NAME}.set(session)",
+                        "yield None",
                     ]
                 ),
+                "@property",
+                "def session(self) -> tt.Session:",
+                _indent(f"return {_SESSION_FUNCTION_NAME}()"),
             ]
         ),
-        "",
     ]
 
 
@@ -184,18 +190,14 @@ def _generate_skeleton(skeleton: Skeleton, /) -> list[str]:
 def generate(skeleton: Skeleton, /) -> str:
     lines = [
         "# Generated skeleton, do not edit manually.",
-        "",
         "from abc import ABC, abstractmethod",
         "from collections.abc import Generator",
         "from contextlib import contextmanager",
         "from contextvars import ContextVar",
         "from typing import Final, final",
-        "",
         "import atoti as tt",
         "from typing_extensions import override",
-        "",
         f'{_CONTEXT_VAR_NAME}: ContextVar[tt.Session] = ContextVar("skeleton")',
-        "",
         f"def {_SESSION_FUNCTION_NAME}() -> tt.Session:",
         *(
             _indent(line)
@@ -209,9 +211,7 @@ def generate(skeleton: Skeleton, /) -> str:
                 ),
             ]
         ),
-        "",
         *_generate_skeleton(skeleton),
-        "",
         f"SKELETON = {_SKELETON_CLASS_NAME}()",
     ]
     assert not any(linesep in line for line in lines)

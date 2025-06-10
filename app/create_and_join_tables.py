@@ -1,58 +1,54 @@
 import atoti as tt
 
-from .skeleton import SKELETON
-from .util.skeleton import column
+from .skeleton2 import SKELETON
 
 
-def create_station_status_table(session: tt.Session, /) -> None:
+def create_station_status_table() -> None:
     skeleton = SKELETON.tables.STATION_STATUS
-    columns = skeleton.columns
-    session.create_table(
-        skeleton.name,
+    SKELETON.session.create_table(
+        skeleton.key,
         data_types={
-            columns.STATION_ID.name: tt.LONG,
-            columns.BIKE_TYPE.name: tt.STRING,
-            columns.BIKES.name: tt.INT,
+            skeleton.STATION_ID.key: tt.LONG,
+            skeleton.BIKE_TYPE.key: tt.STRING,
+            skeleton.BIKES.key: tt.INT,
         },
         keys={
-            columns.STATION_ID.name,
-            columns.BIKE_TYPE.name,
+            skeleton.STATION_ID.key,
+            skeleton.BIKE_TYPE.key,
         },
     )
 
 
-def create_station_details_table(session: tt.Session, /) -> None:
+def create_station_details_table() -> None:
     skeleton = SKELETON.tables.STATION_DETAILS
-    columns = skeleton.columns
-    session.create_table(
-        skeleton.name,
+    SKELETON.session.create_table(
+        skeleton.key,
         data_types={
-            columns.ID.name: tt.LONG,
-            columns.NAME.name: tt.STRING,
-            columns.DEPARTMENT.name: tt.STRING,
-            columns.CITY.name: tt.STRING,
-            columns.POSTCODE.name: tt.INT,
-            columns.STREET.name: tt.STRING,
-            columns.HOUSE_NUMBER.name: tt.STRING,
-            columns.CAPACITY.name: tt.INT,
+            skeleton.ID.key: tt.LONG,
+            skeleton.NAME.key: tt.STRING,
+            skeleton.DEPARTMENT.key: tt.STRING,
+            skeleton.CITY.key: tt.STRING,
+            skeleton.POSTCODE.key: tt.INT,
+            skeleton.STREET.key: tt.STRING,
+            skeleton.HOUSE_NUMBER.key: tt.STRING,
+            skeleton.CAPACITY.key: tt.INT,
         },
-        default_values={columns.POSTCODE.name: 0},
+        default_values={skeleton.POSTCODE.key: 0},
         keys={
-            columns.ID.name,
+            skeleton.ID.key,
         },
     )
 
 
-def join_tables(session: tt.Session, /) -> None:
+def join_tables() -> None:
     tables = SKELETON.tables
-    session.tables[tables.STATION_STATUS.key].join(
-        session.tables[tables.STATION_DETAILS.key],
-        column(session, tables.STATION_STATUS.columns.STATION_ID)
-        == column(session, tables.STATION_DETAILS.columns.ID),
+    tables.STATION_STATUS.value.join(
+        tables.STATION_DETAILS.value,
+        tables.STATION_STATUS.STATION_ID.value == tables.STATION_DETAILS.ID.value,
     )
 
 
-def create_and_join_tables(session: tt.Session, /) -> None:
-    create_station_status_table(session)
-    create_station_details_table(session)
-    join_tables(session)
+def create_and_join_tables() -> None:
+    create_station_status_table()
+    create_station_details_table()
+    join_tables()
