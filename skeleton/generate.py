@@ -35,6 +35,7 @@ _CONTEXT_VAR_NAME = _private("CONTEXT_VAR")
 _KEY_PROPERTY_NAME = "key"
 _SESSION_FUNCTION_NAME = _private("session")
 _SKELETON_CLASS_NAME = _private("Skeleton")
+_SKELETON_CONSTANT_NAME = "SKELETON"
 _SKELETON_OF_METHOD_NAME = "of"
 _TABLES_CLASS_NAME = _private("Tables")
 _VALUE_PROPERTY_NAME = "value"
@@ -189,7 +190,6 @@ def _generate_skeleton(skeleton: Skeleton, /) -> list[str]:
 @validate_call
 def generate(skeleton: Skeleton, /) -> str:
     lines = [
-        "# Generated skeleton, do not edit manually.",
         "from abc import ABC, abstractmethod",
         "from collections.abc import Generator",
         "from contextlib import contextmanager",
@@ -212,7 +212,7 @@ def generate(skeleton: Skeleton, /) -> str:
             ]
         ),
         *_generate_skeleton(skeleton),
-        f"SKELETON = {_SKELETON_CLASS_NAME}()",
+        f"{_SKELETON_CONSTANT_NAME} = {_SKELETON_CLASS_NAME}()",
     ]
     assert not any(linesep in line for line in lines)
     return linesep.join(lines)
