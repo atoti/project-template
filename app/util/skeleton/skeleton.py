@@ -79,7 +79,7 @@ class Skeleton(
 ):
     """The skeleton of a data model.
 
-    It mirrors the structure of the data model but only declares the parent/child relationship between nodes and the name of each node.
+    It mirrors the structure of the data model but only declares the parent/child relationship between nodes.
 
     Note:
         Attaching other information to the skeleton is discouraged because this will end up duplicating the data model API already provided by Atoti.

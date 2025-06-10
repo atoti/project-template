@@ -1,13 +1,26 @@
-import re
-from os import linesep
-from typing import Literal, TypeAlias
+from __future__ import annotations
 
+import re
+from collections.abc import Mapping
+from os import linesep
+from typing import (
+    Annotated,
+    Literal,
+    TypeVar,
+    get_args,
+    get_origin,
+    overload,
+)
+
+import atoti as tt
 from pydantic import validate_call
 from pydantic.alias_generators import to_pascal
+from typing_extensions import is_typeddict
 
-from .typing import Skeleton, Table, Tables
+from ._node import Node
+from .typing import SessionSkeleton
 
-_ClassKind: TypeAlias = Literal["Column", "Table"]
+_T = TypeVar("_T", bound=type)
 
 
 def _identifier(name: str, /, *, kind: Literal["attribute", "class"]) -> str:
@@ -19,129 +32,182 @@ def _identifier(name: str, /, *, kind: Literal["attribute", "class"]) -> str:
             return to_pascal(identifier)
 
 
-def _private(identifier: str, /) -> str:
-    return f"_{identifier}"
-
-
-def _class_name(*parts: str, kind: _ClassKind) -> str:
-    return _private(f"{_identifier(' '.join(parts), kind='class')}{kind}")
-
-
 def _indent(code: str, /) -> str:
     return f"{' ' * 4}{code}"
 
 
+def _private(identifier: str, /) -> str:
+    return f"_{identifier}"
+
+
+def _class_name(type_: type) -> str:
+    return _private(type_.__name__)
+
+
+_COUNTER = [0]
+
+
+def _generate_unique_class_name() -> str:
+    value = _COUNTER[0]
+    _COUNTER[0] += 1
+    return _private(f"Generated{value}")
+
+
 _CONTEXT_VAR_NAME = _private("CONTEXT_VAR")
 _KEY_PROPERTY_NAME = "key"
-_SESSION_FUNCTION_NAME = _private("session")
-_SKELETON_CLASS_NAME = _private("Skeleton")
-_SKELETON_CONSTANT_NAME = "SKELETON"
-_SKELETON_OF_METHOD_NAME = "of"
+_NAME_PROPERTY_NAME = "name"
+_PATH_PROPERTY_NAME = _private("path")
+_SESSION_CONSTANT_NAME = tt.Session.__name__.upper()
+_SESSION_SET_METHOD_NAME = "set"
 _TABLES_CLASS_NAME = _private("Tables")
 _VALUE_PROPERTY_NAME = "value"
 
 
 def _generate_abstract_class(
-    kind: _ClassKind,
+    type_: type,
     /,
     *,
-    key_type: str,
-    parent_type: str | None = None,
-    path: str,
+    #  key_length: int,
+    parent_type: type,
+    path: str = "",
 ) -> list[str]:
-    match parent_type:
-        case str():
-            parent_attribute_name = _private(_private("parent"))
-            init_lines = [
-                f"def __init__(self, *, parent: {parent_type}) -> None:",
-                _indent(f"self.{parent_attribute_name}: Final = parent"),
-            ]
-            parent = f"self.{parent_attribute_name}"
-        case None:
-            init_lines = []
-            parent = f"{_SESSION_FUNCTION_NAME}()"
-
+    parent_attribute_name = _private(_private("parent"))
     return [
-        f"class {_class_name(kind=kind)}(ABC):",
+        f"class {_class_name(type_)}(ABC):",
         *(
             _indent(line)
             for line in [
-                *init_lines,
+                f"def __init__(self, *, parent: {_class_name(parent_type)}) -> None:",
+                _indent(f"self.{parent_attribute_name}: Final = parent"),
                 "@property",
                 "@abstractmethod",
-                f"def {_KEY_PROPERTY_NAME}(self) -> {key_type}: ...",
+                f"def {_KEY_PROPERTY_NAME}(self) -> str: ...",
+                "@property",
+                "@abstractmethod",
+                f"def {_NAME_PROPERTY_NAME}(self) -> str: ...",
                 "@final",
                 "@property",
-                f"def {_VALUE_PROPERTY_NAME}(self) -> tt.{kind}:",
-                _indent(f"return {parent}.{path}[self.{_KEY_PROPERTY_NAME}]"),
-            ]
-        ),
-    ]
-
-
-def _generate_column(column_name: str, /, *, table_name: str) -> list[str]:
-    return [
-        "@final",
-        f"class {_class_name(table_name, column_name, kind='Column')}({_class_name(kind='Column')}):",
-        *(
-            _indent(line)
-            for line in [
-                "@property",
-                "@override",
-                "def key(self) -> str:",
-                _indent(f'return r"""{column_name}"""'),
-            ]
-        ),
-    ]
-
-
-def _generate_table(table: Table, /, *, name: str) -> list[str]:
-    return [
-        *(
-            line
-            for column_name in table
-            for line in _generate_column(column_name, table_name=name)
-        ),
-        "@final",
-        f"class {_class_name(name, kind='Table')}({_class_name(kind='Table')}):",
-        *(
-            _indent(line)
-            for line in [
-                "def __init__(self) -> None:",
-                *(
-                    f"""{_indent(f"self.{_identifier(column_name, kind='attribute')}: Final = {_class_name(name, column_name, kind='Column')}(parent=self)")}"""
-                    for column_name in table
+                f"def {_VALUE_PROPERTY_NAME}(self) -> tt.{type_.__name__}:",
+                _indent(
+                    f"return self.{parent_attribute_name}.value{path}[self.{_KEY_PROPERTY_NAME}]"
                 ),
             ]
         ),
-        *(
-            _indent(line)
-            for line in [
-                "@property",
-                "@override",
-                "def key(self) -> str:",
-                _indent(f'return r"""{name}"""'),
-            ]
-        ),
     ]
 
 
-def _generate_tables(tables: Tables, /) -> list[str]:
+@overload
+def _generate_homogeneous_node_class_name_and_lines(
+    type_: type, name: str, /
+) -> tuple[str, list[str]]: ...
+@overload
+def _generate_homogeneous_node_class_name_and_lines(
+    type_: type,
+    name: str,
+    /,
+    *,
+    class_name_from_child_name: Mapping[str, str],
+    parent_type: type,
+) -> tuple[str, list[str]]: ...
+def _generate_homogeneous_node_class_name_and_lines(
+    type_: type,
+    name: str,
+    /,
+    *,
+    class_name_from_child_name: Mapping[str, str] | None = None,
+    parent_type: type | None = None,
+) -> tuple[str, list[str]]:
+    return (
+        class_name := _generate_unique_class_name(),
+        [
+            "@final",
+            f"class {class_name}({_class_name(type_)}):",
+            *(
+                []
+                if not class_name_from_child_name or parent_type is None
+                else [
+                    *(
+                        _indent(line)
+                        for line in [
+                            f"def __init__(self, *, parent: {_class_name(parent_type)}) -> None:",
+                            *(
+                                _indent(line)
+                                for line in [
+                                    "super().__init__(parent=parent)",
+                                    *(
+                                        f"self.{_identifier(child_name, kind='attribute')}: Final = {class_name}(parent=self)"
+                                        for child_name, class_name in class_name_from_child_name.items()
+                                    ),
+                                ]
+                            ),
+                        ]
+                    )
+                ]
+            ),
+            *(
+                _indent(line)
+                for line in [
+                    "@property",
+                    "@override",
+                    f"def {_NAME_PROPERTY_NAME}(self) -> str:",
+                    _indent(f'return r"""{name}"""'),
+                ]
+            ),
+        ],
+    )
+
+
+def _generate_table_class_name_and_lines(
+    table: _TableSkeleton, /, *, name: str
+) -> tuple[str, list[str]]:
+    column_class_name_and_lines_from_column_name = {
+        column_name: _generate_homogeneous_node_class_name_and_lines(
+            tt.Column, column_name
+        )
+        for column_name in table
+    }
+    class_name, lines = _generate_homogeneous_node_class_name_and_lines(
+        tt.Table,
+        name,
+        class_name_from_child_name={
+            child_name: class_name
+            for child_name, (
+                class_name,
+                _,
+            ) in column_class_name_and_lines_from_column_name.items()
+        },
+        parent_type=tt.Session,
+    )
+    return class_name, [
+        *(
+            line
+            for _, lines in column_class_name_and_lines_from_column_name.values()
+            for line in lines
+        ),
+        *lines,
+    ]
+
+
+def _generate_tables(tables: TablesSkeleton, /) -> list[str]:
+    table_class_name_and_lines_from_table_name = {
+        table_name: _generate_table_class_name_and_lines(table, name=table_name)
+        for table_name, table in tables.items()
+    }
     return [
         *(
             line
-            for name, table in tables.items()
-            for line in _generate_table(table, name=name)
+            for _, lines in table_class_name_and_lines_from_table_name.values()
+            for line in lines
         ),
         "@final",
         f"class {_TABLES_CLASS_NAME}:",
         *(
             _indent(line)
             for line in [
-                "def __init__(self) -> None:",
+                f"def __init__(self, *, parent: {_class_name(tt.Session)}) -> None:",
                 *(
                     _indent(
-                        f"self.{_identifier(name, kind='attribute')}: Final = {_class_name(name, kind='Table')}()"
+                        f"self.{_identifier(name, kind='attribute')}: Final = {table_class_name_and_lines_from_table_name[name][0]}(parent=parent)"
                     )
                     for name in tables
                 ),
@@ -150,28 +216,45 @@ def _generate_tables(tables: Tables, /) -> list[str]:
     ]
 
 
-def _generate_skeleton(skeleton: Skeleton, /) -> list[str]:
+def _generate_skeleton(
+    session_skeleton: _T,
+    /,
+    *,
+    session_skeleton_type: type[_T],
+    session_type: type,
+) -> list[str]:
+    print(
+        session_skeleton_type,
+        is_typeddict(session_skeleton_type),
+        session_skeleton_type.__annotations__,
+    )
     return [
-        *_generate_abstract_class("Table", key_type="str", path="tables"),
-        *_generate_abstract_class(
-            "Column",
-            key_type="str",
-            parent_type=_class_name(kind="Table"),
-            path=_VALUE_PROPERTY_NAME,
-        ),
-        *_generate_tables(skeleton["tables"]),
+        # *_generate_abstract_class(
+        #     tt.Column,
+        #     # key_len="str",
+        #     parent_type=tt.Table,
+        # ),
+        # *_generate_abstract_class(
+        #     tt.Table,
+        #     # key_type="str",
+        #     parent_type=tt.Session,
+        #     path=".tables",
+        # ),
+        # *_generate_tables(skeleton["tables"]),
         "@final",
-        f"class {_SKELETON_CLASS_NAME}:",
+        f"class {_class_name(session_type)}:",
         *(
             _indent(line)
             for line in [
                 "def __init__(self) -> None:",
                 *(
                     _indent(line)
-                    for line in [f"self.tables: Final = {_TABLES_CLASS_NAME}()"]
+                    for line in [
+                        f"self.tables: Final = {_TABLES_CLASS_NAME}(parent=self)"
+                    ]
                 ),
                 "@contextmanager",
-                "def of(self, session: tt.Session, /) -> Generator[None, None, None]:",
+                f"def {_SESSION_SET_METHOD_NAME}(self, session: tt.{session_type.__name__}, /) -> Generator[None, None, None]:",
                 *(
                     _indent(line)
                     for line in [
@@ -180,16 +263,33 @@ def _generate_skeleton(skeleton: Skeleton, /) -> list[str]:
                     ]
                 ),
                 "@property",
-                "def session(self) -> tt.Session:",
-                _indent(f"return {_SESSION_FUNCTION_NAME}()"),
+                f"def {_VALUE_PROPERTY_NAME}(self) -> tt.{session_type.__name__}:",
+                *(
+                    _indent(line)
+                    for line in [
+                        "try:",
+                        _indent(f"return {_CONTEXT_VAR_NAME}.get()"),
+                        "except LookupError as error:",
+                        _indent(
+                            f'message = "Call `{_class_name(session_type)}.{_SESSION_SET_METHOD_NAME}` before."'
+                        ),
+                        _indent("raise RuntimeError(message) from error"),
+                    ]
+                ),
             ]
         ),
     ]
 
 
 @validate_call
-def generate(skeleton: Skeleton, /) -> str:
+def generate(session_skeleton: SessionSkeleton, /) -> str:
+    assert get_origin(SessionSkeleton) is Annotated
+    session_skeleton_type, session_skeleton_node = get_args(SessionSkeleton)
+    assert isinstance(session_skeleton_node, Node)
+    assert session_skeleton_node.key_length is None
+    assert session_skeleton_node.path_from_parent_value == ""
     lines = [
+        "from __future__ import annotations",
         "from abc import ABC, abstractmethod",
         "from collections.abc import Generator",
         "from contextlib import contextmanager",
@@ -198,21 +298,12 @@ def generate(skeleton: Skeleton, /) -> str:
         "import atoti as tt",
         "from typing_extensions import override",
         f'{_CONTEXT_VAR_NAME}: ContextVar[tt.Session] = ContextVar("skeleton")',
-        f"def {_SESSION_FUNCTION_NAME}() -> tt.Session:",
-        *(
-            _indent(line)
-            for line in [
-                "try:",
-                _indent(f"return {_CONTEXT_VAR_NAME}.get()"),
-                "except LookupError as error:",
-                _indent(f"method = {_SKELETON_CLASS_NAME}.{_SKELETON_OF_METHOD_NAME}"),
-                _indent(
-                    r'raise RuntimeError(f"Call `{method.__qualname__}` before.") from error'
-                ),
-            ]
+        *_generate_skeleton(
+            session_skeleton,
+            session_skeleton_type=session_skeleton_type,
+            session_type=session_skeleton_node.value_type,
         ),
-        *_generate_skeleton(skeleton),
-        f"{_SKELETON_CONSTANT_NAME} = {_SKELETON_CLASS_NAME}()",
+        f"{_SESSION_CONSTANT_NAME} = {_class_name(session_skeleton_node.value_type)}()",
     ]
     assert not any(linesep in line for line in lines)
     return linesep.join(lines)

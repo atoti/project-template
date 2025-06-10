@@ -1,47 +1,47 @@
 import atoti as tt
 
-from .skeleton2 import SKELETON
+from .skeleton2 import SESSION
 
 
 def create_station_status_table() -> None:
-    skeleton = SKELETON.tables.STATION_STATUS
-    SKELETON.session.create_table(
-        skeleton.key,
+    table = SESSION.tables.STATION_STATUS
+    SESSION.value.create_table(
+        table.key,
         data_types={
-            skeleton.STATION_ID.key: tt.LONG,
-            skeleton.BIKE_TYPE.key: tt.STRING,
-            skeleton.BIKES.key: tt.INT,
+            table.STATION_ID.key: tt.LONG,
+            table.BIKE_TYPE.key: tt.STRING,
+            table.BIKES.key: tt.INT,
         },
         keys={
-            skeleton.STATION_ID.key,
-            skeleton.BIKE_TYPE.key,
+            table.STATION_ID.key,
+            table.BIKE_TYPE.key,
         },
     )
 
 
 def create_station_details_table() -> None:
-    skeleton = SKELETON.tables.STATION_DETAILS
-    SKELETON.session.create_table(
-        skeleton.key,
+    table = SESSION.tables.STATION_DETAILS
+    SESSION.value.create_table(
+        table.key,
         data_types={
-            skeleton.ID.key: tt.LONG,
-            skeleton.NAME.key: tt.STRING,
-            skeleton.DEPARTMENT.key: tt.STRING,
-            skeleton.CITY.key: tt.STRING,
-            skeleton.POSTCODE.key: tt.INT,
-            skeleton.STREET.key: tt.STRING,
-            skeleton.HOUSE_NUMBER.key: tt.STRING,
-            skeleton.CAPACITY.key: tt.INT,
+            table.ID.key: tt.LONG,
+            table.NAME.key: tt.STRING,
+            table.DEPARTMENT.key: tt.STRING,
+            table.CITY.key: tt.STRING,
+            table.POSTCODE.key: tt.INT,
+            table.STREET.key: tt.STRING,
+            table.HOUSE_NUMBER.key: tt.STRING,
+            table.CAPACITY.key: tt.INT,
         },
-        default_values={skeleton.POSTCODE.key: 0},
+        default_values={table.POSTCODE.key: 0},
         keys={
-            skeleton.ID.key,
+            table.ID.key,
         },
     )
 
 
 def join_tables() -> None:
-    tables = SKELETON.tables
+    tables = SESSION.tables
     tables.STATION_STATUS.value.join(
         tables.STATION_DETAILS.value,
         tables.STATION_STATUS.STATION_ID.value == tables.STATION_DETAILS.ID.value,

@@ -1,6 +1,6 @@
-from .typing import Skeleton
+from .typing import SessionSkeleton
 
-SKELETON: Skeleton = {
+SKELETON: SessionSkeleton = {
     "tables": {
         "Station details": {
             "ID",
