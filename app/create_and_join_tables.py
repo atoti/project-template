@@ -1,54 +1,54 @@
 import atoti as tt
 
-from .skeleton import SKELETON
-from .util.skeleton import column
+from .skeleton import Skeleton
+from .util import column
 
 
 def create_station_status_table(session: tt.Session, /) -> None:
-    skeleton = SKELETON.tables.STATION_STATUS
-    columns = skeleton.columns
+    skeleton = Skeleton.tables.STATION_STATUS
     session.create_table(
         skeleton.name,
         data_types={
-            columns.STATION_ID.name: tt.LONG,
-            columns.BIKE_TYPE.name: tt.STRING,
-            columns.BIKES.name: tt.INT,
+            skeleton.STATION_ID.name: tt.LONG,
+            skeleton.BIKE_TYPE.name: tt.STRING,
+            skeleton.BIKES.name: tt.INT,
         },
         keys={
-            columns.STATION_ID.name,
-            columns.BIKE_TYPE.name,
+            skeleton.STATION_ID.name,
+            skeleton.BIKE_TYPE.name,
         },
     )
 
 
 def create_station_details_table(session: tt.Session, /) -> None:
-    skeleton = SKELETON.tables.STATION_DETAILS
-    columns = skeleton.columns
+    skeleton = Skeleton.tables.STATION_DETAILS
     session.create_table(
         skeleton.name,
         data_types={
-            columns.ID.name: tt.LONG,
-            columns.NAME.name: tt.STRING,
-            columns.DEPARTMENT.name: tt.STRING,
-            columns.CITY.name: tt.STRING,
-            columns.POSTCODE.name: tt.INT,
-            columns.STREET.name: tt.STRING,
-            columns.HOUSE_NUMBER.name: tt.STRING,
-            columns.CAPACITY.name: tt.INT,
+            skeleton.ID.name: tt.LONG,
+            skeleton.NAME.name: tt.STRING,
+            skeleton.DEPARTMENT.name: tt.STRING,
+            skeleton.CITY.name: tt.STRING,
+            skeleton.POSTCODE.name: tt.INT,
+            skeleton.STREET.name: tt.STRING,
+            skeleton.HOUSE_NUMBER.name: tt.STRING,
+            skeleton.CAPACITY.name: tt.INT,
         },
-        default_values={columns.POSTCODE.name: 0},
+        default_values={
+            skeleton.POSTCODE.name: 0,
+        },
         keys={
-            columns.ID.name,
+            skeleton.ID.name,
         },
     )
 
 
 def join_tables(session: tt.Session, /) -> None:
-    tables = SKELETON.tables
-    session.tables[tables.STATION_STATUS.key].join(
-        session.tables[tables.STATION_DETAILS.key],
-        column(session, tables.STATION_STATUS.columns.STATION_ID)
-        == column(session, tables.STATION_DETAILS.columns.ID),
+    skeleton = Skeleton.tables
+    session.tables[skeleton.STATION_STATUS.name].join(
+        session.tables[skeleton.STATION_DETAILS.name],
+        column(session, skeleton.STATION_STATUS.STATION_ID)
+        == column(session, skeleton.STATION_DETAILS.ID),
     )
 
 

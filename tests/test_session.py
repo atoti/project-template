@@ -1,34 +1,34 @@
 import atoti as tt
 import pandas as pd
 
-from app import SKELETON
-from app.util.skeleton import CONTRIBUTORS_COUNT
+from app import Skeleton
 
-from .total_capacity import TOTAL_CAPACITY
+from .expected_total_capacity import EXPECTED_TOTAL_CAPACITY
 
 
 def test_total_capacity(session: tt.Session) -> None:
-    skeleton = SKELETON.cubes.STATION
-    cube = session.cubes[skeleton.key]
-    result = cube.query(cube.measures[skeleton.measures.CAPACITY.key])
+    skeleton = Skeleton.cubes.STATION
+    cube = session.cubes[skeleton.name]
+    m = cube.measures
+    result = cube.query(m[skeleton.measures.CAPACITY.name])
     expected_result = pd.DataFrame(
         {
-            skeleton.measures.CAPACITY.name: pd.Series([TOTAL_CAPACITY], dtype="Int32"),
+            skeleton.measures.CAPACITY.name: pd.Series(
+                [EXPECTED_TOTAL_CAPACITY], dtype="Int32"
+            ),
         }
     )
     pd.testing.assert_frame_equal(result, expected_result)
 
 
 def test_departments(session: tt.Session) -> None:
-    skeleton = SKELETON.cubes.STATION
-    cube = session.cubes[skeleton.key]
+    skeleton = Skeleton.cubes.STATION
+    cube = session.cubes[skeleton.name]
     l, m = cube.levels, cube.measures
     result = cube.query(
-        m[CONTRIBUTORS_COUNT],
+        m[skeleton.measures.CONTRIBUTORS_COUNT.name],
         levels=[
-            l[
-                skeleton.dimensions.STATION_DETAILS.hierarchies.LOCATION.levels.DEPARTMENT.key
-            ]
+            l[skeleton.dimensions.STATION_DETAILS.LOCATION.DEPARTMENT.key],
         ],
     )
     assert list(result.index) == [

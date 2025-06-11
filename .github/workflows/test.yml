@@ -16,6 +16,7 @@ jobs:
           version: "0.5.6"
       - run: uv python install 3.10
       - run: uv sync --locked
+      - run: uv run -m skeleton
       - run: uv run ruff format --check
       - run: uv run ruff check
       - run: uv run mypy

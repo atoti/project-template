@@ -11,6 +11,11 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --frozen --no-dev --no-install-project
+RUN --mount=type=bind,source=skeleton,target=skeleton_tmp \
+    mkdir app && \
+    uv run python -m skeleton_tmp && \
+    mv app/skeleton skeleton && \
+    rm -r app
 
 # Keep this synced with the builder image.
 FROM python:3.10-slim-bookworm
