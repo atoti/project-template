@@ -1,10 +1,11 @@
 import atoti as tt
 
-from .skeleton import SKELETON
+from .skeleton import Skeleton
+from .util import column
 
 
 def create_station_status_table(session: tt.Session, /) -> None:
-    skeleton = SKELETON.tables.STATION_STATUS
+    skeleton = Skeleton.tables.STATION_STATUS
     session.create_table(
         skeleton.name,
         data_types={
@@ -20,7 +21,7 @@ def create_station_status_table(session: tt.Session, /) -> None:
 
 
 def create_station_details_table(session: tt.Session, /) -> None:
-    skeleton = SKELETON.tables.STATION_DETAILS
+    skeleton = Skeleton.tables.STATION_DETAILS
     session.create_table(
         skeleton.name,
         data_types={
@@ -43,11 +44,11 @@ def create_station_details_table(session: tt.Session, /) -> None:
 
 
 def join_tables(session: tt.Session, /) -> None:
-    skeleton = SKELETON.tables
-    skeleton.STATION_STATUS(session).join(
-        skeleton.STATION_DETAILS(session),
-        skeleton.STATION_STATUS.STATION_ID(session)
-        == skeleton.STATION_DETAILS.ID(session),
+    skeleton = Skeleton.tables
+    session.tables[skeleton.STATION_STATUS.name].join(
+        session.tables[skeleton.STATION_DETAILS.name],
+        column(session, skeleton.STATION_STATUS.STATION_ID)
+        == column(session, skeleton.STATION_DETAILS.ID),
     )
 
 

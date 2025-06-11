@@ -1,15 +1,16 @@
 import atoti as tt
 import pandas as pd
 
-from app import SKELETON
+from app import Skeleton
 
 from .expected_total_capacity import EXPECTED_TOTAL_CAPACITY
 
 
 def test_total_capacity(session: tt.Session) -> None:
-    skeleton = SKELETON.cubes.STATION
-    cube = skeleton(session)
-    result = cube.query(skeleton.measures.CAPACITY(session))
+    skeleton = Skeleton.cubes.STATION
+    cube = session.cubes[skeleton.name]
+    m = cube.measures
+    result = cube.query(m[skeleton.measures.CAPACITY.name])
     expected_result = pd.DataFrame(
         {
             skeleton.measures.CAPACITY.name: pd.Series(
@@ -21,12 +22,13 @@ def test_total_capacity(session: tt.Session) -> None:
 
 
 def test_departments(session: tt.Session) -> None:
-    skeleton = SKELETON.cubes.STATION
-    cube = skeleton(session)
+    skeleton = Skeleton.cubes.STATION
+    cube = session.cubes[skeleton.name]
+    l, m = cube.levels, cube.measures
     result = cube.query(
-        skeleton.measures.CONTRIBUTORS_COUNT(session),
+        m[skeleton.measures.CONTRIBUTORS_COUNT.name],
         levels=[
-            skeleton.dimensions.STATION_DETAILS.LOCATION.DEPARTMENT(session),
+            l[skeleton.dimensions.STATION_DETAILS.LOCATION.DEPARTMENT.key],
         ],
     )
     assert list(result.index) == [

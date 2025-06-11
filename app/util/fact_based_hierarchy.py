@@ -3,33 +3,29 @@ from typing import Protocol, TypeVar
 
 import atoti as tt
 
-
-class _GetColumn(Protocol):
-    def __call__(self, session: tt.Session, /) -> tt.Column: ...
+from .column import _ColumnSkeleton, column
 
 
-class _Level(Protocol):
+class _LevelSkeleton(Protocol):
     @property
     def name(self) -> str: ...
 
 
-class _Hierarchy(Protocol):
+class _HierarchySkeleton(Protocol):
     @property
     def key(self) -> tuple[str, str]: ...
 
-    def __getattribute__(self, name: str, /) -> _Level: ...
 
-
-_T = TypeVar("_T", bound=_Hierarchy)
+_Hierarchy = TypeVar("_Hierarchy", bound=_HierarchySkeleton)
 
 
 def fact_based_hierarchy(
     session: tt.Session,
-    hierarchy: _T,
-    get_mapping: Callable[[_T], dict[_Level, _GetColumn]],
+    hierarchy: _Hierarchy,
+    get_mapping: Callable[[_Hierarchy], dict[_LevelSkeleton, _ColumnSkeleton]],
     /,
 ) -> tuple[tuple[str, str], dict[str, tt.Column]]:
     return hierarchy.key, {
-        level.name: get_column(session)
-        for level, get_column in get_mapping(hierarchy).items()
+        level_skeleton.name: column(session, column_skeleton)
+        for level_skeleton, column_skeleton in get_mapping(hierarchy).items()
     }

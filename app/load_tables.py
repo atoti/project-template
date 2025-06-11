@@ -10,7 +10,7 @@ from pydantic import DirectoryPath, FilePath, HttpUrl
 
 from .config import Config
 from .path import RESOURCES_DIRECTORY
-from .skeleton import SKELETON
+from .skeleton import Skeleton
 from .util import read_json, reverse_geocode
 
 
@@ -20,7 +20,7 @@ async def read_station_details(
     reverse_geocoding_path: HttpUrl | Path,
     velib_data_base_path: HttpUrl | Path,
 ) -> pd.DataFrame:
-    skeleton = SKELETON.tables.STATION_DETAILS
+    skeleton = Skeleton.tables.STATION_DETAILS
 
     stations_data: Any = cast(
         Any,
@@ -74,7 +74,7 @@ async def read_station_status(
     *,
     http_client: httpx.AsyncClient,
 ) -> pd.DataFrame:
-    skeleton = SKELETON.tables.STATION_STATUS
+    skeleton = Skeleton.tables.STATION_STATUS
 
     stations_data = cast(
         Any,
@@ -139,6 +139,10 @@ async def load_tables(
         session.tables.data_transaction(),
     ):
         await asyncio.gather(
-            SKELETON.tables.STATION_DETAILS(session).load_async(station_details_df),
-            SKELETON.tables.STATION_STATUS(session).load_async(station_status_df),
+            session.tables[Skeleton.tables.STATION_DETAILS.name].load_async(
+                station_details_df
+            ),
+            session.tables[Skeleton.tables.STATION_STATUS.name].load_async(
+                station_status_df
+            ),
         )
