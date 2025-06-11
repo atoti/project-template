@@ -13,9 +13,7 @@ _TableSkeleton: TypeAlias = Annotated[
 ]
 _TablesSkeleton: TypeAlias = Mapping[str, _TableSkeleton]
 
-_LevelSkeleton: TypeAlias = Annotated[
-    str, Node(tt.Level, key_length=3, path_from_parent_value=".levels")
-]
+_LevelSkeleton: TypeAlias = Annotated[str, Node(tt.Level, key_length=3)]
 _HierarchySkeleton: TypeAlias = Annotated[
     Sequence[_LevelSkeleton],
     Node(tt.Hierarchy, key_length=2, path_from_parent_value=".hierarchies"),
@@ -78,7 +76,7 @@ SKELETON: Skeleton = {
                 },
                 "Station status": {"Bike type": ["Bike type"]},
             },
-            "measures": {"CAPACITY", "BIKES"},
+            "measures": {"Bikes", "Capacity", "contributors.COUNT"},
         }
     },
 }

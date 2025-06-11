@@ -10,7 +10,7 @@ from pydantic import DirectoryPath, FilePath, HttpUrl
 
 from .config import Config
 from .path import RESOURCES_DIRECTORY
-from .skeleton import SKELETON
+from .skeleton import Skeleton
 from .util import read_json, reverse_geocode
 
 
@@ -20,7 +20,7 @@ async def read_station_details(
     reverse_geocoding_path: HttpUrl | Path,
     velib_data_base_path: HttpUrl | Path,
 ) -> pd.DataFrame:
-    columns = SKELETON.tables.STATION_DETAILS.columns
+    table_skeleton = Skeleton.tables.STATION_DETAILS.columns
     stations_data: Any = cast(
         Any,
         await read_json(
@@ -72,8 +72,9 @@ async def read_station_status(
     /,
     *,
     http_client: httpx.AsyncClient,
+    skeleton: Skeleton,
 ) -> pd.DataFrame:
-    columns = SKELETON.tables.STATION_STATUS.columns
+    table_skeleton = skeleton.tables.STATION_STATUS
     stations_data = cast(
         Any,
         await read_json(
@@ -92,16 +93,16 @@ async def read_station_status(
             bike_type, bikes = next(iter(num_bikes_available_types.items()))
             station_statuses.append(
                 {
-                    columns.STATION_ID.name: station_status["station_id"],
-                    columns.BIKE_TYPE.name: bike_type,
-                    columns.BIKES.name: bikes,
+                    table_skeleton.STATION_ID.name: station_status["station_id"],
+                    table_skeleton.BIKE_TYPE.name: bike_type,
+                    table_skeleton.BIKES.name: bikes,
                 }
             )
     return pd.DataFrame(station_statuses)
 
 
 async def load_tables(
-    session: tt.Session,
+    skeleton: Skeleton,
     /,
     *,
     config: Config,
@@ -134,13 +135,13 @@ async def load_tables(
 
     with (
         tt.mapping_lookup(check=config.check_mapping_lookups),
-        session.tables.data_transaction(),
+        skeleton.session.tables.data_transaction(),
     ):
         await asyncio.gather(
-            session.tables[SKELETON.tables.STATION_DETAILS.key].load_async(
+            skeleton.session.tables[skeleton.tables.STATION_DETAILS.name].load_async(
                 station_details_df
             ),
-            session.tables[SKELETON.tables.STATION_STATUS.key].load_async(
+            skeleton.session.tables[skeleton.tables.STATION_STATUS.name].load_async(
                 station_status_df
             ),
         )

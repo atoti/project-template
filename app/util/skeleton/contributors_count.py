@@ -1,1 +1,0 @@
-CONTRIBUTORS_COUNT = "contributors.COUNT"

@@ -3,17 +3,12 @@ from __future__ import annotations
 import re
 from collections.abc import Collection, Mapping
 from os import linesep
-from typing import (
-    Annotated,
-    Literal,
-    TypeVar,
-    get_args,
-    get_origin,
-)
+from textwrap import dedent
+from typing import Annotated, Literal, TypeVar, get_args, get_origin
 
 import atoti as tt
 from pydantic import TypeAdapter
-from pydantic.alias_generators import to_pascal
+from pydantic.alias_generators import to_pascal, to_snake
 from typing_extensions import is_typeddict
 
 from .node import Node
@@ -47,17 +42,20 @@ def _generate_unique_class_name() -> str:
     return _private(f"Generated{value}")
 
 
+_ATOTI_IMPORT_ALIAS = "tt"
 _KEY_PROPERTY_NAME = "key"
 _NAME_PROPERTY_NAME = "name"
 _PARENT_PARAMETER_NAME = "parent"
-_PARENT_PROPERTY_NAME = _private(_private(_PARENT_PARAMETER_NAME))
-_VALUE_PROPERTY_NAME = "value"
-_ATOTI_IMPORT_ALIAS = "tt"
+_PARENT_PROPERTY_NAME = _private(_PARENT_PARAMETER_NAME)
 
 
 def _atoti_class_name(type_: type, /) -> str:
     assert getattr(tt, type_.__name__) is type_
     return f"{_ATOTI_IMPORT_ALIAS}.{type_.__name__}"
+
+
+def _attribute_name(type_: type, /) -> str:
+    return to_snake(type_.__name__)
 
 
 def _unwrap_type(type_: type[_T], /) -> tuple[type[_T], Node | None]:
@@ -78,6 +76,7 @@ def _generate_class_name_and_lines(
     *,
     name: str | None,
     parent_type_name: str,
+    parent_value_type: type,
 ) -> tuple[str, list[str]]:
     skeleton_type, node = _unwrap_type(skeleton_type)
 
@@ -94,6 +93,9 @@ def _generate_class_name_and_lines(
                     value_type,
                     name=child_name,
                     parent_type_name=parent_type_name if node is None else class_name,
+                    parent_value_type=parent_value_type
+                    if node is None
+                    else node.value_type,
                 )
                 for child_name in skeleton
             }
@@ -113,6 +115,9 @@ def _generate_class_name_and_lines(
                     element_type,
                     name=child_name,
                     parent_type_name=parent_type_name if node is None else class_name,
+                    parent_value_type=parent_value_type
+                    if node is None
+                    else node.value_type,
                 )
                 for child_name in skeleton
             }
@@ -126,10 +131,47 @@ def _generate_class_name_and_lines(
                 ) in class_name_and_lines_from_child_name.items()
             ]
         case _:
-            extra_init_lines = []
+            if is_typeddict(skeleton_type):
+                class_name_and_lines_from_attribute_name = {
+                    attribute_name: _generate_class_name_and_lines(
+                        skeleton[attribute_name],
+                        annotation,
+                        name=None,
+                        parent_type_name=parent_type_name
+                        if node is None
+                        else class_name,
+                        parent_value_type=parent_value_type
+                        if node is None
+                        else node.value_type,
+                    )
+                    for attribute_name, annotation in skeleton_type.__annotations__.items()
+                }
+                for _, extra_lines in class_name_and_lines_from_attribute_name.values():
+                    lines.extend(extra_lines)
+                extra_init_lines = [
+                    f"self.{attribute_name}: Final = {class_name}({_PARENT_PARAMETER_NAME}=self)"
+                    for attribute_name, (
+                        class_name,
+                        _,
+                    ) in class_name_and_lines_from_attribute_name.items()
+                ]
+            else:
+                extra_init_lines = []
 
     if name is not None:
         extra_init_lines.append(f'self.{_NAME_PROPERTY_NAME}: Final = r"""{name}"""')
+
+    if node is not None and node.key_length is not None:
+        extra_init_lines.append(
+            f"""self.{_KEY_PROPERTY_NAME}: Final = {
+                ", ".join(
+                    [
+                        f"self{''.join([f'.{_PARENT_PROPERTY_NAME}'] * (node.key_length - index - 1))}.{_NAME_PROPERTY_NAME}"
+                        for index in range(node.key_length)
+                    ]
+                )
+            }"""
+        )
 
     return (
         class_name,
@@ -160,9 +202,9 @@ def _generate_class_name_and_lines(
                             if node is None
                             else [
                                 "@property",
-                                f"def {_VALUE_PROPERTY_NAME}(self) -> {_atoti_class_name(node.value_type)}:",
+                                f"def {_attribute_name(node.value_type)}(self) -> {_atoti_class_name(node.value_type)}:",
                                 _indent(
-                                    f"return self.{_PARENT_PROPERTY_NAME}.{_VALUE_PROPERTY_NAME}{node.path_from_parent_value}[self.{_NAME_PROPERTY_NAME}]"
+                                    f"return self.{_PARENT_PROPERTY_NAME}.{_attribute_name(parent_value_type)}{node.path_from_parent_value}[self.{_NAME_PROPERTY_NAME}]"
                                 ),
                             ]
                         ),
@@ -194,13 +236,13 @@ def generate(skeleton: _T, skeleton_type: type[_T], /) -> str:
 
     match skeleton_type:
         case typed_dict_type if is_typeddict(skeleton_type):
-            assert _VALUE_PROPERTY_NAME not in typed_dict_type.__annotations__
             class_name_and_lines_from_attribute_name = {
                 attribute_name: _generate_class_name_and_lines(
                     skeleton[attribute_name],
                     annotation,
                     name=None,
                     parent_type_name=SKELETON_CLASS_NAME,
+                    parent_value_type=node.value_type,
                 )
                 for attribute_name, annotation in typed_dict_type.__annotations__.items()
             }
@@ -217,7 +259,6 @@ def generate(skeleton: _T, skeleton_type: type[_T], /) -> str:
         case _:
             extra_lines = []
             extra_init_lines = []
-            # raise TypeError(f"Unsupported type: {skeleton_type}.")
 
     skeleton_class_lines = [
         "@final",
@@ -225,11 +266,32 @@ def generate(skeleton: _T, skeleton_type: type[_T], /) -> str:
         *(
             _indent(line)
             for line in [
-                f"def __init__(self, {_VALUE_PROPERTY_NAME}: {_atoti_class_name(node.value_type)}, /) -> None:",
+                *dedent(
+                    '''\
+                    """The skeleton of the application.
+
+                    It mirrors the structure of the data model but only declares the parent/child relationship between nodes.
+
+                    Note:
+                        Attaching other information to the skeleton is discouraged because this will end up duplicating the data model API already provided by Atoti.
+                        For instance, it is discouraged to add a ``data_type`` attribute to ``Column``, or a ``keys`` attribute to ``Table``.
+
+                    Skeletons scale well to large data models because IDEs can inspect them statically and thus offer:
+
+                    * Autocompletion
+                    * "Find all references"
+                    * "Go to definition"
+                    * Type checking
+
+                    """
+                    '''
+                ).splitlines(),
+                "",
+                f"def __init__(self, {_attribute_name(node.value_type)}: {_atoti_class_name(node.value_type)}, /) -> None:",
                 *(
                     _indent(line)
                     for line in [
-                        f"self.{_VALUE_PROPERTY_NAME}: Final = {_VALUE_PROPERTY_NAME}",
+                        f"self.{_attribute_name(node.value_type)}: Final = {_attribute_name(node.value_type)}",
                         *extra_init_lines,
                     ]
                 ),
@@ -237,6 +299,11 @@ def generate(skeleton: _T, skeleton_type: type[_T], /) -> str:
         ),
     ]
 
-    lines = [*import_lines, *extra_lines, *skeleton_class_lines]
+    lines = [
+        "# Generated skeleton, do not edit.",
+        *import_lines,
+        *extra_lines,
+        *skeleton_class_lines,
+    ]
     assert not any(linesep in line for line in lines)
     return linesep.join(lines)

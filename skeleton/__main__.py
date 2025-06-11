@@ -8,7 +8,7 @@ _APP_DIRECTORY = Path(__file__).parent.parent / "app"
 
 def main() -> None:
     code = generate(SKELETON, Skeleton)
-    directory = _APP_DIRECTORY / "skeleton2"
+    directory = _APP_DIRECTORY / "skeleton"
     directory.mkdir(exist_ok=True)
     for filename, text in {
         ".gitignore": "*",
