@@ -104,7 +104,7 @@ def _generate_class_name_and_lines(
             for _, child_lines in class_name_and_lines_from_child_name.values():
                 lines.extend(child_lines)
             extra_init_lines = [
-                f"self.{_identifier(child_name, kind='attribute')}: Final = {child_class_name}({_PARENT_PARAMETER_NAME}={_PARENT_PARAMETER_NAME if node is None else 'self'})"
+                f"self.{_identifier(child_name, kind='attribute')}: Final = {child_class_name}({_PARENT_PARAMETER_NAME if node is None else 'self'})"
                 for child_name, (
                     child_class_name,
                     _,
@@ -127,7 +127,7 @@ def _generate_class_name_and_lines(
             for _, child_lines in class_name_and_lines_from_child_name.values():
                 lines.extend(child_lines)
             extra_init_lines = [
-                f"self.{_identifier(child_name, kind='attribute')}: Final = {child_class_name}({_PARENT_PARAMETER_NAME}={_PARENT_PARAMETER_NAME if node is None else 'self'})"
+                f"self.{_identifier(child_name, kind='attribute')}: Final = {child_class_name}({_PARENT_PARAMETER_NAME if node is None else 'self'})"
                 for child_name, (
                     child_class_name,
                     _,
@@ -153,7 +153,7 @@ def _generate_class_name_and_lines(
                 for _, extra_lines in class_name_and_lines_from_attribute_name.values():
                     lines.extend(extra_lines)
                 extra_init_lines = [
-                    f"self.{attribute_name}: Final = {class_name}({_PARENT_PARAMETER_NAME}=self)"
+                    f"self.{attribute_name}: Final = {class_name}(self)"
                     for attribute_name, (
                         class_name,
                         _,
@@ -187,7 +187,7 @@ def _generate_class_name_and_lines(
                 *(
                     _indent(line)
                     for line in [
-                        f"def __init__(self, *, {_PARENT_PARAMETER_NAME}: {parent_type_name}) -> None:",
+                        f"def __init__(self, {_PARENT_PARAMETER_NAME}: {parent_type_name}, /) -> None:",
                         *(
                             _indent(line)
                             for line in [
@@ -230,13 +230,8 @@ def generate(skeleton: _T, skeleton_type: type[_T], /) -> str:
 
     import_lines = [
         "from __future__ import annotations",
-        "from abc import ABC, abstractmethod",
-        "from collections.abc import Generator",
-        "from contextlib import contextmanager",
-        "from contextvars import ContextVar",
         "from typing import Final, final",
         f"import atoti as {_ATOTI_IMPORT_ALIAS}",
-        "from typing_extensions import override",
     ]
 
     skeleton_class_name = _generate_unique_class_name()
@@ -258,7 +253,7 @@ def generate(skeleton: _T, skeleton_type: type[_T], /) -> str:
             for _, lines in class_name_and_lines_from_attribute_name.values():
                 extra_lines.extend(lines)
             extra_init_lines = [
-                f"self.{attribute_name}: Final = {class_name}({_PARENT_PARAMETER_NAME}=self)"
+                f"self.{attribute_name}: Final = {class_name}(self)"
                 for attribute_name, (
                     class_name,
                     _,
