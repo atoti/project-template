@@ -72,13 +72,26 @@ def _generate_class_name_and_lines(
     path: tuple[str, ...],
 ) -> tuple[str, list[str]]:
     skeleton_type, node = _unwrap_type(skeleton_type)
-    class_name = SKELETON_CLASS_NAME if is_root else _generate_unique_class_name()
 
     match get_origin(skeleton_type), get_args(skeleton_type):
-        case None, () if skeleton_type is str:
-            class_name_and_lines_from_attribute_name: dict[
-                str, tuple[str, list[str]]
-            ] = {}
+        case None, ():
+            match skeleton_type:
+                case _ if skeleton_type is str:
+                    class_name_and_lines_from_attribute_name: dict[
+                        str, tuple[str, list[str]]
+                    ] = {}
+                case typed_dict if is_typeddict(typed_dict):
+                    assert isinstance(skeleton, Mapping)
+                    class_name_and_lines_from_attribute_name = {
+                        attribute_name: _generate_class_name_and_lines(
+                            skeleton[attribute_name],
+                            annotation,
+                            path=path,
+                        )
+                        for attribute_name, annotation in typed_dict.__annotations__.items()
+                    }
+                case _:
+                    raise TypeError(f"Unsupported skeleton type: {skeleton_type}.")
         case origin, (element_type,) if origin is AbstractSet:
             assert isinstance(skeleton, AbstractSet)
             class_name_and_lines_from_attribute_name = {
@@ -100,22 +113,11 @@ def _generate_class_name_and_lines(
                 )
                 for child_name in skeleton
             }
-        case _ if is_typeddict(skeleton_type):
-            assert isinstance(skeleton, Mapping)
-            class_name_and_lines_from_attribute_name = {
-                attribute_name: _generate_class_name_and_lines(
-                    skeleton[attribute_name],
-                    annotation,
-                    path=path,
-                )
-                for attribute_name, annotation in skeleton_type.__annotations__.items()
-            }
-
         case _:
             raise TypeError(f"Unsupported skeleton type: {skeleton_type}.")
 
     return (
-        class_name,
+        class_name := SKELETON_CLASS_NAME if is_root else _generate_unique_class_name(),
         [
             *(
                 line
