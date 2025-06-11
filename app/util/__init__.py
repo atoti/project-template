@@ -1,3 +1,4 @@
+from .fact_based_hierarchy import fact_based_hierarchy as fact_based_hierarchy
 from .normalize_postgres_dsn_for_atoti_jdbc import (
     normalize_postgres_dsn_for_atoti_jdbc as normalize_postgres_dsn_for_atoti_jdbc,
 )

@@ -1,4 +1,4 @@
-from collections.abc import Mapping, Sequence, Set as AbstractSet
+from collections.abc import Mapping, Set as AbstractSet
 from typing import Annotated, TypeAlias
 
 import atoti as tt
@@ -15,7 +15,7 @@ _TablesSkeleton: TypeAlias = Mapping[str, _TableSkeleton]
 
 _LevelSkeleton: TypeAlias = Annotated[str, Node(tt.Level, key_length=3)]
 _HierarchySkeleton: TypeAlias = Annotated[
-    Sequence[_LevelSkeleton],
+    AbstractSet[_LevelSkeleton],
     Node(tt.Hierarchy, key_length=2, path_from_parent_value=".hierarchies"),
 ]
 _DimensionSkeleton: TypeAlias = Mapping[str, _HierarchySkeleton]
@@ -65,16 +65,16 @@ SKELETON: Skeleton = {
         "Station": {
             "dimensions": {
                 "Station details": {
-                    "Location": [
+                    "Location": {
                         "Department",
                         "City",
                         "Postcode",
                         "Street",
                         "House number",
-                    ],
-                    "Station": ["Name", "ID"],
+                    },
+                    "Station": {"Name", "ID"},
                 },
-                "Station status": {"Bike type": ["Bike type"]},
+                "Station status": {"Bike type": {"Bike type"}},
             },
             "measures": {"Bikes", "Capacity", "contributors.COUNT"},
         }

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Collection, Mapping
+from collections.abc import Mapping, Set as AbstractSet
 from os import linesep
 from textwrap import dedent
 from typing import Annotated, Literal, TypeVar, get_args, get_origin
@@ -66,7 +66,7 @@ def _unwrap_type(type_: type[_T], /) -> tuple[type[_T], Node | None]:
             return type_, None
 
 
-SKELETON_CLASS_NAME = "Skeleton"
+SKELETON_CONSTANT_NAME = "SKELETON"
 
 
 def _generate_class_name_and_lines(
@@ -77,6 +77,7 @@ def _generate_class_name_and_lines(
     name: str | None,
     parent_type_name: str,
     parent_value_type: type,
+    root_value_type: type,
 ) -> tuple[str, list[str]]:
     skeleton_type, node = _unwrap_type(skeleton_type)
 
@@ -96,6 +97,7 @@ def _generate_class_name_and_lines(
                     parent_value_type=parent_value_type
                     if node is None
                     else node.value_type,
+                    root_value_type=root_value_type,
                 )
                 for child_name in skeleton
             }
@@ -108,7 +110,7 @@ def _generate_class_name_and_lines(
                     _,
                 ) in class_name_and_lines_from_child_name.items()
             ]
-        case origin, (element_type,) if issubclass(origin, Collection):
+        case origin, (element_type,) if issubclass(origin, AbstractSet):
             class_name_and_lines_from_child_name = {
                 child_name: _generate_class_name_and_lines(
                     child_name,
@@ -118,6 +120,7 @@ def _generate_class_name_and_lines(
                     parent_value_type=parent_value_type
                     if node is None
                     else node.value_type,
+                    root_value_type=root_value_type,
                 )
                 for child_name in skeleton
             }
@@ -143,6 +146,7 @@ def _generate_class_name_and_lines(
                         parent_value_type=parent_value_type
                         if node is None
                         else node.value_type,
+                        root_value_type=root_value_type,
                     )
                     for attribute_name, annotation in skeleton_type.__annotations__.items()
                 }
@@ -201,10 +205,11 @@ def _generate_class_name_and_lines(
                             []
                             if node is None
                             else [
-                                "@property",
-                                f"def {_attribute_name(node.value_type)}(self) -> {_atoti_class_name(node.value_type)}:",
+                                f"def __call__(self, {_attribute_name(root_value_type)}: {_atoti_class_name(root_value_type)}, /) -> {_atoti_class_name(node.value_type)}:",
                                 _indent(
-                                    f"return self.{_PARENT_PROPERTY_NAME}.{_attribute_name(parent_value_type)}{node.path_from_parent_value}[self.{_NAME_PROPERTY_NAME}]"
+                                    f"return {_attribute_name(root_value_type)}{node.path_from_parent_value}[self.{_NAME_PROPERTY_NAME}]"
+                                    if parent_value_type is root_value_type
+                                    else f"return self.{_PARENT_PROPERTY_NAME}({_attribute_name(root_value_type)}){node.path_from_parent_value}[self.{_NAME_PROPERTY_NAME}]"
                                 ),
                             ]
                         ),
@@ -234,6 +239,8 @@ def generate(skeleton: _T, skeleton_type: type[_T], /) -> str:
         "from typing_extensions import override",
     ]
 
+    skeleton_class_name = _generate_unique_class_name()
+
     match skeleton_type:
         case typed_dict_type if is_typeddict(skeleton_type):
             class_name_and_lines_from_attribute_name = {
@@ -241,8 +248,9 @@ def generate(skeleton: _T, skeleton_type: type[_T], /) -> str:
                     skeleton[attribute_name],
                     annotation,
                     name=None,
-                    parent_type_name=SKELETON_CLASS_NAME,
+                    parent_type_name=skeleton_class_name,
                     parent_value_type=node.value_type,
+                    root_value_type=node.value_type,
                 )
                 for attribute_name, annotation in typed_dict_type.__annotations__.items()
             }
@@ -262,7 +270,7 @@ def generate(skeleton: _T, skeleton_type: type[_T], /) -> str:
 
     skeleton_class_lines = [
         "@final",
-        f"class {SKELETON_CLASS_NAME}:",
+        f"class {skeleton_class_name}:",
         *(
             _indent(line)
             for line in [
@@ -282,19 +290,11 @@ def generate(skeleton: _T, skeleton_type: type[_T], /) -> str:
                     * "Find all references"
                     * "Go to definition"
                     * Type checking
-
                     """
                     '''
                 ).splitlines(),
-                "",
-                f"def __init__(self, {_attribute_name(node.value_type)}: {_atoti_class_name(node.value_type)}, /) -> None:",
-                *(
-                    _indent(line)
-                    for line in [
-                        f"self.{_attribute_name(node.value_type)}: Final = {_attribute_name(node.value_type)}",
-                        *extra_init_lines,
-                    ]
-                ),
+                "def __init__(self) -> None:",
+                *(_indent(line) for line in extra_init_lines),
             ]
         ),
     ]
@@ -304,6 +304,7 @@ def generate(skeleton: _T, skeleton_type: type[_T], /) -> str:
         *import_lines,
         *extra_lines,
         *skeleton_class_lines,
+        f"{SKELETON_CONSTANT_NAME} = {skeleton_class_name}()",
     ]
     assert not any(linesep in line for line in lines)
     return linesep.join(lines)

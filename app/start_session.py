@@ -11,7 +11,6 @@ from .config import Config
 from .create_and_join_tables import create_and_join_tables
 from .create_cubes import create_cubes
 from .load_tables import load_tables
-from .skeleton import Skeleton
 
 
 def get_session_config(config: Config, /) -> tt.SessionConfig:
@@ -36,13 +35,12 @@ async def start_session(
     *,
     config: Config,
     http_client: httpx.AsyncClient,
-) -> AsyncGenerator[Skeleton]:
+) -> AsyncGenerator[tt.Session]:
     """Start the session, declare the data model and load the initial data."""
     session_config = get_session_config(config)
     with tt.Session.start(session_config) as session:
-        skeleton = Skeleton(session)
         with tt.mapping_lookup(check=config.check_mapping_lookups):
-            create_and_join_tables(skeleton)
-            create_cubes(skeleton)
-        await load_tables(skeleton, config=config, http_client=http_client)
-        yield skeleton
+            create_and_join_tables(session)
+            create_cubes(session)
+        await load_tables(session, config=config, http_client=http_client)
+        yield session
