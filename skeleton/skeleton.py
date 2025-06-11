@@ -35,6 +35,7 @@ class Skeleton(TypedDict):
     cubes: _CubesSkeleton
 
 
+# Rerun `uv run python -m skeleton` after changing this.
 SKELETON: Skeleton = {
     "tables": {
         "Station details": {
