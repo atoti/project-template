@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Mapping
+from collections.abc import Collection, Mapping
 from os import linesep
 from typing import (
     Annotated,
@@ -9,18 +9,16 @@ from typing import (
     TypeVar,
     get_args,
     get_origin,
-    overload,
 )
 
 import atoti as tt
-from pydantic import validate_call
+from pydantic import TypeAdapter
 from pydantic.alias_generators import to_pascal
 from typing_extensions import is_typeddict
 
-from ._node import Node
-from .typing import SessionSkeleton
+from .node import Node
 
-_T = TypeVar("_T", bound=type)
+_T = TypeVar("_T")
 
 
 def _identifier(name: str, /, *, kind: Literal["attribute", "class"]) -> str:
@@ -40,10 +38,6 @@ def _private(identifier: str, /) -> str:
     return f"_{identifier}"
 
 
-def _class_name(type_: type) -> str:
-    return _private(type_.__name__)
-
-
 _COUNTER = [0]
 
 
@@ -53,257 +47,196 @@ def _generate_unique_class_name() -> str:
     return _private(f"Generated{value}")
 
 
-_CONTEXT_VAR_NAME = _private("CONTEXT_VAR")
 _KEY_PROPERTY_NAME = "key"
 _NAME_PROPERTY_NAME = "name"
-_PATH_PROPERTY_NAME = _private("path")
-_SESSION_CONSTANT_NAME = tt.Session.__name__.upper()
-_SESSION_SET_METHOD_NAME = "set"
-_TABLES_CLASS_NAME = _private("Tables")
+_PARENT_PARAMETER_NAME = "parent"
+_PARENT_PROPERTY_NAME = _private(_private(_PARENT_PARAMETER_NAME))
 _VALUE_PROPERTY_NAME = "value"
+_ATOTI_IMPORT_ALIAS = "tt"
 
 
-def _generate_abstract_class(
-    type_: type,
+def _atoti_class_name(type_: type, /) -> str:
+    assert getattr(tt, type_.__name__) is type_
+    return f"{_ATOTI_IMPORT_ALIAS}.{type_.__name__}"
+
+
+def _unwrap_type(type_: type[_T], /) -> tuple[type[_T], Node | None]:
+    match get_origin(type_), get_args(type_):
+        case origin, (unwrapped_type, (Node() as node)) if origin is Annotated:
+            return unwrapped_type, node
+        case _:
+            return type_, None
+
+
+SKELETON_CLASS_NAME = "Skeleton"
+
+
+def _generate_class_name_and_lines(
+    skeleton: _T,
+    skeleton_type: type[_T],
     /,
     *,
-    #  key_length: int,
-    parent_type: type,
-    path: str = "",
-) -> list[str]:
-    parent_attribute_name = _private(_private("parent"))
-    return [
-        f"class {_class_name(type_)}(ABC):",
-        *(
-            _indent(line)
-            for line in [
-                f"def __init__(self, *, parent: {_class_name(parent_type)}) -> None:",
-                _indent(f"self.{parent_attribute_name}: Final = parent"),
-                "@property",
-                "@abstractmethod",
-                f"def {_KEY_PROPERTY_NAME}(self) -> str: ...",
-                "@property",
-                "@abstractmethod",
-                f"def {_NAME_PROPERTY_NAME}(self) -> str: ...",
-                "@final",
-                "@property",
-                f"def {_VALUE_PROPERTY_NAME}(self) -> tt.{type_.__name__}:",
-                _indent(
-                    f"return self.{parent_attribute_name}.value{path}[self.{_KEY_PROPERTY_NAME}]"
-                ),
-            ]
-        ),
-    ]
-
-
-@overload
-def _generate_homogeneous_node_class_name_and_lines(
-    type_: type, name: str, /
-) -> tuple[str, list[str]]: ...
-@overload
-def _generate_homogeneous_node_class_name_and_lines(
-    type_: type,
-    name: str,
-    /,
-    *,
-    class_name_from_child_name: Mapping[str, str],
-    parent_type: type,
-) -> tuple[str, list[str]]: ...
-def _generate_homogeneous_node_class_name_and_lines(
-    type_: type,
-    name: str,
-    /,
-    *,
-    class_name_from_child_name: Mapping[str, str] | None = None,
-    parent_type: type | None = None,
+    name: str | None,
+    parent_type_name: str,
 ) -> tuple[str, list[str]]:
+    skeleton_type, node = _unwrap_type(skeleton_type)
+
+    class_name = _generate_unique_class_name()
+
+    lines: list[str] = []
+
+    match get_origin(skeleton_type), get_args(skeleton_type):
+        case origin, (name_type, value_type) if issubclass(origin, Mapping):
+            assert name_type is str
+            class_name_and_lines_from_child_name = {
+                child_name: _generate_class_name_and_lines(
+                    skeleton[child_name],
+                    value_type,
+                    name=child_name,
+                    parent_type_name=parent_type_name if node is None else class_name,
+                )
+                for child_name in skeleton
+            }
+            for _, child_lines in class_name_and_lines_from_child_name.values():
+                lines.extend(child_lines)
+            extra_init_lines = [
+                f"self.{_identifier(child_name, kind='attribute')}: Final = {child_class_name}({_PARENT_PARAMETER_NAME}={_PARENT_PARAMETER_NAME if node is None else 'self'})"
+                for child_name, (
+                    child_class_name,
+                    _,
+                ) in class_name_and_lines_from_child_name.items()
+            ]
+        case origin, (element_type,) if issubclass(origin, Collection):
+            class_name_and_lines_from_child_name = {
+                child_name: _generate_class_name_and_lines(
+                    child_name,
+                    element_type,
+                    name=child_name,
+                    parent_type_name=parent_type_name if node is None else class_name,
+                )
+                for child_name in skeleton
+            }
+            for _, child_lines in class_name_and_lines_from_child_name.values():
+                lines.extend(child_lines)
+            extra_init_lines = [
+                f"self.{_identifier(child_name, kind='attribute')}: Final = {child_class_name}({_PARENT_PARAMETER_NAME}={_PARENT_PARAMETER_NAME if node is None else 'self'})"
+                for child_name, (
+                    child_class_name,
+                    _,
+                ) in class_name_and_lines_from_child_name.items()
+            ]
+        case _:
+            extra_init_lines = []
+
+    if name is not None:
+        extra_init_lines.append(f'self.{_NAME_PROPERTY_NAME}: Final = r"""{name}"""')
+
     return (
-        class_name := _generate_unique_class_name(),
+        class_name,
         [
-            "@final",
-            f"class {class_name}({_class_name(type_)}):",
-            *(
-                []
-                if not class_name_from_child_name or parent_type is None
-                else [
-                    *(
-                        _indent(line)
-                        for line in [
-                            f"def __init__(self, *, parent: {_class_name(parent_type)}) -> None:",
-                            *(
-                                _indent(line)
-                                for line in [
-                                    "super().__init__(parent=parent)",
-                                    *(
-                                        f"self.{_identifier(child_name, kind='attribute')}: Final = {class_name}(parent=self)"
-                                        for child_name, class_name in class_name_from_child_name.items()
-                                    ),
-                                ]
-                            ),
-                        ]
-                    )
-                ]
-            ),
-            *(
-                _indent(line)
-                for line in [
-                    "@property",
-                    "@override",
-                    f"def {_NAME_PROPERTY_NAME}(self) -> str:",
-                    _indent(f'return r"""{name}"""'),
-                ]
-            ),
+            *lines,
+            *[
+                "@final",
+                f"class {class_name}:",
+                *(
+                    _indent(line)
+                    for line in [
+                        f"def __init__(self, *, {_PARENT_PARAMETER_NAME}: {parent_type_name}) -> None:",
+                        *(
+                            _indent(line)
+                            for line in [
+                                *(
+                                    []
+                                    if node is None
+                                    else [
+                                        f"self.{_PARENT_PROPERTY_NAME}: Final = {_PARENT_PARAMETER_NAME}"
+                                    ]
+                                ),
+                                *extra_init_lines,
+                            ]
+                        ),
+                        *(
+                            []
+                            if node is None
+                            else [
+                                "@property",
+                                f"def {_VALUE_PROPERTY_NAME}(self) -> {_atoti_class_name(node.value_type)}:",
+                                _indent(
+                                    f"return self.{_PARENT_PROPERTY_NAME}.{_VALUE_PROPERTY_NAME}{node.path_from_parent_value}[self.{_NAME_PROPERTY_NAME}]"
+                                ),
+                            ]
+                        ),
+                    ]
+                ),
+            ],
         ],
     )
 
 
-def _generate_table_class_name_and_lines(
-    table: _TableSkeleton, /, *, name: str
-) -> tuple[str, list[str]]:
-    column_class_name_and_lines_from_column_name = {
-        column_name: _generate_homogeneous_node_class_name_and_lines(
-            tt.Column, column_name
-        )
-        for column_name in table
-    }
-    class_name, lines = _generate_homogeneous_node_class_name_and_lines(
-        tt.Table,
-        name,
-        class_name_from_child_name={
-            child_name: class_name
-            for child_name, (
-                class_name,
-                _,
-            ) in column_class_name_and_lines_from_column_name.items()
-        },
-        parent_type=tt.Session,
-    )
-    return class_name, [
-        *(
-            line
-            for _, lines in column_class_name_and_lines_from_column_name.values()
-            for line in lines
-        ),
-        *lines,
-    ]
+def generate(skeleton: _T, skeleton_type: type[_T], /) -> str:
+    skeleton_type, node = _unwrap_type(skeleton_type)
+    assert node is not None
+    assert node.key_length is None
+    assert node.path_from_parent_value == ""
 
+    skeleton = TypeAdapter(skeleton_type).validate_python(skeleton)
 
-def _generate_tables(tables: TablesSkeleton, /) -> list[str]:
-    table_class_name_and_lines_from_table_name = {
-        table_name: _generate_table_class_name_and_lines(table, name=table_name)
-        for table_name, table in tables.items()
-    }
-    return [
-        *(
-            line
-            for _, lines in table_class_name_and_lines_from_table_name.values()
-            for line in lines
-        ),
-        "@final",
-        f"class {_TABLES_CLASS_NAME}:",
-        *(
-            _indent(line)
-            for line in [
-                f"def __init__(self, *, parent: {_class_name(tt.Session)}) -> None:",
-                *(
-                    _indent(
-                        f"self.{_identifier(name, kind='attribute')}: Final = {table_class_name_and_lines_from_table_name[name][0]}(parent=parent)"
-                    )
-                    for name in tables
-                ),
-            ]
-        ),
-    ]
-
-
-def _generate_skeleton(
-    session_skeleton: _T,
-    /,
-    *,
-    session_skeleton_type: type[_T],
-    session_type: type,
-) -> list[str]:
-    print(
-        session_skeleton_type,
-        is_typeddict(session_skeleton_type),
-        session_skeleton_type.__annotations__,
-    )
-    return [
-        # *_generate_abstract_class(
-        #     tt.Column,
-        #     # key_len="str",
-        #     parent_type=tt.Table,
-        # ),
-        # *_generate_abstract_class(
-        #     tt.Table,
-        #     # key_type="str",
-        #     parent_type=tt.Session,
-        #     path=".tables",
-        # ),
-        # *_generate_tables(skeleton["tables"]),
-        "@final",
-        f"class {_class_name(session_type)}:",
-        *(
-            _indent(line)
-            for line in [
-                "def __init__(self) -> None:",
-                *(
-                    _indent(line)
-                    for line in [
-                        f"self.tables: Final = {_TABLES_CLASS_NAME}(parent=self)"
-                    ]
-                ),
-                "@contextmanager",
-                f"def {_SESSION_SET_METHOD_NAME}(self, session: tt.{session_type.__name__}, /) -> Generator[None, None, None]:",
-                *(
-                    _indent(line)
-                    for line in [
-                        f"{_CONTEXT_VAR_NAME}.set(session)",
-                        "yield None",
-                    ]
-                ),
-                "@property",
-                f"def {_VALUE_PROPERTY_NAME}(self) -> tt.{session_type.__name__}:",
-                *(
-                    _indent(line)
-                    for line in [
-                        "try:",
-                        _indent(f"return {_CONTEXT_VAR_NAME}.get()"),
-                        "except LookupError as error:",
-                        _indent(
-                            f'message = "Call `{_class_name(session_type)}.{_SESSION_SET_METHOD_NAME}` before."'
-                        ),
-                        _indent("raise RuntimeError(message) from error"),
-                    ]
-                ),
-            ]
-        ),
-    ]
-
-
-@validate_call
-def generate(session_skeleton: SessionSkeleton, /) -> str:
-    assert get_origin(SessionSkeleton) is Annotated
-    session_skeleton_type, session_skeleton_node = get_args(SessionSkeleton)
-    assert isinstance(session_skeleton_node, Node)
-    assert session_skeleton_node.key_length is None
-    assert session_skeleton_node.path_from_parent_value == ""
-    lines = [
+    import_lines = [
         "from __future__ import annotations",
         "from abc import ABC, abstractmethod",
         "from collections.abc import Generator",
         "from contextlib import contextmanager",
         "from contextvars import ContextVar",
         "from typing import Final, final",
-        "import atoti as tt",
+        f"import atoti as {_ATOTI_IMPORT_ALIAS}",
         "from typing_extensions import override",
-        f'{_CONTEXT_VAR_NAME}: ContextVar[tt.Session] = ContextVar("skeleton")',
-        *_generate_skeleton(
-            session_skeleton,
-            session_skeleton_type=session_skeleton_type,
-            session_type=session_skeleton_node.value_type,
-        ),
-        f"{_SESSION_CONSTANT_NAME} = {_class_name(session_skeleton_node.value_type)}()",
     ]
+
+    match skeleton_type:
+        case typed_dict_type if is_typeddict(skeleton_type):
+            assert _VALUE_PROPERTY_NAME not in typed_dict_type.__annotations__
+            class_name_and_lines_from_attribute_name = {
+                attribute_name: _generate_class_name_and_lines(
+                    skeleton[attribute_name],
+                    annotation,
+                    name=None,
+                    parent_type_name=SKELETON_CLASS_NAME,
+                )
+                for attribute_name, annotation in typed_dict_type.__annotations__.items()
+            }
+            extra_lines = []
+            for _, lines in class_name_and_lines_from_attribute_name.values():
+                extra_lines.extend(lines)
+            extra_init_lines = [
+                f"self.{attribute_name}: Final = {class_name}({_PARENT_PARAMETER_NAME}=self)"
+                for attribute_name, (
+                    class_name,
+                    _,
+                ) in class_name_and_lines_from_attribute_name.items()
+            ]
+        case _:
+            extra_lines = []
+            extra_init_lines = []
+            # raise TypeError(f"Unsupported type: {skeleton_type}.")
+
+    skeleton_class_lines = [
+        "@final",
+        f"class {SKELETON_CLASS_NAME}:",
+        *(
+            _indent(line)
+            for line in [
+                f"def __init__(self, {_VALUE_PROPERTY_NAME}: {_atoti_class_name(node.value_type)}, /) -> None:",
+                *(
+                    _indent(line)
+                    for line in [
+                        f"self.{_VALUE_PROPERTY_NAME}: Final = {_VALUE_PROPERTY_NAME}",
+                        *extra_init_lines,
+                    ]
+                ),
+            ]
+        ),
+    ]
+
+    lines = [*import_lines, *extra_lines, *skeleton_class_lines]
     assert not any(linesep in line for line in lines)
     return linesep.join(lines)
