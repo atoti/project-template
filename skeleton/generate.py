@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping, Set as AbstractSet
+from itertools import count
 from os import linesep
 from textwrap import dedent
 from typing import Annotated, TypeVar, get_args, get_origin
@@ -11,13 +12,11 @@ from typing_extensions import is_typeddict
 
 from .node import Node
 
-_COUNTER = [0]
+_COUNTER = count()
 
 
 def _generate_unique_class_name() -> str:
-    value = _COUNTER[0]
-    _COUNTER[0] += 1
-    return f"_Generated{value}"
+    return f"_Generated{next(_COUNTER)}"
 
 
 def _identifier(name: str, /) -> str:
