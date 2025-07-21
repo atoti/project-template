@@ -1,16 +1,12 @@
 [dependency-groups]
-dev = [
-    "docker",
-    "mypy",
-    "pandas-stubs",
-    "pytest",
-    "pytest-asyncio",
-    "ruff",
-]
+dev = ["docker", "pandas-stubs", "pytest", "pytest-asyncio", "ruff", "ty"]
 
 [project]
 name = "app"
 version = "0.1.0"
+# Keep in sync with:
+# - .github/workflows/test.yml
+# - Dockerfile`'s `FROM` commands.
 requires-python = ">=3.10"
 dependencies = [
     "atoti[jdbc]",
@@ -21,17 +17,6 @@ dependencies = [
     "typing-extensions",
 ]
 
-
-[tool.mypy]
-files = "app,skeleton,tests" # Remove once https://github.com/python/mypy/issues/10428 is fixed.
-strict = true
-warn_redundant_casts = true
-warn_unused_configs = true
-warn_unused_ignores = true
-
-[[tool.mypy.overrides]]
-module = ["docker", "docker.*"]
-ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules --strict-markers"
@@ -71,8 +56,20 @@ select = ["ALL"]
 banned-from = ["atoti", "pandas"]
 
 [tool.ruff.lint.flake8-import-conventions.aliases]
-atoti =  "tt"
+atoti = "tt"
 pandas = "pd"
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
+
+[tool.ty.rules]
+unused-ignore-comment = "warn"
+
+[tool.ty.terminal]
+error-on-warning = true
+
+[tool.uv]
+# Keep in sync with:
+# - .github/workflows/test.yml
+# - Dockerfile`'s `builder`.
+required-version = ">=0.8.0"

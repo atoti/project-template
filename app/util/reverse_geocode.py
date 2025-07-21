@@ -86,7 +86,7 @@ def _reverse_geocode(
 
     results_df = results_df.set_index(list(coordinates_df.columns))
     results_df = results_df.rename(columns=_COLUMN_NAME_MAPPING)
-    return results_df.to_dict("index")  # type: ignore[return-value]
+    return results_df.to_dict("index")
 
 
 def reverse_geocode(

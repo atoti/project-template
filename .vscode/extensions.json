@@ -1,5 +1,6 @@
 {
     "recommendations": [
+        "astral-sh.ty",
         "charliermarsh.ruff",
         "ms-python.python",
         "tamasfe.even-better-toml"

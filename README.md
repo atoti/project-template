@@ -7,7 +7,7 @@ On top of the `atoti` package, it comes with:
 - Dependency management with [uv](https://docs.astral.sh/uv)
 - Config management with [Pydantic](https://docs.pydantic.dev/2.6/concepts/pydantic_settings)
 - Testing with [pytest](https://docs.pytest.org)
-- Type checking with [mypy](http://mypy-lang.org)
+- Type checking with [ty](https://docs.astral.sh/ty)
 - Formatting and linting with [Ruff](https://docs.astral.sh/ruff)
 - Continuous testing with [GitHub Actions](https://github.com/features/actions)
 

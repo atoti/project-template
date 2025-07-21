@@ -30,7 +30,7 @@ async def read_station_details(
             http_client=http_client,
         ),
     )["data"]["stations"]
-    station_information_df = pd.DataFrame(stations_data)[
+    station_information_df = pd.DataFrame(stations_data)[  # ty: ignore[no-matching-overload]
         ["station_id", "name", "capacity", "lat", "lon"]
     ].rename(
         columns={
