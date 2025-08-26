@@ -13,7 +13,7 @@ jobs:
         with:
           enable-cache: true
           # Keep in sync with pyproject.toml's `tool.uv.required-version`.
-          version: "0.8.0"
+          version: "0.8.13"
       # Keep in sync with pyproject.toml's `project.requires-python`.
       - run: uv python install 3.10
       - run: uv sync --locked
