@@ -21,8 +21,10 @@ def docker_bin_fixture() -> Path:
 
 
 @pytest.fixture(name="docker_client", scope="session")
-def docker_client_fixture() -> docker.DockerClient:
-    return docker.from_env()
+def docker_client_fixture() -> Generator[docker.DockerClient, None, None]:
+    client = docker.from_env()
+    yield client
+    client.close()
 
 
 @pytest.fixture(name="docker_image_name", scope="session")
@@ -76,3 +78,4 @@ def session_inside_docker_container_fixture(
         )
         session = tt.Session.connect(f"http://localhost:{host_port}")
         yield session
+        logs.close()
