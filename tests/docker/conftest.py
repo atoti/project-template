@@ -1,4 +1,5 @@
 from collections.abc import Generator
+from contextlib import closing
 from datetime import timedelta
 from pathlib import Path
 from shutil import which
@@ -22,9 +23,8 @@ def docker_bin_fixture() -> Path:
 
 @pytest.fixture(name="docker_client", scope="session")
 def docker_client_fixture() -> Generator[docker.DockerClient, None, None]:
-    client = docker.from_env()
-    yield client
-    client.close()
+    with closing(docker.from_env()) as client:
+        yield client
 
 
 @pytest.fixture(name="docker_image_name", scope="session")
@@ -64,11 +64,12 @@ def session_inside_docker_container_fixture(
             "DATA_REFRESH_PERIOD": "30"
         },
     ) as container:
-        logs = container.logs(stream=True)
-
-        while "Session listening on port" not in next(logs).decode():
+        while True:
+            logs = container.logs()
+            if b"Session listening on port" in logs:
+                break
             if timeout.timed_out:
-                raise RuntimeError(f"Session start timed out:\n{container.logs()}")
+                raise RuntimeError(f"Session start timed out:\n{logs}")
 
         container.reload()  # Refresh `attrs` to get its `HostPort`.
         host_port = int(
@@ -76,6 +77,8 @@ def session_inside_docker_container_fixture(
                 "HostPort"
             ]
         )
-        session = tt.Session.connect(f"http://localhost:{host_port}")
-        yield session
-        logs.close()
+        with (
+            tt.Session.connect(f"http://localhost:{host_port}") as session,
+            tt.mapping_lookup(check=False),
+        ):
+            yield session

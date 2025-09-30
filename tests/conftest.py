@@ -30,4 +30,5 @@ def config_fixture() -> Config:
 )
 async def session_fixture(config: Config) -> AsyncGenerator[tt.Session]:
     async with start_app(config=config) as session:
-        yield session
+        with tt.mapping_lookup(check=False):
+            yield session

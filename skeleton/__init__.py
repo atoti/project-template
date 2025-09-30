@@ -1,7 +1,8 @@
 from pathlib import Path
 
 from .generate import SKELETON_CLASS_NAME, generate
-from .skeleton import SKELETON, Skeleton
+from .skeleton import SKELETON
+from .typing import Skeleton
 
 
 def main(directory: Path = Path(__file__).parent.parent / "app" / "skeleton") -> None:

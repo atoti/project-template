@@ -18,21 +18,21 @@ def create_station_cube(session: tt.Session, /) -> None:
         [
             fact_based_hierarchy(
                 session,
-                skeleton.dimensions.STATION_DETAILS.LOCATION,
+                skeleton.dimensions.STATION_INFORMATION.LOCATION,
                 lambda hierarchy: {
-                    hierarchy.DEPARTMENT: Skeleton.tables.STATION_DETAILS.DEPARTMENT,
-                    hierarchy.CITY: Skeleton.tables.STATION_DETAILS.CITY,
-                    hierarchy.POSTCODE: Skeleton.tables.STATION_DETAILS.POSTCODE,
-                    hierarchy.STREET: Skeleton.tables.STATION_DETAILS.STREET,
-                    hierarchy.HOUSE_NUMBER: Skeleton.tables.STATION_DETAILS.HOUSE_NUMBER,
+                    hierarchy.DEPARTMENT: Skeleton.tables.STATION_INFORMATION.DEPARTMENT,
+                    hierarchy.CITY: Skeleton.tables.STATION_INFORMATION.CITY,
+                    hierarchy.POSTCODE: Skeleton.tables.STATION_INFORMATION.POSTCODE,
+                    hierarchy.STREET: Skeleton.tables.STATION_INFORMATION.STREET,
+                    hierarchy.HOUSE_NUMBER: Skeleton.tables.STATION_INFORMATION.HOUSE_NUMBER,
                 },
             ),
             fact_based_hierarchy(
                 session,
-                skeleton.dimensions.STATION_DETAILS.STATION,
+                skeleton.dimensions.STATION_INFORMATION.STATION,
                 lambda hierarchy: {
-                    hierarchy.NAME: Skeleton.tables.STATION_DETAILS.NAME,
-                    hierarchy.ID: Skeleton.tables.STATION_DETAILS.ID,
+                    hierarchy.NAME: Skeleton.tables.STATION_INFORMATION.NAME,
+                    hierarchy.ID: Skeleton.tables.STATION_INFORMATION.ID,
                 },
             ),
             fact_based_hierarchy(
@@ -51,10 +51,10 @@ def create_station_cube(session: tt.Session, /) -> None:
         )
         m[skeleton.measures.CAPACITY.name] = tt.agg.sum(
             tt.agg.single_value(
-                column(session, Skeleton.tables.STATION_DETAILS.CAPACITY)
+                column(session, Skeleton.tables.STATION_INFORMATION.CAPACITY)
             ),
             scope=tt.OriginScope(
-                {l[skeleton.dimensions.STATION_DETAILS.STATION.ID.key]}
+                {l[skeleton.dimensions.STATION_INFORMATION.STATION.ID.key]}
             ),
         )
 

@@ -94,10 +94,10 @@ def _generate_class_name_and_lines(
         case origin, (element_type,) if origin is AbstractSet:
             assert isinstance(skeleton, AbstractSet)
             class_name_and_lines_from_attribute_name = {
-                _identifier(child_name).upper(): _generate_class_name_and_lines(
+                _identifier(str(child_name)).upper(): _generate_class_name_and_lines(
                     child_name,
                     element_type,
-                    path=(*path, child_name),
+                    path=(*path, str(child_name)),
                 )
                 for child_name in skeleton
             }
@@ -105,10 +105,10 @@ def _generate_class_name_and_lines(
             assert isinstance(skeleton, Mapping)
             assert name_type is str
             class_name_and_lines_from_attribute_name = {
-                _identifier(child_name).upper(): _generate_class_name_and_lines(
+                _identifier(str(child_name)).upper(): _generate_class_name_and_lines(
                     skeleton[child_name],
                     value_type,
-                    path=(*path, child_name),
+                    path=(*path, str(child_name)),
                 )
                 for child_name in skeleton
             }

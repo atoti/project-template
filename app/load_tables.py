@@ -1,5 +1,6 @@
-import asyncio
+from asyncio import gather, to_thread
 from collections.abc import Iterable, Mapping
+from logging import getLogger
 from pathlib import Path
 from typing import Any, cast
 
@@ -13,24 +14,25 @@ from .path import RESOURCES_DIRECTORY
 from .skeleton import Skeleton
 from .util import read_json, reverse_geocode
 
+_LOGGER = getLogger(__name__)
 
-async def read_station_details(
+
+async def read_station_information(
     *,
     http_client: httpx.AsyncClient,
     reverse_geocoding_path: HttpUrl | Path,
     velib_data_base_path: HttpUrl | Path,
 ) -> pd.DataFrame:
-    skeleton = Skeleton.tables.STATION_DETAILS
+    skeleton = Skeleton.tables.STATION_INFORMATION
 
-    stations_data: Any = cast(
-        Any,
-        await read_json(
-            velib_data_base_path,
-            Path("station_information.json"),
-            http_client=http_client,
-        ),
-    )["data"]["stations"]
-    station_information_df = pd.DataFrame(stations_data)[  # ty: ignore[no-matching-overload]
+    station_information_data = await read_json(
+        velib_data_base_path,
+        Path("station_information.json"),
+        http_client=http_client,
+    )
+    station_information_data = cast(Any, station_information_data)["data"]["stations"]
+
+    station_information_df = pd.DataFrame(station_information_data)[  # ty: ignore[no-matching-overload]
         ["station_id", "name", "capacity", "lat", "lon"]
     ].rename(
         columns={
@@ -51,9 +53,12 @@ async def read_station_details(
         ),
     )
 
-    reverse_geocoded_df = reverse_geocode(
-        coordinates, reverse_geocoding_path=reverse_geocoding_path
-    ).rename(
+    reverse_geocoded_df = await reverse_geocode(
+        coordinates,
+        http_client=http_client,
+        reverse_geocoding_path=reverse_geocoding_path,
+    )
+    reverse_geocoded_df = reverse_geocoded_df.rename(
         columns={
             "department": skeleton.DEPARTMENT.name,
             "city": skeleton.CITY.name,
@@ -76,16 +81,15 @@ async def read_station_status(
 ) -> pd.DataFrame:
     skeleton = Skeleton.tables.STATION_STATUS
 
-    stations_data = cast(
-        Any,
-        await read_json(
-            velib_data_base_path,
-            Path("station_status.json"),
-            http_client=http_client,
-        ),
-    )["data"]["stations"]
+    stations_status_data = await read_json(
+        velib_data_base_path,
+        Path("station_status.json"),
+        http_client=http_client,
+    )
+    stations_status_data = cast(Any, stations_status_data)["data"]["stations"]
+
     station_statuses: list[Mapping[str, Any]] = []
-    for station_status in stations_data:
+    for station_status in stations_status_data:
         for num_bikes_available_types in station_status["num_bikes_available_types"]:
             if len(num_bikes_available_types) != 1:
                 raise ValueError(
@@ -109,6 +113,7 @@ async def load_tables(
     config: Config,
     http_client: httpx.AsyncClient,
 ) -> None:
+    _LOGGER.info("Loading tables.")
     if config.data_refresh_period is None:
         reverse_geocoding_path: HttpUrl | FilePath = (
             RESOURCES_DIRECTORY / "station_location.csv"
@@ -122,8 +127,8 @@ async def load_tables(
             "https://velib-metropole-opendata.smovengo.cloud/opendata/Velib_Metropole"
         )
 
-    station_details_df, station_status_df = await asyncio.gather(
-        read_station_details(
+    station_information_df, station_status_df = await gather(
+        read_station_information(
             http_client=http_client,
             reverse_geocoding_path=reverse_geocoding_path,
             velib_data_base_path=velib_data_base_path,
@@ -138,11 +143,14 @@ async def load_tables(
         tt.mapping_lookup(check=config.check_mapping_lookups),
         session.tables.data_transaction(),
     ):
-        await asyncio.gather(
-            session.tables[Skeleton.tables.STATION_DETAILS.name].load_async(
-                station_details_df
+        await gather(
+            to_thread(
+                session.tables[Skeleton.tables.STATION_INFORMATION.name].load,
+                station_information_df,
             ),
-            session.tables[Skeleton.tables.STATION_STATUS.name].load_async(
-                station_status_df
+            to_thread(
+                session.tables[Skeleton.tables.STATION_STATUS.name].load,
+                station_status_df,
             ),
         )
+    _LOGGER.info("Tables loaded.")
