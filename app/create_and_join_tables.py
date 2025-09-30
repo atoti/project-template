@@ -20,8 +20,8 @@ def create_station_status_table(session: tt.Session, /) -> None:
     )
 
 
-def create_station_details_table(session: tt.Session, /) -> None:
-    skeleton = Skeleton.tables.STATION_DETAILS
+def create_station_information_table(session: tt.Session, /) -> None:
+    skeleton = Skeleton.tables.STATION_INFORMATION
     session.create_table(
         skeleton.name,
         data_types={
@@ -46,13 +46,13 @@ def create_station_details_table(session: tt.Session, /) -> None:
 def join_tables(session: tt.Session, /) -> None:
     skeleton = Skeleton.tables
     session.tables[skeleton.STATION_STATUS.name].join(
-        session.tables[skeleton.STATION_DETAILS.name],
+        session.tables[skeleton.STATION_INFORMATION.name],
         column(session, skeleton.STATION_STATUS.STATION_ID)
-        == column(session, skeleton.STATION_DETAILS.ID),
+        == column(session, skeleton.STATION_INFORMATION.ID),
     )
 
 
 def create_and_join_tables(session: tt.Session, /) -> None:
     create_station_status_table(session)
-    create_station_details_table(session)
+    create_station_information_table(session)
     join_tables(session)

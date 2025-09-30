@@ -1,4 +1,4 @@
-import asyncio
+from asyncio import Event, create_task, sleep
 from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import asynccontextmanager
 
@@ -10,14 +10,14 @@ async def run_periodically(
     *,
     period: float,
 ) -> AsyncGenerator[None]:
-    stopped = asyncio.Event()
+    stopped = Event()
 
     async def loop() -> None:
         while not stopped.is_set():
             await callback()
-            await asyncio.sleep(period)
+            await sleep(period)
 
-    task = asyncio.create_task(loop())
+    task = create_task(loop())
 
     try:
         yield

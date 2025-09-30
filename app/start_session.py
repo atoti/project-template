@@ -1,6 +1,8 @@
 import sys
+from asyncio import to_thread
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from logging import getLogger
 from pathlib import Path
 
 import atoti as tt
@@ -12,8 +14,10 @@ from .create_and_join_tables import create_and_join_tables
 from .create_cubes import create_cubes
 from .load_tables import load_tables
 
+_LOGGER = getLogger(__name__)
 
-def get_session_config(config: Config, /) -> tt.SessionConfig:
+
+def _get_session_config(config: Config, /) -> tt.SessionConfig:
     user_content_storage: Path | UserContentStorageConfig | None = None
 
     if config.user_content_storage is not None:
@@ -30,6 +34,11 @@ def get_session_config(config: Config, /) -> tt.SessionConfig:
     )
 
 
+def _create_data_model(session: tt.Session, /) -> None:
+    create_and_join_tables(session)
+    create_cubes(session)
+
+
 @asynccontextmanager
 async def start_session(
     *,
@@ -37,10 +46,16 @@ async def start_session(
     http_client: httpx.AsyncClient,
 ) -> AsyncGenerator[tt.Session]:
     """Start the session, declare the data model and load the initial data."""
-    session_config = get_session_config(config)
-    with tt.Session.start(session_config) as session:
+    session_config = _get_session_config(config)
+    _LOGGER.info("Starting Atoti Session.")
+    session = await to_thread(tt.Session.start, session_config)
+    _LOGGER.info("Atoti Session started.")
+    try:
         with tt.mapping_lookup(check=config.check_mapping_lookups):
-            create_and_join_tables(session)
-            create_cubes(session)
+            _LOGGER.info("Creating data model.")
+            await to_thread(_create_data_model, session)
+            _LOGGER.info("Data model created.")
         await load_tables(session, config=config, http_client=http_client)
         yield session
+    finally:
+        await to_thread(session.close)

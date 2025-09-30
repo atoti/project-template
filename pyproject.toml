@@ -1,5 +1,5 @@
 [dependency-groups]
-dev = ["docker", "pandas-stubs", "pytest", "pytest-asyncio", "ruff", "ty"]
+dev = ["anyio", "docker", "pandas-stubs", "pytest", "ruff", "ty"]
 
 [project]
 name = "app"
@@ -7,7 +7,7 @@ version = "0.1.0"
 # Keep in sync with:
 # - .github/workflows/test.yml
 # - Dockerfile`'s `FROM` commands.
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "atoti[jdbc]",
     "httpx",
@@ -17,11 +17,9 @@ dependencies = [
     "typing-extensions",
 ]
 
-
 [tool.pytest.ini_options]
 addopts = "--doctest-modules --strict-markers"
-asyncio_default_fixture_loop_scope = "session"
-asyncio_mode = "auto"
+anyio_mode = "auto"
 filterwarnings = ["error"]
 
 [tool.ruff.format]
@@ -72,4 +70,4 @@ error-on-warning = true
 # Keep in sync with:
 # - .github/workflows/test.yml
 # - Dockerfile`'s `builder`.
-required-version = ">=0.8.13"
+required-version = ">=0.8.22"

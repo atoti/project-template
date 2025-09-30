@@ -6,7 +6,7 @@ from app import Skeleton
 from .expected_total_capacity import EXPECTED_TOTAL_CAPACITY
 
 
-def test_total_capacity(session: tt.Session) -> None:
+async def test_total_capacity(session: tt.Session) -> None:
     skeleton = Skeleton.cubes.STATION
     cube = session.cubes[skeleton.name]
     m = cube.measures
@@ -21,14 +21,14 @@ def test_total_capacity(session: tt.Session) -> None:
     pd.testing.assert_frame_equal(result, expected_result)
 
 
-def test_departments(session: tt.Session) -> None:
+async def test_departments(session: tt.Session) -> None:
     skeleton = Skeleton.cubes.STATION
     cube = session.cubes[skeleton.name]
     l, m = cube.levels, cube.measures
     result = cube.query(
         m[skeleton.measures.CONTRIBUTORS_COUNT.name],
         levels=[
-            l[skeleton.dimensions.STATION_DETAILS.LOCATION.DEPARTMENT.key],
+            l[skeleton.dimensions.STATION_INFORMATION.LOCATION.DEPARTMENT.key],
         ],
     )
     assert list(result.index) == [
