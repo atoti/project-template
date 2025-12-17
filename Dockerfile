@@ -4,7 +4,7 @@
 # Keep Python version in sync with:
 # - pyproject.toml's `project.requires-python`.
 # - the main stage below.
-FROM ghcr.io/astral-sh/uv:0.8.22-python3.11-bookworm-slim AS builder
+FROM ghcr.io/astral-sh/uv:0.9.18-python3.11-bookworm-slim AS builder
 
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 

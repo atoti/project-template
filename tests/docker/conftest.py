@@ -72,6 +72,7 @@ def session_inside_docker_container_fixture(
                 raise RuntimeError(f"Session start timed out:\n{logs}")
 
         container.reload()  # Refresh `attrs` to get its `HostPort`.
+        assert container.attrs is not None
         host_port = int(
             next(iter(container.attrs["NetworkSettings"]["Ports"].values()))[0][
                 "HostPort"

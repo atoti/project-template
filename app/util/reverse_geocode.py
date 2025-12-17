@@ -97,7 +97,7 @@ async def _reverse_geocode(
 
     result_df = result_df.set_index(list(coordinates_df.columns))
     result_df = result_df.rename(columns=_COLUMN_NAME_MAPPING)
-    return result_df.to_dict("index")
+    return result_df.to_dict("index")  # ty: ignore[invalid-return-type]
 
 
 async def reverse_geocode(

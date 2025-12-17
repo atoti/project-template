@@ -32,7 +32,7 @@ async def read_station_information(
     )
     station_information_data = cast(Any, station_information_data)["data"]["stations"]
 
-    station_information_df = pd.DataFrame(station_information_data)[  # ty: ignore[no-matching-overload]
+    station_information_df = pd.DataFrame(station_information_data)[
         ["station_id", "name", "capacity", "lat", "lon"]
     ].rename(
         columns={
