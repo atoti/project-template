@@ -17,10 +17,11 @@ dependencies = [
     "typing-extensions",
 ]
 
-[tool.pytest.ini_options]
-addopts = "--doctest-modules --strict-markers"
+[tool.pytest]
+addopts = ["--doctest-modules"]
 anyio_mode = "auto"
 filterwarnings = ["error"]
+strict = true
 
 [tool.ruff.format]
 docstring-code-format = true
