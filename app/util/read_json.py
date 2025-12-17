@@ -21,4 +21,5 @@ async def read_json(
         response = await http_client.get(url)
         response.raise_for_status()
         json_bytes = await response.aread()
+    # Parse JSON in separate thread to not block the event loop.
     return await to_thread(json.loads, json_bytes)

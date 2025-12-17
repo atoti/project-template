@@ -1,4 +1,4 @@
-from asyncio import gather, to_thread
+from asyncio import gather
 from collections.abc import Iterable, Mapping
 from logging import getLogger
 from pathlib import Path
@@ -144,13 +144,11 @@ async def load_tables(
         session.tables.data_transaction(),
     ):
         await gather(
-            to_thread(
-                session.tables[Skeleton.tables.STATION_INFORMATION.name].load,
-                station_information_df,
+            session.tables[Skeleton.tables.STATION_INFORMATION.name].load_async(
+                station_information_df
             ),
-            to_thread(
-                session.tables[Skeleton.tables.STATION_STATUS.name].load,
-                station_status_df,
+            session.tables[Skeleton.tables.STATION_STATUS.name].load_async(
+                station_status_df
             ),
         )
     _LOGGER.info("Tables loaded.")
