@@ -101,7 +101,7 @@ def _generate_class_name_and_lines(
                 )
                 for child_name in skeleton
             }
-        case origin, (name_type, value_type) if origin is Mapping:
+        case origin, (name_type, value_type) if origin is dict:
             assert isinstance(skeleton, Mapping)
             assert name_type is str
             class_name_and_lines_from_attribute_name = {

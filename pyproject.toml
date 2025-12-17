@@ -70,4 +70,4 @@ error-on-warning = true
 # Keep in sync with:
 # - .github/workflows/test.yml
 # - Dockerfile`'s `builder`.
-required-version = ">=0.8.22"
+required-version = ">=0.9.18"
